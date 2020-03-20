@@ -1,4 +1,5 @@
 name: "Naumann et al."
+output_dir: "docs"
 navbar:
   title: "Naumann et al."
   #type: inverse 
