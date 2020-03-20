@@ -1,0 +1,11 @@
+name: "Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children"
+output_dir: "docs"
+navbar:
+  title: "Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children"
+left:
+  - text: "Home"
+    href: index.html
+  - text: "Speed and Distance"
+    href: speed-and-distance.html
+output:
+  html_document
