@@ -1,27 +1,132 @@
 ---
-title: "index"
+title: "General information"
+output: 
+  html_document:
+    css: styles.css
+    code_folding: hide
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+
+# Set general settings for Markdown file 
+  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+
+# Set root file
+  knitr::opts_knit$set(root.dir = 'C:/Users/naumasan/Documents/Data_Analysis/2018_Pilotierung_Adlershof/Electrophysiological_Correlates_of Decoding_Emotional_Face_Expressions_in_Children/data')
+  
+# Swipe environment
+  rm(list=ls())
+  
+# Load packages
+  library(kableExtra)
+  library(XLConnect)
+  library(XLConnectJars)
+  
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+We created a tab for every data set used within this paper which encodes variables' meaning und their values. 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+### Overview of data sets  {.tabset .tabset-pills}
 
-```{r cars}
-summary(cars)
+#### Questionnaire data (QN_data)
+
+  
+```{r table_qn_data}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx", 
+                               sheet = "QN_data", 
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>% 
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+  
+
+#### EEG stimulus description (Stim_Descr)
+
+```{r table_stim_descr}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+                               sheet = "Stim_Descr",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
+#### EEG task data
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r table_eeg_task_data}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+                               sheet = "EEG_task_data",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+#### ERPs
+
+```{r table_ERPs}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+                               sheet = "ERPs",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+
+
+#### EMT_task_specifics
+
+```{r table_EMT_task_specifics}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+                               sheet = "EMT_task_specifics",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+
+
+#### EMT
+
+```{r table_EMT}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+                               sheet = "EMT",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```

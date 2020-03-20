@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>General information</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="styles.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Naumann et al.</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="glyphicon glyphicon-info-sign"></span>
+     
+    Introduction
+  </a>
+</li>
+<li>
+  <a href="R_Script_1_Method_Section.html">
+    <span class="glyphicon glyphicon-wrench"></span>
+     
+    Method section
+  </a>
+</li>
+<li>
+  <a href="R_Script_2_EEG_task_measures.html">
+    <span class="glyphicon glyphicon-hand-up"></span>
+     
+    EEG task measures
+  </a>
+</li>
+<li>
+  <a href="R_Script_3_ERP_measures.html">
+    <span class="glyphicon glyphicon-user"></span>
+     
+    ERP measures
+  </a>
+</li>
+<li>
+  <a href="R_Script_4_Emotion_empathy_measures.html">
+    <span class="glyphicon glyphicon-link"></span>
+     
+    Emotion &amp; Empathy measures
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">General information</h1>
+
+</div>
+
+
+<p>We created a tab for every data set used within this paper which encodes variables’ meaning und their values.</p>
+<div id="overview-of-data-sets" class="section level3 tabset tabset-pills">
+<h3>Overview of data sets</h3>
+<div id="questionnaire-data-qn_data" class="section level4">
+<h4>Questionnaire data (QN_data)</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;, 
+                               sheet = &quot;QN_data&quot;, 
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;% 
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:left;">
+participant Identifier
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+sex
+</td>
+<td style="text-align:left;">
+participant’s gender
+</td>
+<td style="text-align:left;">
+1 = male, 2 = female
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+birth_date
+</td>
+<td style="text-align:left;">
+participant’s birth date
+</td>
+<td style="text-align:left;">
+yy-m-dd
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+test_date
+</td>
+<td style="text-align:left;">
+participant’s test date
+</td>
+<td style="text-align:left;">
+yy-m-dd
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mum_ed
+</td>
+<td style="text-align:left;">
+Educational level of participant’s mum
+</td>
+<td style="text-align:left;">
+Scoring range: 2-52
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dad_ed
+</td>
+<td style="text-align:left;">
+Educational level of participant’s dad
+</td>
+<td style="text-align:left;">
+Scoring range: 2-52
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mum_occup_ISCO
+</td>
+<td style="text-align:left;">
+Current occupation of participant’s mum
+</td>
+<td style="text-align:left;">
+Scoring range: 1-8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dad_occup_ISCO
+</td>
+<td style="text-align:left;">
+Current occupation of participant’s dad
+</td>
+<td style="text-align:left;">
+Scoring range: 1-8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income
+</td>
+<td style="text-align:left;">
+family income
+</td>
+<td style="text-align:left;">
+Scoring range: 1-13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+PPVT_perc
+</td>
+<td style="text-align:left;">
+Peabody Picture Vocabulary Test percentile
+</td>
+<td style="text-align:left;">
+Percentile range: 1,1 - 98,9
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WM
+</td>
+<td style="text-align:left;">
+Working memory score
+</td>
+<td style="text-align:left;">
+Scoring range:
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+CMM_perc
+</td>
+<td style="text-align:left;">
+Columbia Mental Maturity Scale percentile
+</td>
+<td style="text-align:left;">
+Scoring range: 1-100
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMK_EK_P
+</td>
+<td style="text-align:left;">
+Parental rating emotion knowledge
+</td>
+<td style="text-align:left;">
+Scoring range: 0-12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMK_EM_P
+</td>
+<td style="text-align:left;">
+Parental rating empathy
+</td>
+<td style="text-align:left;">
+Scoring range: 0-24
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMK_EK_Ch
+</td>
+<td style="text-align:left;">
+Child assessment emotion knowledge
+</td>
+<td style="text-align:left;">
+Scoring range: 0-28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EMK_EM_Ch
+</td>
+<td style="text-align:left;">
+Child assessment empathy
+</td>
+<td style="text-align:left;">
+Scoring range: 0-19
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SRS
+</td>
+<td style="text-align:left;">
+Social Responsiveness Scale Total Score [raw]
+</td>
+<td style="text-align:left;">
+Scoring range: 1-195 (until 60: normal functioning)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SCQ
+</td>
+<td style="text-align:left;">
+Social Communication Questionnaire Total Score [raw]
+</td>
+<td style="text-align:left;">
+Scoring range: 0-39
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+random_EEG
+</td>
+<td style="text-align:left;">
+participant’s randomization order
+</td>
+<td style="text-align:left;">
+R1 = randomization 1, R2 = randomization 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:left;">
+participant’s age
+</td>
+<td style="text-align:left;">
+measured in years
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+income_rec
+</td>
+<td style="text-align:left;">
+Recoded family income
+</td>
+<td style="text-align:left;">
+1 = 0-1250€ 2 = 1250-2000€ 3 = 2000-3000€ 4 = 3000-5000€ 5 = &gt; 5000€
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mum_ed_rec
+</td>
+<td style="text-align:left;">
+Recoded educational level of participant’s mum
+</td>
+<td style="text-align:left;">
+1 = no degree 2 = secondary modern school [German: “Hauptschule”] 3 = middle school [German: “Realschule”] 4 = advanced technical college entrance qualification [German: “Fachhochschulreife”] 5 = higher education entrance qualification (A-levels) [German: “Abitur”]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+dad_ed_rec
+</td>
+<td style="text-align:left;">
+Recoded educational level of participant’s dad
+</td>
+<td style="text-align:left;">
+1 = no degree 2 = secondary modern school [German: “Hauptschule”] 3 = middle school [German: “Realschule”] 4 = advanced technical college entrance qualification [German: “Fachhochschulreife”] 5 = higher education entrance qualification (A-levels) [German: “Abitur”]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+occ_mum
+</td>
+<td style="text-align:left;">
+Recoded current occupation of participant’s mum
+</td>
+<td style="text-align:left;">
+1 = student 2 = skilled worker [German:Gelernter “Facharbeiter”] 3 = foremen/forwomen [German: “Vorarbeiter”] 4 = clerk in the middle grade of the civil service [German: “Beamter mittlerer Dienst”] 5 = senior officials [German: “Beamte höherer Dienst”]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+occ_dad
+</td>
+<td style="text-align:left;">
+Recoded current occupation of participant’s dad
+</td>
+<td style="text-align:left;">
+1 = student 2 = skilled worker [German:Gelernter “Facharbeiter”] 3 = foremen/forwomen [German: “Vorarbeiter”] 4 = clerk in the middle grade of the civil service [German: “Beamter mittlerer Dienst”] 5 = senior officials [German: “Beamte höherer Dienst”]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+wink_ind
+</td>
+<td style="text-align:left;">
+Winkler index
+</td>
+<td style="text-align:left;">
+Scoring range: 1-15
+</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+<div id="eeg-stimulus-description-stim_descr" class="section level4">
+<h4>EEG stimulus description (Stim_Descr)</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;,
+                               sheet = &quot;Stim_Descr&quot;,
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Trial
+</td>
+<td style="text-align:left;">
+Trial number
+</td>
+<td style="text-align:left;">
+range: 1-144
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Prime
+</td>
+<td style="text-align:left;">
+stimulus identity /gender / emotion of face 1
+</td>
+<td style="text-align:left;">
+identity_gender_emotion 1-72, 01/02, 01-03 01 = female, 02 = male 01 = happy, 02 = neutral, 03 = angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Target
+</td>
+<td style="text-align:left;">
+stimulus identity /gender / emotion of face 2
+</td>
+<td style="text-align:left;">
+identity_gender_emotion 1-72, 01/02, 01-03 01 = female, 02 = male 01 = happy, 02 = neutral, 03 = angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Identity
+</td>
+<td style="text-align:left;">
+codes identity / gender of stimulus
+</td>
+<td style="text-align:left;">
+f = female, m = male identity ranges from 1-72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Randomization
+</td>
+<td style="text-align:left;">
+randomization order
+</td>
+<td style="text-align:left;">
+R1 = randomization 1, R2 = randomization 2
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="eeg-task-data" class="section level4">
+<h4>EEG task data</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;,
+                               sheet = &quot;EEG_task_data&quot;,
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:left;">
+participant Identifier
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trial
+</td>
+<td style="text-align:left;">
+Trial number of EEG task
+</td>
+<td style="text-align:left;">
+ranges from1-144
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Block
+</td>
+<td style="text-align:left;">
+Block of the EEG task
+</td>
+<td style="text-align:left;">
+1 = block 1 2 = block 2 3 = block 3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Response
+</td>
+<td style="text-align:left;">
+Accuracy
+</td>
+<td style="text-align:left;">
+0 = incorrect 1 = correct
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RTs
+</td>
+<td style="text-align:left;">
+Reaction time
+</td>
+<td style="text-align:left;">
+measured in ms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Cong
+</td>
+<td style="text-align:left;">
+Trial definition
+</td>
+<td style="text-align:left;">
+1 = repeated 2 = novel
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Prime
+</td>
+<td style="text-align:left;">
+definition of emotion for face 1
+</td>
+<td style="text-align:left;">
+1 = happy, 2 = neutral, 3 = angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Target
+</td>
+<td style="text-align:left;">
+definition of emotion for face 2
+</td>
+<td style="text-align:left;">
+4 = repeated happy, 5 = repeated neutral, 6 = repeated angry 7 = novel happy, 8 = novel neutral, 9 = novel angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Trial_EEG
+</td>
+<td style="text-align:left;">
+Trial number of EEG recording
+</td>
+<td style="text-align:left;">
+ranges from 1-288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+participant’s age
+</td>
+<td style="text-align:left;">
+measured in years
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WM
+</td>
+<td style="text-align:left;">
+Working memory score
+</td>
+<td style="text-align:left;">
+Scoring range:
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EEG_Random
+</td>
+<td style="text-align:left;">
+participant’s randomization order
+</td>
+<td style="text-align:left;">
+R1 = randomization 1, R2 = randomization 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stim_type
+</td>
+<td style="text-align:left;">
+stimulus of this trial
+</td>
+<td style="text-align:left;">
+range: m1-m36; f1-f36 f = female, m = male
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_smaller_250_ms
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time smaller than 250 ms
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_larger_7s
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time larger than 7s
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_MAD
+</td>
+<td style="text-align:left;">
+exclude trials with larger value than ± 2.5 median absolute deviation
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+<div id="erps" class="section level4">
+<h4>ERPs</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;,
+                               sheet = &quot;ERPs&quot;,
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:left;">
+participant Identifier
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Condition
+</td>
+<td style="text-align:left;">
+Emotion and prime/target conditions
+</td>
+<td style="text-align:left;">
+1 = happy (face1) 2 = neutral (face1) 3 = angry (face1) 4 = repeated happy (face2) 5 = repeated neutral (face2) 6 = repeated angry (face2) 7 = novel happy(face2) 8 = novel neutral (face2) 9 = novel angry (face2)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_PO3
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P1 at electrode PO3
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_PO4
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P1 at electrode PO4
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_O1
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P1 at electrode O1
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_O2
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P1 at electrode O2
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P1_Oz
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P1 at electrode Oz
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170l_TP7
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode TP7
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170l_CP5
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode CP5
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170l_P7
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode P7
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170r_TP8
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode TP8
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170r_CP6
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode CP6
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+N170r_P8
+</td>
+<td style="text-align:left;">
+single-trial amplitude for N170 at electrode P8
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_PO3
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P3 at electrode PO3
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_PO4
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P3 at electrode PO4
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_O1
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P3 at electrode O1
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_O2
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P3 at electrode O2
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+P3_Oz
+</td>
+<td style="text-align:left;">
+single-trial amplitude for P3 at electrode Oz
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group_pcic
+</td>
+<td style="text-align:left;">
+Indicates condition for prime (p) vs repeated (c) vs novel (ic) trials
+</td>
+<td style="text-align:left;">
+1 = prime 2 = repeated 3 = novel
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group_pt
+</td>
+<td style="text-align:left;">
+Indicates condition for prime (p) vs target (t)
+</td>
+<td style="text-align:left;">
+1 = prime 2 = target
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mean_ROI_P1
+</td>
+<td style="text-align:left;">
+Average of single-trial P1 amplitude across P1 ROI (PO3, PO4, O1, O2, Oz)
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mean_ROI_N170l
+</td>
+<td style="text-align:left;">
+Average of single-trial N170 amplitude across N170 left ROI (TP7, CP5, P7)
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mean_ROI_N170r
+</td>
+<td style="text-align:left;">
+Average of single-trial N170 amplitude across N170 right ROI (TP8, CP6, P8)
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+mean_ROI_P3
+</td>
+<td style="text-align:left;">
+Average of single-trial P3 amplitude across P3 ROI (PO3, PO4, O1, O2, Oz)
+</td>
+<td style="text-align:left;">
+measured in mikroVolt
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RTs
+</td>
+<td style="text-align:left;">
+Reaction time
+</td>
+<td style="text-align:left;">
+measured in ms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Response
+</td>
+<td style="text-align:left;">
+Accuracy
+</td>
+<td style="text-align:left;">
+0 = incorrect 1 = correct
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Block
+</td>
+<td style="text-align:left;">
+Block of the EEG task
+</td>
+<td style="text-align:left;">
+1 = block 1 2 = block 2 3 = block 3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_smaller_250_ms
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time smaller than 250 ms
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_larger_7s
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time larger than 7s
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_MAD
+</td>
+<td style="text-align:left;">
+exclude trials with larger value than ± 2.5 median absolute deviation
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EEG_Random
+</td>
+<td style="text-align:left;">
+participant’s randomization order
+</td>
+<td style="text-align:left;">
+R1 = randomization 1, R2 = randomization 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stim_type
+</td>
+<td style="text-align:left;">
+stimulus of this trial
+</td>
+<td style="text-align:left;">
+range: m1-m36; f1-f36 f = female, m = male
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+participant’s age
+</td>
+<td style="text-align:left;">
+measured in years
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WM
+</td>
+<td style="text-align:left;">
+Working memory score
+</td>
+<td style="text-align:left;">
+Scoring range:
+</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+<div id="emt_task_specifics" class="section level4">
+<h4>EMT_task_specifics</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;,
+                               sheet = &quot;EMT_task_specifics&quot;,
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Trial
+</td>
+<td style="text-align:left;">
+trial number
+</td>
+<td style="text-align:left;">
+ranges from 1-72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Randomization
+</td>
+<td style="text-align:left;">
+participant’s randomization order
+</td>
+<td style="text-align:left;">
+1 = randomization 1 2 = randomization 2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Image_1
+</td>
+<td style="text-align:left;">
+Specification of stimulus
+</td>
+<td style="text-align:left;">
+XX_XX_XX identity_gender_emotion 01 = female, 02 = male 01 = happy, 02 = neutral, 03 = angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stimulus
+</td>
+<td style="text-align:left;">
+Number of stimulus
+</td>
+<td style="text-align:left;">
+ranges from 1-72
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="emt" class="section level4">
+<h4>EMT</h4>
+<pre class="r"><code># Load data set
+  qn_data_desc = readWorksheetFromFile(&quot;Overview_Data.xlsx&quot;,
+                               sheet = &quot;EMT&quot;,
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %&gt;%
+    kable_styling(bootstrap_options = c(&quot;hover&quot;), font_size = 12,fixed_thead = T)</code></pre>
+<table class="table table-hover" style="font-size: 12px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Variable_Meaning
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+ID
+</td>
+<td style="text-align:left;">
+participant Identifier
+</td>
+<td style="text-align:left;">
+<ul>
+<li></td>
+</tr>
+<tr>
+<td style="text-align:left;">
+emotion
+</td>
+<td style="text-align:left;">
+Code for emotions
+</td>
+<td style="text-align:left;">
+1 = happy 2 = neutral 3 = angry
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Answer
+</td>
+<td style="text-align:left;">
+Accuracy
+</td>
+<td style="text-align:left;">
+0 = incorrect 1 = correct
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+RT_in_ms
+</td>
+<td style="text-align:left;">
+Reaction time
+</td>
+<td style="text-align:left;">
+measured in ms
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Stim_type
+</td>
+<td style="text-align:left;">
+stimulus of this trial
+</td>
+<td style="text-align:left;">
+ranges from 1-72
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Age
+</td>
+<td style="text-align:left;">
+participant’s age
+</td>
+<td style="text-align:left;">
+measured in years
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+WM
+</td>
+<td style="text-align:left;">
+Working memory score
+</td>
+<td style="text-align:left;">
+Scoring range:
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_smaller_250_ms
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time smaller than 250 ms
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_larger_7s
+</td>
+<td style="text-align:left;">
+exclude trials with reaction time larger than 7s
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Exclude_MAD
+</td>
+<td style="text-align:left;">
+exclude trials with larger value than ± 2.5 median absolute deviation
+</td>
+<td style="text-align:left;">
+TRUE = outlier, FALSE = keep for further analyses
+</td>
+</tr>
+</tbody>
+</table></li>
+</ul>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

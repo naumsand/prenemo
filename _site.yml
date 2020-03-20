@@ -1,11 +1,24 @@
-name: "Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children"
-output_dir: "docs"
+name: "Naumann et al."
 navbar:
-  title: "Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children"
-left:
-  - text: "Home"
-    href: index.html
-  - text: "Speed and Distance"
-    href: speed-and-distance.html
+  title: "Naumann et al."
+  #type: inverse 
+  left:
+    - text: "Introduction"
+      icon: glyphicon-info-sign
+      href: index.html
+    - text: "Method section"
+      icon: glyphicon-wrench
+      href: R_Script_1_Method_Section.html
+    - text: "EEG task measures"
+      icon: glyphicon-hand-up
+      href: R_Script_2_EEG_task_measures.html
+    - text: "ERP measures"
+      icon: glyphicon-user
+      href: R_Script_3_ERP_measures.html
+    - text: "Emotion & Empathy measures"
+      icon: glyphicon-link
+      href: R_Script_4_Emotion_empathy_measures.html
 output:
   html_document
+      
+# for icons use homepage: https://getbootstrap.com/docs/3.3/components/
