@@ -113,7 +113,6 @@ output:
 
 <br>
 
-
 #### Table XX
 
 ```{r table_descr, results = TRUE}
@@ -421,9 +420,3 @@ for (i in 1:nfiles) {
 ```
 
 
-
-[...]
-
-The mean number of trials per condition was not significantly different for valence trials (happy: *M* = `r tr_mean_emo[2]`, *SD* = `r tr_sd_emo[2]`, angry: *M* = `r tr_mean_emo[1]`, *SD* = `r tr_mean_emo[1]`, neutral: *M* = `r tr_mean_emo[3]`, *SD* = `r tr_mean_emo[3]`; *F*(`r emo.aov.sum$Df[1]`, `r emo.aov.sum$Df[2]`) = `r emo.aov.sum$F.value[1]`, *p* = `r format.pval(pv = emo.aov.sum$Pr..F.[1], digits = 2, eps = 0.001, nsmall = 3)`)). Trial numbers for repeated trials (*M* = `r tr_mean_rep[2]`, *SD* = `r tr_sd_rep[2]`) were significantly higher (*t*(`r t_test_res$parameter`) = `r t_test_res$statistic`, *p* = `r format.pval(pv = t_test_res$p.value, digits = 2, eps = 0.001, nsmall = 3)`) in comparison to novel trials (*M* = `r tr_mean_rep[1]`, *SD* = `r tr_sd_rep[1]`). 
-
-[...]
