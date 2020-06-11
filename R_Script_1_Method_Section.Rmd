@@ -111,10 +111,6 @@ output:
   
 ```
 
-Four- to 6-year-old children were recruited to participate in the current study (*N* = `r ntotal`). Participants were recruited from an existing database of families who had volunteered for research with their child in the past. As compensation, parents were paid € 16. Children received a small toy for their participation.
- 	All children were typically developing with regard to their intellectual functioning and receptive verbal ability as assessed by the Peabody Picture Vocabulary Test 4th Edition (PPVT-4; Dunn & Dunn, 2007) and the Columbia Mental Maturity Scale (CMM; Eggert, 1972). We also screened for abnormalities in social ability with the Social Responsiveness Scale (SRS; Constantino & Gruber, 2005) and Social Communication Questionnaire (SCQ; Rutter et al., 2003). A socioeconomic score was attributed to each child according to family income, caregiver occupation and education (Winkler & Stolzenberg, 1998). For double-earner families, the highest socioeconomic score was used. Socioeconomic status of the families ranged from middle to upper class. Screening and demographic information is described in **Table XX**. 
- 	The final sample for analysis consisted of `r num_part` participants (*M* = `r age_mean` years, *SD* = `r age_sd`, `r fem` females). One participant was excluded for non-compliance during the EEG recording and 1 participant due to non-visibility of the ERP components leaving a total sample of `r num_part`. The attrition rate of  `r attr_rate` % is similar to previous ERP studies with children of similar ages (Vlamings et al., 2010). 
-
 <br>
 
 
