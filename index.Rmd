@@ -1,19 +1,18 @@
 ---
-title: "General information"
+title: "Data description"
 output: 
   html_document:
-    css: styles.css
     code_folding: hide
+    df_print: paged
 ---
+
+<!-- Set up workspace -->
 
 ```{r setup, include=FALSE, message = FALSE, warning = FALSE}
 
 # Set general settings for Markdown file 
   knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
-# Set root file
-  knitr::opts_knit$set(root.dir = 'C:/Users/naumasan/Documents/Data_Analysis/2018_Pilotierung_Adlershof/Electrophysiological_Correlates_of Decoding_Emotional_Face_Expressions_in_Children/data')
-  
 # Swipe environment
   rm(list=ls())
   
@@ -24,19 +23,30 @@ output:
   
 ```
 
+<br>
 
-We created a tab for every data set used within this paper which encodes variables' meaning und their values. 
+We created a tab for every data set used within this paper which displays variables' meaning und their value codes:
 
+  + qn_data
+  + EEG_task_data
+  + ERP_data
+  + ERPs_Topo_Face1
+  + ERPs_Topo_Face2
+  + ERP_Traj_Face_1 (ROI_P1_P3_Face1, left_ROI_N170_Face1, right_ROI_N170_Face1)
+  + ERP_Traj_Face_2 (ROI_P1_P3_Face2, left_ROI_N170_Face2, right_ROI_N170_Face2)
+  + EMT
+  
 ### Overview of data sets  {.tabset .tabset-pills}
 
-#### Questionnaire data (QN_data)
+#### qn_data
 
+<!-- Display qn_data descriptions -->  
   
 ```{r table_qn_data}
 
 # Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx", 
-                               sheet = "QN_data", 
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx", 
+                               sheet = "qn_data", 
                                startCol = 1,
                                endCol = 0)
 
@@ -47,29 +57,15 @@ We created a tab for every data set used within this paper which encodes variabl
 ```
   
 
-#### EEG stimulus description (Stim_Descr)
-
-```{r table_stim_descr}
-
-# Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
-                               sheet = "Stim_Descr",
-                               startCol = 1,
-                               endCol = 0)
-
-# Create table
-  kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
-
-```
-
 
 #### EEG task data
+
+<!-- Display EEG task descriptions -->  
 
 ```{r table_eeg_task_data}
 
 # Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
                                sheet = "EEG_task_data",
                                startCol = 1,
                                endCol = 0)
@@ -81,13 +77,16 @@ We created a tab for every data set used within this paper which encodes variabl
 ```
 
 
-#### ERPs
+#### ERP_data
+
+<!-- Display ERP data descriptions -->  
+
 
 ```{r table_ERPs}
 
 # Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
-                               sheet = "ERPs",
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "ERP_data",
                                startCol = 1,
                                endCol = 0)
 
@@ -98,13 +97,16 @@ We created a tab for every data set used within this paper which encodes variabl
 ```
 
 
-#### EMT_task_specifics
 
-```{r table_EMT_task_specifics}
+#### ERP_Topo_Face1
+
+<!-- Display ERP data descriptions -->  
+
+```{r table_ERP_topo_f1}
 
 # Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
-                               sheet = "EMT_task_specifics",
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "ERP_Topo_Face1",
                                startCol = 1,
                                endCol = 0)
 
@@ -113,15 +115,84 @@ We created a tab for every data set used within this paper which encodes variabl
     kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
 
 ```
+
+
+
+#### ERP_Topo_Face2
+
+<!-- Display ERP data descriptions -->  
+
+
+```{r table_ERP_topo_f2}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "ERP_Topo_Face2",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+
+
+
+#### ERP_Traj_Face1
+
+<!-- Display ERP data descriptions -->  
+
+
+```{r table_ERP_traj_f1}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "ERP_Traj_Face1",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+
+
+
+
+#### ERP_Traj_Face2
+
+<!-- Display ERP data descriptions -->  
+
+
+```{r table_ERP_traj_f2}
+
+# Load data set
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "ERP_Topo_Face2",
+                               startCol = 1,
+                               endCol = 0)
+
+# Create table
+  kable(qn_data_desc) %>%
+    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+
+```
+
+
+
 
 
 #### EMT
 
+<!-- Display EMT task data descriptions -->  
+
 ```{r table_EMT}
 
 # Load data set
-  qn_data_desc = readWorksheetFromFile("Overview_Data.xlsx",
-                               sheet = "EMT",
+  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
+                               sheet = "EMT_data",
                                startCol = 1,
                                endCol = 0)
 
@@ -130,3 +201,16 @@ We created a tab for every data set used within this paper which encodes variabl
     kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
 
 ```
+
+
+### Session info
+
+<!-- Provide session info  -->
+
+```{r session_info, results = TRUE}
+
+# Get session info 
+  sessionInfo()
+
+```
+

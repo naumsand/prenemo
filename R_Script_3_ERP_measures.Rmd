@@ -5,7 +5,7 @@ output:
     code_folding: hide
     toc: true
     toc_float: true 
-    toc_depth: 5  
+    toc_depth: 3  
 ---
 
 <!-- Set up workspace -->
@@ -15,1454 +15,1634 @@ output:
 # Set general settings for Markdown file 
   knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
 
-# Set root file
- knitr::opts_knit$set(root.dir = 'C:/Users/naumasan/Documents/Data_Analysis/2018_Pilotierung_Adlershof/Electrophysiological_Correlates_of Decoding_Emotional_Face_Expressions_in_Children')
- 
-# Set figure size
- knitr::opts_chunk$set(fig.width=8, fig.height=4) 
-  
 # Swipe environment
   rm(list=ls())
-  
+
 # Set libraries
   library(akima)
-  library(colorblindr)
   library(cowplot)
   library(dplyr)
   library(eegUtils)
   library(eeptools)
   library(EnvStats)
-  library(expss)
   library(ez)
   library(ggplot2)
   library(ggstatsplot)
-  library(gridExtra)
   library(gvlma)
   library(Hmisc)
-  library(htmlTable)
-  library(nlme)
-  library(lattice)
   library(lme4)
   library(lmerTest)
   library(MASS)
-  library(pastecs)
-  library(plyr)
+  library(miceadds)
   library(psych)
-  library(readr)
   library(reshape2)
-  library(RColorBrewer)
   library(Rmisc)
-  library(rowr)
   library(sjPlot)
   library(sjmisc)
   library(sjlabelled)
   library(stringr)
-  library(table1)
   library(tidyverse)
-  library(tidyr)
-  library(XLConnect)
-  library(XLConnectJars)
-  
-# Set functions
-  
-  # Round to 2 digits   
-    options(digits=2)
-  
-  # Disable scientific notation in R
-    options(scipen = 999)
 
+# Round to 2 digits   
+  options(digits=2)
+
+# Disable scientific notation in R
+  options(scipen = 999)
+
+# Set figure theme  
+  theme_SN = theme(axis.title.y = element_text(size = 15, margin = margin(t = 0, r = 20, b = 0, l = 0)),
+          panel.grid.major.x = element_blank(), panel.grid.minor.x = element_blank(),
+          panel.grid.major.y = element_line(colour = "black", linetype = "dotted", size=0.6),
+          panel.grid.minor.y = element_blank(),
+          panel.background = element_rect(colour = "black", size = 0.5),
+          text=element_text(size = 15),
+          legend.position = "none")
+  
+# Set figure color palettes
+  emotion_col = c("#829dac","#1d4f6a","#032f47")
+  nov_col = c("#6b9c30","#2b3e13")
+  
 ```
 
-<!-- Load and prepare data sets -->
+<!-- Load data set -->
 
-```{r load_prep_data}
-  # Prepare EEG data --------------------------------------------------------
-    # Concatenate ERP table ----------------------------------------------------
-      
-    # Get RT/Accuracy datafor EEG task
-      EEG_behav = readRDS("./data/EEG_behav_data.rds", refhook = NULL)
-      
-    # Get stimulus information 
-      Stim_data = readWorksheetFromFile("./data/Stim_Descr.xlsx", 
-                                        sheet = 1, 
-                                        startCol = 1,
-                                        endCol = 0)
+```{r load_data, include = FALSE}
 
-    # List files of EEG/RT within a folder and get number of participants
-      files_eeg = list.files(path="./data/ERPs", pattern = "*ind.csv")
-      nfiles = length(files_eeg)
+# Load ERP data
+  load.Rdata(filename="./data/ERP_data.Rdata", "ERP_data")
   
-    # Combine single ERP trials of participants into data frame   
-  
-      for (i in 1:nfiles) {
-    
-      # Get EEG file per subject
-        Subj_Data = read.csv(file=paste("./data/ERPs/",files_eeg[i], sep = ""), header=TRUE, sep=",")
-    
-      # EEG table transformations -----------------------------------------------
-    
-        # Add ID
-          Subj_Data$ID = substr(files_eeg [i],1,2)
-    
-        # Re-format single conditions into numbers
-          Subj_Data$Condition =as.numeric(as.factor(Subj_Data$Condition))
-      
-        # Reminder: (p=prime, c=comgruent, ic=incongruent)
-          # 1 - p_happy; 2 - p_neutral; 3 - p_angry
-          # 4 - c_happy; 5 - c_neutral; 6 - c_angry
-          # 7 - ic_happy; 8 - ic_neutral; 9 - ic_angry 
-      
-        # Add group conditions (prime, congruent, incongruent)
-    
-        # Create grouping variable 
-          grouping = data.frame(single=c(1:9),group_pcic=c(rep(1,3),rep(2,3),rep(3,3)),group_pt=c(rep(1,3),rep(2,6)))
-    
-        # group_pcic = prime vs congruent vs incongruent, group_pt = prime vs target
-    
-        # Match grouping variable with subject data
-          Subj_Data$Group_pcic = grouping$group_pcic[match(Subj_Data$Condition,grouping$single,nomatch = NA)]
-          Subj_Data$Group_pt = grouping$group_pt[match(Subj_Data$Condition,grouping$single,nomatch = NA)]
-          
-        # Average ROIs
-          Subj_Data$mean_ROI_P1 = rowMeans(subset(Subj_Data,select = c(P1_PO3,P1_PO4,P1_O1,P1_O2,P1_Oz)),na.rm = TRUE)
-          Subj_Data$mean_ROI_N170l = rowMeans(subset(Subj_Data,select = c(N170l_TP7,N170l_CP5,N170l_P7)),na.rm = TRUE)
-          Subj_Data$mean_ROI_N170r = rowMeans(subset(Subj_Data,select = c(N170r_TP8,N170r_CP6,N170r_P8)),na.rm = TRUE)
-          Subj_Data$mean_ROI_P3 = rowMeans(subset(Subj_Data,select = c(P3_PO3,P3_PO4,P3_O1,P3_O2,P3_Oz)),na.rm = TRUE)
-          
-      # Match EEG table with behavioral information  ------------------------------------------------
-    
-        # Function to map values together (RT values and ERP trial values): match ()
-    
-        # Match RTs
-          Subj_Data$RTs = EEG_behav$RTs[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-    
-        # Match Responses 
-          Subj_Data$Response = EEG_behav$Response[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-    
-        # Match Blocks
-          Subj_Data$Block = EEG_behav$Block[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-    
-        # Match RT inclusion / exclusion criteria 
-          Subj_Data$Exclude_smaller_250ms = EEG_behav$Exclude_smaller_250ms[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-          Subj_Data$Exclude_larger_7s = EEG_behav$Exclude_larger_7s[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-          Subj_Data$Exclude_MAD = EEG_behav$Exclude_MAD[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-    
-        # Match randomization / stimulus type
-          Subj_Data$EEG_Random = EEG_behav$EEG_Random[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-          Subj_Data$Stim_Type = EEG_behav$Stim_Type[match(Subj_Data$RT_Nr,EEG_behav$Trial_EEG,nomatch = NA)]
-        
-        # Match chronological age / working memory
-          Subj_Data$Age = EEG_behav$Age[match(Subj_Data$ID,EEG_behav$ID,nomatch = NA)]
-          Subj_Data$WM = EEG_behav$WM[match(Subj_Data$ID,EEG_behav$ID,nomatch = NA)]
-    
-    
-      # Combine all subject data ------------------------------------------
-    
-        if (i==1) {
-          All_Subj = Subj_Data # first round: create all_subj data frame
-        } else {
-          All_Subj = rbind(All_Subj,Subj_Data) # add to all_subj data frame 
-        }
-        
-        # Clear previous
-          remove(Subj_Data)
-    
-    }
-  
-  # Remove EEG_Nr & RT_Nr
-    All_Subj = subset(All_Subj, select = -c(EEG_Nr,RT_Nr))
-  
-  # ID to the front
-    All_Subj = All_Subj[, c(18,1:17,19:34)]  
-  
-  # Define ID as factor
-    All_Subj$ID = factor(All_Subj$ID)
-
-  # Remove NAs for amplitudes with no clear indication to a block
-    All_Subj=All_Subj[complete.cases(All_Subj[ , 28]),]
- 
-  # Re-check NAs
-    sapply(All_Subj,function(x) sum(is.na(x)))
-    
-  # De-select outlier participant
-    All_Subj = All_Subj[with(All_Subj, !(All_Subj$ID=="05")), ]
-
 ```
-
-### 3.2 ERP analysis
 
 <br>
 
-#### 3.2.1 Valence effects
+We developed a novel paradigm to examine ERP responses to novel and repeated emotional faces. In particular, EEG was recorded while preschoolers observed pairs of faces presented sequentially. In some trials, the two sequential facial stimuli (hereafter: ‘Face 1’ and ‘Face 2’) were identical, while in other trials they differed with regards to the emotional expression displayed (happy, fearful or neutral). 
 
----
+We calculated linear mixed models (LMM) separately for each ERP component. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all linear mixed model analyses to control for cognitive abilities of the children as well as potential age differences.
 
-##### Assumption checks {.tabset .tabset-pills}
+The random effects structure included random intercepts for participants `(1|ID)` and stimulus `(1|Stim_Type)`. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.
 
-###### LMM_P1: Normality of residuals 
+<br>
 
-```{r P1_val_res}
- # Build model & check assumptions -----------------------------------------
-        
-        # Select "face 1"
-          P1_Val = subset(All_Subj,Group_pt == 1) 
+### Valence effects
 
-        # Prepare fixed factors 
-          P1_Val$ID = as.factor(P1_Val$ID)
-          P1_Val$Stim_Type = as.factor(P1_Val$Stim_Type)
+<br>
 
-        # Re-code emotion condition
-          P1_Val$Condition[P1_Val$Condition==1] = "happy"
-          P1_Val$Condition[P1_Val$Condition==2] = "neutral"
-          P1_Val$Condition[P1_Val$Condition==3] = "angry"
-        
-        # Create factor & set neutral as baseline
-          P1_Val$Condition = factor(P1_Val$Condition, levels=c("neutral","happy","angry"))
-        
-        # Set treatment contrast
-          contrasts(P1_Val$Condition) = contr.treatment(3)
-  
-      # 1) Check properties of DV / residuals 
+We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) components would be larger for emotional compared to neutral facial expressions. We examined this hypothesis in response to Face 1.
 
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          P1_Val$Trans_P1 = P1_Val$mean_ROI_P1 + 1 - min(P1_Val$mean_ROI_P1)
-      
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(P1_Val$Trans_P1 ~ P1_Val$Condition)   
+<br>
 
-        # Visualize normality assumption of residuals (without log transform)
-          mod_P1_val = lm(Trans_P1 ~ Condition, data=P1_Val)
-          res.mod_P1_val = residuals(mod_P1_val)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_P1_val = qqPlot(res.mod_P1_val, main="QQplot before transformation")    
-          norm_mod_P1_val = plot(density(res.mod_P1_val), main="Density plot before transformation")  
-          par(mfrow=c(1,1))
-        
-```
+#### **Descriptive statistics**
 
----
+<!-- Plot ERP morphology and topography -->
 
-###### LMM_P1: Random effect structure
+```{r ERPs_val_traj_topos}
 
-```{r P1_val_build_mod, results = TRUE}
-      # 3) Construct full model      
-            
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Condition, P1_Val) 
-        
-        # Attach to dataframe
-          P1_Val[,(ncol(P1_Val)+1):(ncol(P1_Val)+3)] = mm_c
-          names(P1_Val)[(ncol(P1_Val)-2):ncol(P1_Val)] = c("Mean","Hap_Neu", "Ang_Neu") 
-        
-        # Build model 
-          mod_P1_val.lmer1 = lmer(mean_ROI_P1 ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 + Hap_Neu + Ang_Neu||ID) +
-                              (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                              data = P1_Val,
-                              control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_P1_val.lmer1))
-        
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_P1_val.lmer1),comp = "Variance")
-        
-        # Remove intercepts/slopes based on variance check 
-          mod_P1_val.lmer2 = lmer(mean_ROI_P1 ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 + Hap_Neu + Ang_Neu||ID) +
-                              (0 + Hap_Neu||Stim_Type),
-                              data = P1_Val,
-                              control=lmerControl(calc.derivs = FALSE))
-        
-        # Re-check the model
-          summary(rePCA(mod_P1_val.lmer2))
-          print(VarCorr(mod_P1_val.lmer2),comp = "Variance")
-        
-        # Likelihood ratio testing
-        
-          # For ID
-            mod_P1_val.lmer3 = lmer(mean_ROI_P1 ~ 
-                                  Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                  (1 |ID) +
-                                  (0 + Hap_Neu + Ang_Neu||Stim_Type),
-                                data = P1_Val,
-                                control=lmerControl(calc.derivs = FALSE))
-          
-          # Calculate ANOVA
-            anova(mod_P1_val.lmer2,mod_P1_val.lmer3)
-        
-          # Stimulus type
-            mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 + Ang_Neu||ID) +
-                              (1 |Stim_Type),
-                            data = P1_Val,
-                            control=lmerControl(calc.derivs = FALSE))
-            
-          # Calculate ANOVA
-            anova(mod_P1_val.lmer2,mod_P1_val.lmer4)
-        
-        
-          # Final model
-            mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 |ID) +
-                              (1 |Stim_Type),
-                            data = P1_Val,
-                            control=lmerControl(calc.derivs = FALSE))
-```
-
----
-
-###### LMM_P1: Homoscedasticity 
-
-```{r P1_val_homosk}
-      # 4) Check homoscedasticity  
-        
-          # Whether residuals are equally distributed along regression line 
-            plot(fitted(mod_P1_val.lmer4), residuals(mod_P1_val.lmer4))
-            abline(0, 0)    
-```
-
----
-
-###### LMM_N170: Normality of residuals 
-
-```{r N170_val_res}
-# Transform dataset so that left/right hemisphere are accounted for 
-          N170_Val = gather (All_Subj, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
-        
-        # Add variable name
-          N170_Val$Elect_site = as.character(N170_Val$Elect_site)
-          N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170l"] = 'left'
-          N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170r"] = "right"
- 
-        # Prepare fixed factors 
-          N170_Val$ID = as.factor(N170_Val$ID)
-          N170_Val$Stim_Type = as.factor(N170_Val$Stim_Type)
-          N170_Val$Elect_site = factor(N170_Val$Elect_site)
-        
-        # Select primes
-          N170_Val = subset(N170_Val,Group_pt == 1) 
-        
-        # Re-code values for emotion variable
-          N170_Val$Condition[N170_Val$Condition==1] = "happy"
-          N170_Val$Condition[N170_Val$Condition==2] = "neutral"
-          N170_Val$Condition[N170_Val$Condition==3] = "angry"
-        
-        # Create factor, get neutral as baseline
-          N170_Val$Condition = factor(N170_Val$Condition, levels=c("neutral","happy","angry"))
-        
-        # Set treatment contrast
-          (contrasts(N170_Val$Condition) = contr.treatment(3))
-          
-        # Set contrast for hemisphere
-          (contrasts(N170_Val$Elect_site) = contr.sum(2)/2)
-        
-        
-      # 1) Check properties of DV / residuals 
-        
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          N170_Val$Trans_N170 = N170_Val$N170_Amplitude + 1 - min(N170_Val$N170_Amplitude)
-
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(N170_Val$Trans_N170 ~ N170_Val$Condition)   
-
-        # Visualize normality assumption of residuals (without log transform)
-          mod_N170_val = lm(Trans_N170 ~ Condition, data=N170_Val)
-          res.mod_N170_val = residuals(mod_N170_val)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_N170_val = qqPlot(res.mod_N170_val, main="QQplot before transformation")    
-          norm_mod_N170_val = plot(density(res.mod_N170_val), main="Density plot before transformation")  
-          par(mfrow=c(1,1))            
-      
-            
-```
-
----
-
-###### LMM_N170: Random effect structure
-
-```{r N170_val_build_mod, results = TRUE}
- # 3) Construct full model    
-                  
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Condition + Elect_site + Condition*Elect_site, N170_Val) 
-        
-        # Attach to dataframe
-          N170_Val[,(ncol(N170_Val)+1):(ncol(N170_Val)+6)] = mm_c
-          names(N170_Val)[(ncol(N170_Val)-5):ncol(N170_Val)] = c("Mean", "Hap_Neu", "Ang_Neu", "Elect_site", "Hap_NeuxElect_site", "Ang_NeuxElect_site") 
-          
-        # Get model
-          mod_N170_val.lmer1 = lmer(N170_Amplitude ~ 
-                                      Hap_Neu + Ang_Neu+ Hap_NeuxElect_site + Ang_NeuxElect_site + scale(Age) + scale(WM) + 
-                                      (1 + Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + Elect_site||ID) +
-                                      (1 + Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + Elect_site||Stim_Type),
-                                    data = N170_Val,
-                                    control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_N170_val.lmer1))
-        
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_N170_val.lmer1),comp = "Variance")
-        
-        # Improved model
-          mod_N170_val.lmer2 = lmer(N170_Amplitude ~ 
-                                      Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + scale(Age) + scale(WM) + 
-                                      (1 |ID),
-                                      data = N170_Val,
-                                      control=lmerControl(calc.derivs = FALSE))
-        # Re-check the model
-          summary(rePCA(mod_N170_val.lmer2))
-          print(VarCorr(mod_N170_val.lmer2),comp = "Variance")
-```
-
----
-
-###### LMM_N170: Homoscedasticity 
-
-```{r N170_val_homosk}
-        # 4) Check homoscedasticity  
-        
-        # Whether residuals are equally distributed along regression line 
-          plot(fitted(mod_N170_val.lmer2), residuals(mod_N170_val.lmer2))
-          abline(0, 0)    
-```
-
----
-
-###### LMM_P3: Normality of residuals 
-
-```{r P3_val_res}
- # Build model & check assumptions ---------------------------------------
-
-        # Select primes
-          P3_Val = subset(All_Subj, Group_pt == 1) 
-
-        # Prepare fixed factors 
-          P3_Val$ID = as.factor(P3_Val$ID)
-          P3_Val$Stim_Type = as.factor(P3_Val$Stim_Type)
-        
-        # Re-Name values of emotion condition
-          P3_Val$Condition[P3_Val$Condition==1] = "happy"
-          P3_Val$Condition[P3_Val$Condition==2] = "neutral"
-          P3_Val$Condition[P3_Val$Condition==3] = "angry"
-        
-        # Create factor, get neutral as baseline
-          P3_Val$Condition = factor(P3_Val$Condition, levels=c("neutral","happy","angry"))
-        
-        # Set treatment contrast
-          (contrasts(P3_Val$Condition) = contr.treatment(3))
-        
-      # 1) Check properties of DV / residuals 
-        
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          P3_Val$Trans_P3 = P3_Val$mean_ROI_P3 + 1 - min(P3_Val$mean_ROI_P3)
-      
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(P3_Val$Trans_P3 ~ P3_Val$Condition)   
-
-        # Visualize normality assumption of residuals (without log transform)
-          mod_P3_val = lm(Trans_P3 ~ Condition, data=P3_Val)
-          res.mod_P3_val = residuals(mod_P3_val)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_P3_val = qqPlot(res.mod_P3_val, main="QQplot before transformation")    
-          norm_mod_P3_val = plot(density(res.mod_P3_val), main="Density plot before transformation")  
-          par(mfrow=c(1,1))
-```
-
----
-
-###### LMM_P3: Random effect structure
-
-```{r P3_val_build_mod, results = TRUE}
-  
-      # 3) Construct full model     
-            
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Condition, P3_Val) 
-        
-        # Attach to dataframe
-          P3_Val[,(ncol(P3_Val)+1):(ncol(P3_Val)+3)] = mm_c
-        
-          names(P3_Val)[(ncol(P3_Val)-2):ncol(P3_Val)] = c("Mean","Hap_Neu", "Ang_Neu") 
-        
-        # Get model 
-          mod_P3_val.lmer1 = lmer(mean_ROI_P3 ~ 
-                                Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                (1 + Hap_Neu + Ang_Neu||ID) +
-                                (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                              data = P3_Val,
-                              control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_P3_val.lmer1))
-        
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_P3_val.lmer1),comp = "Variance")
-        
-        
-        # Improved model
-          mod_P3_val.lmer2 = lmer(mean_ROI_P3 ~ 
-                                    Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                    (1 | ID) +
-                                    (1 + Ang_Neu||Stim_Type),
-                                  data = P3_Val,
-                                  control=lmerControl(calc.derivs = FALSE))
-          
-        # Re-check the model
-          summary(rePCA(mod_P3_val.lmer2))
-          print(VarCorr(mod_P3_val.lmer2),comp = "Variance")
-        
-        
-        # Likelihood ratio testing 
-        
-          # Stimulus type 
-            mod_P3_val.lmer3 = lmer(mean_ROI_P3 ~ 
-                                  Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                  (1 |ID) +
-                                  (1 |Stim_Type),
-                                data = P3_Val,
-                                control=lmerControl(calc.derivs = FALSE))
-
-          # Calculate ANOVA 
-            anova(mod_P3_val.lmer2, mod_P3_val.lmer3)
-        
-            
-        # Final model
-          mod_P3_val.lmer4 = lmer(mean_ROI_P3 ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 |ID) +
-                              (1 |Stim_Type),
-                            data = P3_Val,
-                            control=lmerControl(calc.derivs = FALSE))
-```
-
----
-
-###### LMM_P3: Homoscedasticity 
-
-```{r P3_val_homosk}
-      # 4) Check homoscedasticity  
-        
-        # Whether residuals are equally dsitributed along regression line 
-          plot(fitted(mod_P3_val.lmer4), residuals(mod_P3_val.lmer4))
-          abline(0, 0)       
-```
-
----
-
-
-
-##### 3.2.1.1 P1
-
-We tested whether P1 amplitudes were larger for emotional (angry or happy) in comparison to neutral stimuli at "face 1" (See **Figure X A**). The best-fitting model included random intercepts for participants and stimulus. P1 Amplitudes at "face 1" were significantly larger for angry in comparison to neutral facial expressions ($\hat{β}$ = `r coef(summary(mod_P1_val.lmer4))[3,1]`, *p* `r format.pval(pv = coef(summary(mod_P1_val.lmer4))[3,5], digits = 2, eps = 0.05, nsmall = 2)`). No difference was found for the contrast of happy vs neutral faces ($\hat{β}$ = `r coef(summary(mod_P1_val.lmer4))[2,1]`, *p* = `r coef(summary(mod_P1_val.lmer4))[2,5]`). None of the covariates reached significance (age: $\hat{β}$ = `r coef(summary(mod_P1_val.lmer4))[4,1]`, *p* = `r coef(summary(mod_P1_val.lmer4))[4,5]`; working memory: $\hat{β}$ = `r coef(summary(mod_P1_val.lmer4))[5,1]`, *p* = `r coef(summary(mod_P1_val.lmer4))[5,5]`; see **Table X**).
-
-
-```{r ERPs_val_traj}
+## P1/P3 trajectories
 
 # Load data
-        Prime_data = read.csv("./data/ERPs/ROI_P1_prime.csv",header = TRUE)
+  Face1_data = read.csv("./data/ROI_P1_P3_Face1.csv",header = TRUE)
 
-      # De-select participants
-        Prime_data = Prime_data[with(Prime_data, !(Prime_data$ID=="05")), ]
+# De-select participants
+  Face1_data = Face1_data[with(Face1_data, !(Face1_data$ID=="05")), ]
 
-      # Select time window
-        Prime_data = Prime_data[(Prime_data$Time >= -200)& (Prime_data$Time <= 600),]
+# Select time window
+  Face1_data = Face1_data[(Face1_data$Time >= -200)& (Face1_data$Time <= 600),]
 
-      # Rename conditions
-        Prime_data$Condition[Prime_data$Condition == 1]='happy';
-        Prime_data$Condition[Prime_data$Condition == 2]='neutral';
-        Prime_data$Condition[Prime_data$Condition == 3]='angry';
+# Rename conditions
+  Face1_data$Condition[Face1_data$Condition == 1]='happy';
+  Face1_data$Condition[Face1_data$Condition == 2]='neutral';
+  Face1_data$Condition[Face1_data$Condition == 3]='angry';
 
-      # Select conditions of interest
-        Prime_data_all_emo_sep = Prime_data[(Prime_data$Condition == 'happy')  | (Prime_data$Condition == 'angry') | (Prime_data$Condition == 'neutral'),]
-
-      # Plot data
-        P1_val_traj = ggplot(Prime_data_all_emo_sep,aes(Time,ROI_Average))+
-          ggtitle("P1 & P3") +
-          theme(panel.background = element_blank(), panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)), legend.text=element_text(size=7),
-                legend.key = element_rect(fill = "white"))+
-          stat_summary(fun.y = mean, geom = "line", size = 1, linetype = "solid", aes(colour= Condition))+
-          scale_color_discrete(guide = guide_legend(override.aes = list(color = "white")))+
-          #scale_color_OkabeIto()+
-          scale_colour_manual(values = c("#FF5B4F","#000000","#276CB3"))+
-          #theme(axis.title.x=element_blank())+      # to turn of x-axis title
-          #theme(axis.title.y=element_blank())+      # to turn of y-axis title
-          #theme(text=element_text(family="Coves", face="bold", size=18))+
-          labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-          theme(legend.position="bottom") +
-          coord_cartesian(ylim=c(-2, 16),xlim=c(-100,600)) +
-          scale_y_continuous(breaks=seq(-2,16,2))+
-          scale_x_continuous(breaks=seq(-100,600,100))+
-          geom_vline(xintercept = 0, linetype = "dashed",colour="grey" )+
-          geom_hline(yintercept = 0, linetype = "dashed",colour="grey")
+# Select conditions of interest
+  Face1_data_all_emo_sep = Face1_data[(Face1_data$Condition == 'happy')  | (Face1_data$Condition == 'angry') | (Face1_data$Condition == 'neutral'),]
+  
+  
+# Factor and level emotion
+  Face1_data_all_emo_sep$Condition = factor(Face1_data_all_emo_sep$Condition, levels=c("neutral","happy","angry"))
 
 
-  # N170 trajectories
-
-      # Load data
-        Prime_data_l = read.csv("./data/ERPs/left_ROI_N170_prime.csv",header = TRUE)
-        Prime_data_r = read.csv("./data/ERPs/right_ROI_N170_prime.csv",header = TRUE)
-
-      # LEFT HEMISPHERE
-
-      # Select time windows
-        Prime_data_l = Prime_data_l[(Prime_data_l$Time >= -200)& (Prime_data_l$Time <= 600),]
-
-      # De-select participants
-        Prime_data_l = Prime_data_l[with(Prime_data_l, !(Prime_data_l$ID=="05")), ]
-
-      # Rename conditions
-        Prime_data_l$Condition[Prime_data_l$Condition == 1]='happy';
-        Prime_data_l$Condition[Prime_data_l$Condition == 2]='neutral';
-        Prime_data_l$Condition[Prime_data_l$Condition == 3]='angry';
-
-
-      # Select conditions of interest
-        Prime_data_all_emo_sep_l = Prime_data_l[(Prime_data_l$Condition == 'happy')  | (Prime_data_l$Condition == 'angry') | (Prime_data_l$Condition == 'neutral'),]
-
-      # Plot data
-        N170l_val_traj = ggplot(Prime_data_all_emo_sep_l,aes(Time,ROI_Average))+
-          ggtitle("Left Hemisphere: N170")+
-          theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)), legend.text=element_text(size=7),
-                legend.key = element_rect(fill = "white"))+
-          stat_summary(fun.y = mean,geom = "line",size = 1, linetype = "solid", aes(colour= Condition))+
-          #scale_color_OkabeIto()+
-          scale_colour_manual(values = c("#FF5B4F","#000000","#276CB3"))+
-          #theme(text=element_text(family="Coves", face="bold", size=15))+
-          #theme(axis.title.x=element_blank())+      # to turn of x-axis title
-          #theme(axis.title.y=element_blank())+      # to turn of y-axis title
-          #theme(legend.position="none")+            # to turn of legend
-          theme(legend.position="bottom") +
-          labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-          coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
-          scale_y_continuous(breaks=seq(-6,6,2))+
-          scale_x_continuous(breaks=seq(-100,600,100))+
-          geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
-          geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
-
-      # RIGHT HEMISPHERE
-
-      # Select time window
-        Prime_data_r = Prime_data_r[(Prime_data_r$Time >= -200)& (Prime_data_r$Time <= 600),]
-
-      # De-select participants
-        Prime_data_r = Prime_data_r[with(Prime_data_r, !(Prime_data_r$ID=="05")), ]
-
-      # Rename conditions
-        Prime_data_r$Condition[Prime_data_r$Condition == 1]='happy';
-        Prime_data_r$Condition[Prime_data_r$Condition == 2]='neutral';
-        Prime_data_r$Condition[Prime_data_r$Condition == 3]='angry';
+# Plot data
+  P1_P3_val_traj = ggplot(Face1_data_all_emo_sep,aes(Time,ROI_Average))+
+    theme(panel.background = element_blank(), panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+          legend.text=element_text(size=7),
+          legend.key = element_rect(fill = "white"))+
+    stat_summary(fun.y = mean, geom = "line", size = 0.8, linetype = "solid", aes(colour= Condition))+
+    scale_color_discrete(guide = guide_legend(override.aes = list(color = "white")))+
+    scale_colour_manual(values = emotion_col)+
+    labs(x = "\ntime (ms)",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
+    theme(legend.position="none") +
+    coord_cartesian(ylim=c(-2, 16),xlim=c(-100,600)) +
+    scale_y_continuous(breaks=seq(-2,16,2))+
+    scale_x_continuous(breaks=seq(-100,600,100))+
+    geom_vline(xintercept = 0, linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0, linetype = "dashed",colour="grey")+
+    geom_text(x=110, y=14, label = "P1", color="black", size=3)+
+    geom_text(x=350, y=14, label = "P3", color="black", size=3)
 
 
-      # Select conditions of interest
-        Prime_data_all_emo_sep_r = Prime_data_r[(Prime_data_r$Condition == 'happy')  | (Prime_data_r$Condition == 'angry') | (Prime_data_r$Condition == 'neutral'),]
+## N170 trajectories
 
-      # Plot data
+# Load data
+  Face1_data_l = read.csv("./data/left_ROI_N170_Face1.csv",header = TRUE)
+  Face1_data_r = read.csv("./data/right_ROI_N170_Face1.csv",header = TRUE)
 
-       N170r_val_traj = ggplot(Prime_data_all_emo_sep_r,aes(Time,ROI_Average))+
-         ggtitle("Right Hemisphere: N170")+
-          theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)), legend.text=element_text(size=7),
-                legend.key = element_rect(fill = "white"))+
-          stat_summary(fun.y = mean, geom = "line",size = 1, linetype = "solid", aes(colour= Condition))+
-          # scale_color_OkabeIto()+
-          scale_colour_manual(values = c("#FF5B4F","#000000","#276CB3"))+
-          #theme(text=element_text(family="Coves", face="bold", size=15))+
-          #theme(axis.title.x=element_blank())+      # to turn of x-axis title
-          #theme(axis.title.y=element_blank())+      # to turn of y-axis title
-          #theme(legend.position="none")+            # to turn of legend
-          theme(legend.position="bottom")+
-          labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-          coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
-          scale_y_continuous(breaks=seq(-6,6,2))+
-          scale_x_continuous(breaks=seq(-100,600,100))+
-          geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
-          geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
+# Select time windows
+  Face1_data_l = Face1_data_l[(Face1_data_l$Time >= -200)& (Face1_data_l$Time <= 600),]
+  Face1_data_r = Face1_data_r[(Face1_data_r$Time >= -200)& (Face1_data_r$Time <= 600),]
 
+# De-select participants
+  Face1_data_l = Face1_data_l[with(Face1_data_l, !(Face1_data_l$ID=="05")), ]
+  Face1_data_r = Face1_data_r[with(Face1_data_r, !(Face1_data_r$ID=="05")), ]
 
-# Combine plots
-      combine_plots(P1_val_traj, N170l_val_traj, N170r_val_traj,
-                               ncol = 3, nrow=1,
-                               labels = c("A", "B", "C"),
-                               caption.color = "black",
-                               caption.vjust = 0,
-                               caption.hjust = 1.3,
-                               caption.text = "Figure XX: ERP trajectories for emotion effects")
+# Rename conditions
+  Face1_data_l$Condition[Face1_data_l$Condition == 1]='happy';
+  Face1_data_l$Condition[Face1_data_l$Condition == 2]='neutral';
+  Face1_data_l$Condition[Face1_data_l$Condition == 3]='angry';
+  
+  Face1_data_r$Condition[Face1_data_r$Condition == 1]='happy';
+  Face1_data_r$Condition[Face1_data_r$Condition == 2]='neutral';
+  Face1_data_r$Condition[Face1_data_r$Condition == 3]='angry';
+
+# Select conditions of interest
+  Face1_data_all_emo_sep_l = Face1_data_l[(Face1_data_l$Condition == 'happy')  | (Face1_data_l$Condition == 'angry') | (Face1_data_l$Condition == 'neutral'),]
+  
+  Face1_data_all_emo_sep_r = Face1_data_r[(Face1_data_r$Condition == 'happy')  | (Face1_data_r$Condition == 'angry') | (Face1_data_r$Condition == 'neutral'),]
+  
+# Factor and level emotion
+  Face1_data_all_emo_sep_l$Condition = factor(Face1_data_all_emo_sep_l$Condition, levels=c("neutral","happy","angry"))
+
+    Face1_data_all_emo_sep_r$Condition = factor(Face1_data_all_emo_sep_r$Condition, levels=c("neutral","happy","angry"))
+
+# Average N170 trajectories for left and right hemisphere  
+  Face1_N170 = (Face1_data_all_emo_sep_l + Face1_data_all_emo_sep_r)/2
+  Face1_N170$Condition = Face1_data_all_emo_sep_l$Condition
+  
+# Plot N170 trajectory   
+   N170_val_traj = ggplot(Face1_N170,aes(Time,ROI_Average))+
+      theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+            axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+            legend.text=element_text(size=7),
+            legend.key = element_rect(fill = "white"))+
+      stat_summary(fun.y = mean, geom = "line",size = 0.8, linetype = "solid", aes(colour= Condition))+
+      scale_colour_manual(values = emotion_col)+
+      theme(legend.position="none")+
+      labs(x = "\ntime (ms)",y = expression(paste("")),colour = "")+
+      coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
+      scale_y_continuous(breaks=seq(-6,6,2))+
+      scale_x_continuous(breaks=seq(-100,600,100))+
+      geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+      geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+      geom_text(x=200, y=-5.2, label = "N170", color="black", size = 3)
+
+# Load topography information
+  Topo_Emo = read.csv(file="./data/ERPs_Topo_Face1.csv", header=TRUE, sep=",")
+
+# Exclude participant
+  Topo_Emo = Topo_Emo[with(Topo_Emo, !(Topo_Emo$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Emo)[names(Topo_Emo) == "Time"] = "time"
+
+# Change from wide to long format for electrodes
+  Topo_Emo = gather(Topo_Emo, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+
+# Rename A1/A2
+  names(Topo_Emo)[names(Topo_Emo) == "A1"] <- "TP9"
+  names(Topo_Emo)[names(Topo_Emo) == "A2"] <- "TP10"
+
+# Plot topoplots for happy
+  Topo_Emo_Hap = subset(Topo_Emo, Condition == 1)
+  
+# Plot topoplots for neutral
+  Topo_Emo_Neu = subset(Topo_Emo, Condition == 2)
+
+# Plot topoplots for angry
+  Topo_Emo_Ang = subset(Topo_Emo, Condition == 3)
+  
+# Calculate difference score angry-neutral
+  Topo_Diff_Ang_Neu = data.frame(ID = Topo_Emo_Hap[,1], time = Topo_Emo_Hap[,3],
+                                  electrode = Topo_Emo_Hap[,4], amplitude = Topo_Emo_Ang$amplitude - Topo_Emo_Neu$amplitude)
+  
+  
+# Calculate difference score happy-neutral
+  Topo_Diff_Hap_Neu = data.frame(ID = Topo_Emo_Hap[,1], time = Topo_Emo_Hap[,3],
+                                  electrode = Topo_Emo_Hap[,4], amplitude = Topo_Emo_Hap$amplitude - Topo_Emo_Neu$amplitude)  
+  
+## P1s   
+
+# Select time windows
+  Topo_Diff_Ang_Neu_P1 = subset(Topo_Diff_Ang_Neu, time >= 80 & time <= 120)
+  Topo_Diff_Hap_Neu_P1 = subset(Topo_Diff_Hap_Neu, time >= 80 & time <= 120)
+
+# Add electrode information  
+  Topo_Diff_Ang_Neu_P1 = electrode_locations(Topo_Diff_Ang_Neu_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_Diff_Hap_Neu_P1 = electrode_locations(Topo_Diff_Hap_Neu_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Draw topographies
+  topo_diff_ang_neu_P1 = ggplot(Topo_Diff_Ang_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P1 (80-120 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+  
+
+# Draw topographies
+  topo_diff_hap_neu_P1 = ggplot(Topo_Diff_Hap_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                   ggtitle("")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
+
+## N170s 
+
+# Select time windows
+  Topo_Diff_Ang_Neu_N170 = subset(Topo_Diff_Ang_Neu, time >= 170 & time <= 230)
+  Topo_Diff_Hap_Neu_N170 = subset(Topo_Diff_Hap_Neu, time >= 170 & time <= 230)
+
+# Add electrode information  
+  Topo_Diff_Ang_Neu_N170 = electrode_locations(Topo_Diff_Ang_Neu_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_Diff_Hap_Neu_N170 = electrode_locations(Topo_Diff_Hap_Neu_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Draw topographies
+  topo_diff_ang_neu_N170 = ggplot(Topo_Diff_Ang_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("N170 (170-230 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+  
+
+# Draw topographies
+  topo_diff_hap_neu_N170 = ggplot(Topo_Diff_Hap_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
+  
+## P3s   
+
+# Select time windows
+  Topo_Diff_Ang_Neu_P3 = subset(Topo_Diff_Ang_Neu, time >= 300 & time <= 600)
+  Topo_Diff_Hap_Neu_P3 = subset(Topo_Diff_Hap_Neu, time >= 300 & time <= 600)
+
+# Add electrode information  
+  Topo_Diff_Ang_Neu_P3 = electrode_locations(Topo_Diff_Ang_Neu_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_Diff_Hap_Neu_P3 = electrode_locations(Topo_Diff_Hap_Neu_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Draw topographies
+  topo_diff_ang_neu_P3 = ggplot(Topo_Diff_Ang_Neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P3 (300-600 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+  
+
+# Draw topographies
+  topo_diff_hap_neu_P3 = ggplot(Topo_Diff_Hap_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
 
 ```
 
-##### 3.2.1.2 N170
+```{r ERP_val_plot}
 
-We also checked whether emotional faces elicited larger N170 amplitudes compared to neutral faces at "face 1" (See **Figure X B,C**). As previous research has shown that differences in N170 amplitudes across hemispheres can be found in developmental populations (e.g., Adolphs, 2002), we also included hemisphere as a fixed effect factor (left vs right hemisphere). The best fitting model included participant as random intercept. In contrast to our hypothesis, no differences between happy or angry faces in contrast to neutral faces were detected (happy-neutral: $\hat{β}$ = `r coef(summary(mod_N170_val.lmer2))[2,1]`, *p* = `r coef(summary(mod_N170_val.lmer2))[2,5]`; angry-neutral: $\hat{β}$ = `r coef(summary(mod_N170_val.lmer2))[3,1]`, *p* = `r coef(summary(mod_N170_val.lmer2))[3,5]`). None of the interactions of hemisphere with the emotion contrasts, nor covariates reached significance (see **Table XX**). 
+# Get legend for trajectories
+  traj_emo = ggplot(Face1_N170,aes(Time,ROI_Average))+
+      theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+            axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+            legend.text=element_text(size=10),
+            legend.key = element_rect(fill = "white"))+
+      stat_summary(fun.y = mean, geom = "line",size = 1, linetype = "solid", aes(colour= Condition))+
+      scale_colour_manual(values = emotion_col)+
+      theme(legend.position="right")+
+      labs(x = "\ntime (ms)",y = expression(paste("")),colour = "")+
+      coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
+      scale_y_continuous(breaks=seq(-6,6,2))+
+      scale_x_continuous(breaks=seq(-100,600,100))+
+      geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+      geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
 
-```{r ERP_val_topos, fig.width = 12, fig.height = 7}
+  traj_leg_emo = get_legend(traj_emo)
 
-    # Load topography information
-      Topo_Emo = read.csv(file="./data/ERPs/ERPs_Topo_Emotions.csv", header=TRUE, sep=",")
-
-    # Exclude participant
-      Topo_Emo = Topo_Emo[with(Topo_Emo, !(Topo_Emo$ID==5)), ]
-
-    # Re-name to fit topoplot function
-      names(Topo_Emo)[names(Topo_Emo) == "Time"] = "time"
-
-    # Change from wide to long format for electrodes
-      Topo_Emo = gather(Topo_Emo, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
-
-    # Rename A1/A2
-      names(Topo_Emo)[names(Topo_Emo) == "A1"] <- "TP9"
-      names(Topo_Emo)[names(Topo_Emo) == "A2"] <- "TP10"
-
-    # Plot topoplots for happy
-      Topo_Emo_Hap = subset(Topo_Emo, Condition == 1)
-
-    # Plot topoplots for neutral
-      Topo_Emo_Neu = subset(Topo_Emo, Condition == 2)
-
-    # Plot topoplots for angry
-      Topo_Emo_Ang = subset(Topo_Emo, Condition == 3)
-
-    # P1s
-      P1_neu=topoplot(Topo_Emo_Neu, time_lim = c(80, 120),interp_limit = "head", limits = c(-5,15))+
-        ggtitle("P1 (80-120 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="neutral", size=3)
-
-      P1_hap=topoplot(Topo_Emo_Hap, time_lim = c(80, 120),interp_limit = "head", limits = c(-5,15))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="happy", size=3)
-
-      P1_ang=topoplot(Topo_Emo_Ang, time_lim = c(80, 120),interp_limit = "head", limits = c(-5,15))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="angry", size=3)
+# Get legend for topos
+  topo_leg_P1 =  ggplot(Topo_Diff_Ang_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                      ggtitle("Angry-Neutral")+
+                      geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
+                                head_size = 1.5) +
+                      scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                      theme_void() +
+                      coord_equal() +
+                      labs(fill = expression(paste(" ", mu,"V")))+
+                      theme(legend.position  = "right")
+  
+  topo_leg_P1 = get_legend(topo_leg_P1)
 
 
-    # N170s
-      N170_neu=topoplot(Topo_Emo_Neu, time_lim = c(170, 230),interp_limit = "head", limits = c(-5,5))+
-        ggtitle("N170 (170-230 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="neutral", size=3)
+  topo_leg_N170 = ggplot(Topo_Diff_Ang_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                      ggtitle("Angry-Neutral")+
+                      geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
+                                head_size = 1.5) +
+                      scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
+                      theme_void() +
+                      coord_equal() +
+                      labs(fill = expression(paste(" ", mu,"V")))+
+                      theme(legend.position = "right")
+ 
+  
+  topo_leg_N170 = get_legend(topo_leg_N170)
+  
+  
+  topo_leg_P3 =  ggplot(Topo_Diff_Ang_Neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                      ggtitle("Angry-Neutral")+
+                      geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
+                                head_size = 1.5) +
+                      scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
+                      theme_void() +
+                      coord_equal() +
+                      labs(fill = expression(paste(" ", mu,"V")))+
+                      theme(legend.position  = "right")
+  
+  topo_leg_P3 = get_legend(topo_leg_P3)  
 
-      N170_hap=topoplot(Topo_Emo_Hap, time_lim = c(170, 230),interp_limit = "head", limits = c(-5,5))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="happy", size=3)
+  
+# Get difference labels
+  text = paste("\n Angry-\n", "Neutral\n")
+  
+  ang_neu_text = ggplot() + 
+    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          panel.background = element_rect(colour = "white", size = 0.5),
+          axis.ticks = element_blank())
 
-      N170_ang=topoplot(Topo_Emo_Ang, time_lim = c(170, 230),interp_limit = "head", limits = c(-5,5))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="angry", size=3)
+  text = paste("\n Happy-\n", "Neutral\n")
+  
+  hap_neu_text = ggplot() + 
+    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          panel.background = element_rect(colour = "white", size = 0.5),
+          axis.ticks = element_blank()) 
+  
+# Get capital letters
+  text = paste("\n A\n","\n \n","\n \n","\n \n","\n B\n")
+  
+  first_plot = ggplot() + 
+    annotate("text", x = 4, y = 25, size=5, label = text) + 
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          panel.background = element_rect(colour = "white", size = 0.5),
+          axis.ticks = element_blank()) 
+  
+# Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
+  ggdraw(xlim = c(0, 1.2), ylim = c(0,1.4)) +
+    draw_plot(first_plot, -0.68, 0.25, 1.4, 1.4) +
+    draw_plot(P1_P3_val_traj, 0.05, 0.7, 0.5, 0.6)+ 
+    draw_plot(N170_val_traj, 0.55, 0.7, 0.5, 0.6)+
+    draw_plot(traj_leg_emo, 1, 1, 0.25, 0.25)+
+    draw_plot(ang_neu_text, -0.05, 0.25, 0.3, 0.3)+
+    draw_plot(hap_neu_text, -0.05, -0.05, 0.3, 0.3)+
+    draw_plot(topo_diff_ang_neu_P1, 0.12, 0.3, 0.3, 0.3) +
+    draw_plot(topo_diff_hap_neu_P1, 0.12, 0.00, 0.3, 0.3) +
+    draw_plot(topo_leg_P1, 0.37, 0.25, 0.15, 0.15)+ 
+    draw_plot(topo_diff_ang_neu_N170, 0.47, 0.3, 0.3, 0.3) +
+    draw_plot(topo_diff_hap_neu_N170, 0.47, 0.00, 0.3, 0.3) +
+    draw_plot(topo_leg_N170, 0.72, 0.25, 0.15, 0.15)+
+    draw_plot(topo_diff_ang_neu_P3, 0.82, 0.3, 0.3, 0.3) +
+    draw_plot(topo_diff_hap_neu_P3, 0.82, 0.00, 0.3, 0.3) +
+    draw_plot(topo_leg_P3, 1.07, 0.25, 0.15, 0.15)
+  
+```
+
+<br><br>
+
+#### **Model specification** {.tabset .tabset-pills}
+
+<br>
+
+<!-- LMM Model specifications -->
+
+##### LMM_P1: Random effect structure
+
+```{r P1_val_build_mod}
+
+# Select Face 1
+  P1_Val = subset(ERP_data,Group_pt == 1) 
+
+# Prepare fixed factors 
+  P1_Val$ID = as.factor(P1_Val$ID)
+  P1_Val$Stim_Type = as.factor(P1_Val$Stim_Type)
+
+# Re-code emotion condition
+  P1_Val$Condition[P1_Val$Condition==1] = "happy"
+  P1_Val$Condition[P1_Val$Condition==2] = "neutral"
+  P1_Val$Condition[P1_Val$Condition==3] = "angry"
+
+# Create factor & set neutral as baseline
+  P1_Val$Condition = factor(P1_Val$Condition, levels=c("neutral","happy","angry"))
+
+# Add contrast columns
+  mm_P1_Val =  model.matrix( ~ Condition, P1_Val) 
+
+# Attach to dataframe
+  P1_Val[,(ncol(P1_Val)+1):(ncol(P1_Val)+3)] = mm_P1_Val
+  names(P1_Val)[(ncol(P1_Val)-2):ncol(P1_Val)] = c("Mean","Hap_Neu", "Ang_Neu") 
+
+# Build model 
+  mod_P1_val.lmer1 = lmer(mean_ROI_P1 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Hap_Neu + Ang_Neu||ID) +
+                            (1 + Hap_Neu + Ang_Neu||Stim_Type),
+                          data = P1_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_P1_val.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_P1_val.lmer1),comp = "Variance")
+
+# Remove intercepts/slopes based on variance check 
+  mod_P1_val.lmer2 = lmer(mean_ROI_P1 ~ 
+                          Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                          (1 + Hap_Neu + Ang_Neu||ID) +
+                          (0 + Hap_Neu||Stim_Type),
+                        data = P1_Val,
+                        control=lmerControl(calc.derivs = FALSE))
+
+# Re-check the model
+  summary(rePCA(mod_P1_val.lmer2))
+  print(VarCorr(mod_P1_val.lmer2),comp = "Variance")
+
+# Likelihood ratio testing
+
+# For ID
+  mod_P1_val.lmer3 = lmer(mean_ROI_P1 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 |ID) +
+                            (0 + Hap_Neu + Ang_Neu||Stim_Type),
+                          data = P1_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P1_val.lmer2,mod_P1_val.lmer3)
+
+# Stimulus type
+  mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Ang_Neu||ID) +
+                            (1 |Stim_Type),
+                          data = P1_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P1_val.lmer2,mod_P1_val.lmer4)
 
 
-    # P3s
-      P3_neu=topoplot(Topo_Emo_Neu, time_lim = c(300, 600),interp_limit = "head",limits = c(-5,10))+
-        ggtitle("P3 (300-600 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="neutral", size=3)
+# Final model
+  mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 |ID) +
+                            (1 |Stim_Type),
+                          data = P1_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+```
 
-      P3_hap=topoplot(Topo_Emo_Hap, time_lim = c(300, 600),interp_limit = "head",limits = c(-5,10))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="happy", size=3)
+According to our hypothesis, the main fixed effects of interest was emotion of Face 1. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (` Neutral vs Happy`, `Neutral vs Angry`). The final model was comprised of: 
 
-      P3_ang=topoplot(Topo_Emo_Ang, time_lim = c(300, 600),interp_limit = "head", limits = c(-5,10))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="angry", size=3)
+  ``r format(formula(mod_P1_val.lmer4))``
 
+---
 
-    # Combine plots
-      combine_plots(P1_neu, N170_neu, P3_neu,
-                     P1_hap, N170_hap, P3_hap,
-                     P1_ang, N170_ang, P3_ang,
-                      ncol = 3,
-                      caption.text = "Figure XX: Topographical maps of emotion condition",
-                      caption.color = "black",
-                      caption.hjust = 0.5)
+##### LMM_P1: Normality of residuals 
+
+```{r P1_val_res_box, fig.width = 6, fig.asp = .62}
+
+# Set treatment contrast
+  contrasts(P1_Val$Condition) = contr.treatment(3)
+
+## Check properties of DV / residuals 
+  P1_Val$Trans_P1 = P1_Val$mean_ROI_P1 + 1 - min(P1_Val$mean_ROI_P1)
+
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(P1_Val$Trans_P1 ~ P1_Val$Condition)   
 
 ```
 
+P1 amplitudes met the assumption of normally distributed residuals.
 
-<br>
+```{r P1_val_res_plot, fig.width = 6, fig.asp = .62}
+# Visualize normality assumption of residuals (without log transform)
+  mod_P1_val = lm(Trans_P1 ~ Condition, data=P1_Val)
+  res.mod_P1_val = residuals(mod_P1_val)
+  
+  par(mfrow=c(1,2))
+  qqpl_mod_P1_val = qqPlot(res.mod_P1_val, main="QQplot before transformation")    
+  norm_mod_P1_val = plot(density(res.mod_P1_val), main="Density plot before transformation")  
+  par(mfrow=c(1,1))
+        
+```
 
-##### 3.2.1.3 P3
+---
 
-Similar to P1 and N170, we also tested whether P3 amplitudes were larger for emotional in contrast to neutral faces at "face 1" (See **Figure X A**). The LMM with the best model fit was comprised of random intercepts for participant and stimulus. In line with our hypothesis, angry faces elicited larger amplitudes compared to neutral faces ($\hat{β}$ = `r coef(summary(mod_P3_val.lmer4))[3,1]`, *p* `r format.pval(pv = coef(summary(mod_P3_val.lmer4))[3,5], digits = 2, eps = 0.05, nsmall = 2)`). No difference, however, was found between happy and neutral faces ($\hat{β}$ = `r coef(summary(mod_P3_val.lmer4))[2,1]`, *p* = `r coef(summary(mod_P3_val.lmer4))[2,5]`). Covariates showed no significant results (See **Table XX**).
 
-<br>
+##### LMM_P1: Homoscedasticity 
+
+```{r P1_val_homosk, fig.width = 6, fig.asp = .62}
+# Check homoscedasticity  
+  plot(fitted(mod_P1_val.lmer4), residuals(mod_P1_val.lmer4))
+  abline(0, 0)   
+  
+```
+
+Based on visual inspection, we assumed homoscedasticity. 
+
+---
+
+##### LMM_N170: Random effect structure
+
+```{r N170_val_build_mod}
+
+# Transform dataset so that left/right hemisphere are accounted for 
+  N170_Val = gather (ERP_data, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
+
+# Add variable name
+  N170_Val$Elect_site = as.character(N170_Val$Elect_site)
+  N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170l"] = 'left'
+  N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170r"] = "right"
+
+# Prepare fixed factors 
+  N170_Val$ID = as.factor(N170_Val$ID)
+  N170_Val$Stim_Type = as.factor(N170_Val$Stim_Type)
+  N170_Val$Elect_site = factor(N170_Val$Elect_site)
+
+# Select primes
+  N170_Val = subset(N170_Val,Group_pt == 1) 
+
+# Re-code values for emotion variable
+  N170_Val$Condition[N170_Val$Condition==1] = "happy"
+  N170_Val$Condition[N170_Val$Condition==2] = "neutral"
+  N170_Val$Condition[N170_Val$Condition==3] = "angry"
+
+# Create factor, get neutral as baseline
+  N170_Val$Condition = factor(N170_Val$Condition, levels=c("neutral","happy","angry"))
+
+# Set treatment contrast
+  contrasts(N170_Val$Condition) = contr.treatment(3)
+
+# Set contrast for hemisphere
+  contrasts(N170_Val$Elect_site) = contr.sum(2)/2
+
+
+
+# Add contrast columns
+  mm_N170_Val =  model.matrix( ~ Condition + Elect_site + Condition*Elect_site, N170_Val) 
+
+# Attach to dataframe
+  N170_Val[,(ncol(N170_Val)+1):(ncol(N170_Val)+6)] = mm_N170_Val
+  names(N170_Val)[(ncol(N170_Val)-5):ncol(N170_Val)] = c("Mean", "Hap_Neu", "Ang_Neu", "Elect_site", "Hap_NeuxElect_site", "Ang_NeuxElect_site") 
+
+# Get model
+  mod_N170_val.lmer1 = lmer(N170_Amplitude ~ 
+                              Hap_Neu + Ang_Neu+ Hap_NeuxElect_site + Ang_NeuxElect_site + scale(Age) + scale(WM) + 
+                              (1 + Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + Elect_site||ID) +
+                              (1 + Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + Elect_site||Stim_Type),
+                            data = N170_Val,
+                            control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_N170_val.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_N170_val.lmer1),comp = "Variance")
+
+# Improved model
+  mod_N170_val.lmer2 = lmer(N170_Amplitude ~ 
+                              Hap_Neu + Ang_Neu + Hap_NeuxElect_site + Ang_NeuxElect_site + scale(Age) + scale(WM) + 
+                              (1 |ID),
+                            data = N170_Val,
+                            control=lmerControl(calc.derivs = FALSE))
+# Re-check the model
+  summary(rePCA(mod_N170_val.lmer2))
+  print(VarCorr(mod_N170_val.lmer2),comp = "Variance")
+  
+```
+
+According to our hypothesis, the main fixed effects of interest was emotion of Face 1. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (` Neutral vs Happy`, `Neutral vs Angry`). For the N170, we also included a scaled sum contrast for hemisphere (`Elect_site`) as well as an interaction of emotional facial expressions with hemisphere. The final model was comprised of: 
+
+  ``r format(formula(mod_N170_val.lmer2))``
+
+---
+
+
+##### LMM_N170: Normality of residuals 
+
+```{r N170_val_res_box, fig.width = 6, fig.asp = .62}
+
+## Check properties of DV / residuals 
+  N170_Val$Trans_N170 = N170_Val$N170_Amplitude + 1 - min(N170_Val$N170_Amplitude)
+
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(N170_Val$Trans_N170 ~ N170_Val$Condition)   
+            
+```
+
+N170 amplitudes met the assumption of normally distributed residuals.
+
+```{r N170_val_res_plot, fig.width = 6, fig.asp = .62}
+# Visualize normality assumption of residuals (without log transform)
+  mod_N170_val = lm(Trans_N170 ~ Condition, data=N170_Val)
+  res.mod_N170_val = residuals(mod_N170_val)
+  
+  par(mfrow=c(1,2))
+  qqpl_mod_N170_val = qqPlot(res.mod_N170_val, main="QQplot before transformation")    
+  norm_mod_N170_val = plot(density(res.mod_N170_val), main="Density plot before transformation")  
+  par(mfrow=c(1,1))  
+```
+
+
+---
+
+##### LMM_N170: Homoscedasticity 
+
+```{r N170_val_homosk, fig.width = 6, fig.asp = .62}
+
+# Check homoscedasticity  
+  plot(fitted(mod_N170_val.lmer2), residuals(mod_N170_val.lmer2))
+  abline(0, 0) 
+  
+```
+
+Based on visual inspection, we assumed homoscedasticity. 
+
+---
+
+##### LMM_P3: Random effect structure
+
+```{r P3_val_build_mod}
+  
+# Select primes
+  P3_Val = subset(ERP_data, Group_pt == 1) 
+
+# Prepare fixed factors 
+  P3_Val$ID = as.factor(P3_Val$ID)
+  P3_Val$Stim_Type = as.factor(P3_Val$Stim_Type)
+
+# Re-Name values of emotion condition
+  P3_Val$Condition[P3_Val$Condition==1] = "happy"
+  P3_Val$Condition[P3_Val$Condition==2] = "neutral"
+  P3_Val$Condition[P3_Val$Condition==3] = "angry"
+
+# Create factor, get neutral as baseline
+  P3_Val$Condition = factor(P3_Val$Condition, levels=c("neutral","happy","angry"))
+
+# Set treatment contrast
+  contrasts(P3_Val$Condition) = contr.treatment(3)
+
+
+# Add contrast columns
+  mm_P3_Val =  model.matrix( ~ Condition, P3_Val) 
+
+# Attach to dataframe
+  P3_Val[,(ncol(P3_Val)+1):(ncol(P3_Val)+3)] = mm_P3_Val
+  names(P3_Val)[(ncol(P3_Val)-2):ncol(P3_Val)] = c("Mean","Hap_Neu", "Ang_Neu") 
+
+# Get model 
+  mod_P3_val.lmer1 = lmer(mean_ROI_P3 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Hap_Neu + Ang_Neu||ID) +
+                            (1 + Hap_Neu + Ang_Neu||Stim_Type),
+                          data = P3_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_P3_val.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_P3_val.lmer1),comp = "Variance")
+
+# Improved model
+  mod_P3_val.lmer2 = lmer(mean_ROI_P3 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 | ID) +
+                            (1 + Ang_Neu||Stim_Type),
+                          data = P3_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Re-check the model
+  summary(rePCA(mod_P3_val.lmer2))
+  print(VarCorr(mod_P3_val.lmer2),comp = "Variance")
+
+
+# Likelihood ratio testing 
+
+# Stimulus type 
+  mod_P3_val.lmer3 = lmer(mean_ROI_P3 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 |ID) +
+                            (1 |Stim_Type),
+                          data = P3_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA 
+  anova(mod_P3_val.lmer2, mod_P3_val.lmer3)
+
+
+# Final model
+  mod_P3_val.lmer4 = lmer(mean_ROI_P3 ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 |ID) +
+                            (1 |Stim_Type),
+                          data = P3_Val,
+                          control=lmerControl(calc.derivs = FALSE))
+```
+
+According to our hypothesis, the main fixed effects of interest was emotion of Face 1. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (` Neutral vs Happy`, `Neutral vs Angry`). The final model was comprised of: 
+
+  ``r format(formula(mod_P3_val.lmer4))``
+
+---
+
+
+
+##### LMM_P3: Normality of residuals 
+
+```{r P3_val_res_box, fig.width = 6, fig.asp = .62}
+
+## Check properties of DV / residuals 
+  P3_Val$Trans_P3 = P3_Val$mean_ROI_P3 + 1 - min(P3_Val$mean_ROI_P3)
+
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(P3_Val$Trans_P3 ~ P3_Val$Condition)   
+
+```
+
+P3 amplitudes met the assumption of normally distributed residuals.
+
+```{r P3_val_res_plot, fig.width = 6, fig.asp = .62}
+
+# Visualize normality assumption of residuals (without log transform)
+  mod_P3_val = lm(Trans_P3 ~ Condition, data=P3_Val)
+  res.mod_P3_val = residuals(mod_P3_val)
+  
+  par(mfrow=c(1,2))
+  qqpl_mod_P3_val = qqPlot(res.mod_P3_val, main="QQplot before transformation")    
+  norm_mod_P3_val = plot(density(res.mod_P3_val), main="Density plot before transformation")  
+  par(mfrow=c(1,1))
+  
+```
+
+---
+
+##### LMM_P3: Homoscedasticity 
+
+```{r P3_val_homosk, fig.width = 6, fig.asp = .62}
+
+# Check homoscedasticity  
+  plot(fitted(mod_P3_val.lmer4), residuals(mod_P3_val.lmer4))
+  abline(0, 0)    
+
+```
+
+Based on visual inspection, we assumed homoscedasticity. 
+
+---
+
+#### **Results**
+
+<!-- Present ERP valence effects -->
+
+P1 Amplitudes at Face 1 were significantly larger for angry in comparison to neutral facial expressions. No difference was found for the contrast of happy vs neutral faces. In contrast to our hypothesis, no differences N170 amplitde difference between happy or angry faces compared to neutral faces were detected. None of the interactions of hemisphere with the emotion contrasts reached significance. In line with our hypothesis, angry faces elicited larger amplitudes compared to neutral faces. No difference, however, was found between happy and neutral faces. 
 
 ```{r ERP_val_results_table, results = TRUE}
 
+# Define labels 
 labels = c("Intercept","Happy vs Neutral", "Angry vs Neutral", "Age", "Working Memory","HvsN X ROI", "AvsN X ROI")
 
-       # Create table
-          tab_model(mod_P1_val.lmer4, mod_N170_val.lmer2, mod_P3_val.lmer4, 
-                    pred.labels=labels,
-                    show.se=TRUE, show.stat=TRUE, show.ci = FALSE, string.se = "SE",
-                    show.re.var=FALSE, show.obs=FALSE,
-                    emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
-                    show.icc = FALSE)
+# Create table
+  tab_model(mod_P1_val.lmer4, mod_N170_val.lmer2, mod_P3_val.lmer4, 
+          pred.labels=labels,
+          string.est = "b",
+          show.se=TRUE, string.se = "SE",
+          show.stat=TRUE, string.stat = "t",
+          show.ci = FALSE, 
+          show.re.var = TRUE, show.obs = TRUE,
+          emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
+          show.icc = TRUE)
 
 ```
 
 <br>
 
-
-*Table XX: Results of LMMs for contrasting emotions*
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
 <br>
 
-#### 3.2.2 Categorization effects
+### Categorization effects
 
----
+<br>
 
-##### Assumption checks {.tabset .tabset-pills}
+We hypothesized that ERP amplitudes for Face 2 would decrease in response to an identical Face 1.
 
-###### LMM_P1: Normality of residuals 
+<br>
 
-```{r P1_cat_res}
- # Select correct responses
-          P1_Cat = subset(All_Subj, Response == 1)    
-          
-        # Select targets
-          P1_Cat = subset(P1_Cat,Group_pt == 2)   
-            
-        # Prepare fixed factors 
-          P1_Cat$ID = as.factor(P1_Cat$ID)
-          P1_Cat$Stim_Type = as.factor(P1_Cat$Stim_Type)
+#### **Descriptive statistics**
+
+<!-- Plot ERP morphology and topography -->
+
+```{r ERP_cat_traj_topos}
+
+## P1 and P3
+
+# Load Face 2 data
+  Face2_data = read.csv("./data/ROI_P1_P3_Face2.csv",header = TRUE)
+
+# De-select participants
+  Face2_data = Face2_data[with(Face2_data, !(Face2_data$ID=="05")), ]
+
+# Select time window of interest
+  Face2_data = Face2_data[(Face2_data$Time >= -200)& (Face2_data$Time <= 600),]
+
+# Rename values of Face2 condition
+  Face2_data$Condition[Face2_data$Condition == 1]='repeated';
+  Face2_data$Condition[Face2_data$Condition == 2]='novel';
+  Face2_data$Condition[Face2_data$Condition == 3]='prime';
+  Face2_data$Condition[Face2_data$Condition == 4]='c_happy';
+  Face2_data$Condition[Face2_data$Condition == 5]='c_neutral';
+  Face2_data$Condition[Face2_data$Condition == 6]='c_angry';
+  Face2_data$Condition[Face2_data$Condition == 7]='ic_happy';
+  Face2_data$Condition[Face2_data$Condition == 8]='ic_neutral';
+  Face2_data$Condition[Face2_data$Condition == 9]='ic_angry';
+
+# Plot ERP trajectory for P1/P3
+  Face2_data_icc = Face2_data[(Face2_data$Condition == 'repeated')  | (Face2_data$Condition == 'novel'),]
   
-        # Define novel vs repeated trials
-          P1_Cat[P1_Cat$Group_pcic==2,]$Group_pcic = "repeated"
-          P1_Cat[P1_Cat$Group_pcic==3,]$Group_pcic = "novel"
-        
-        # Create factor, get neutral as baseline
-          P1_Cat$Group_pcic = factor(P1_Cat$Group_pcic, levels=c("novel","repeated"))
-        
-        # Set treatment contrast
-          (contrasts(P1_Cat$Group_pcic) = contr.sum(2)/2)
+  P1_cat_traj = ggplot(Face2_data_icc,aes(Time,ROI_Average))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0)),
+          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+          axis.text=element_text(size=8))+
+    stat_summary(fun.y = mean,geom = "line", size = 0.8, linetype = "solid",aes(colour= Condition))+
+    scale_colour_manual(values = nov_col)+
+    #ggtitle("P1 & P3") +
+    theme(legend.position="none")+      
+    labs(x = "\ntime (ms)",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-2, 18),xlim=c(-100,600)) +
+    scale_y_continuous(breaks=seq(-2,18,4))+
+    scale_x_continuous(breaks=seq(-100,600,100))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    geom_text(x=120, y=16.8, label = "P1", color="black", size=3)+
+    geom_text(x=350, y=14.8, label = "P3", color="black", size=3)
+
+## N170
+  Face2_data_l = read.csv("./data/left_ROI_N170_Face2.csv",header = TRUE)
+  Face2_data_r = read.csv("./data/right_ROI_N170_Face2.csv",header = TRUE)
+
+# De-select participants
+  Face2_data_l = Face2_data_l[with(Face2_data_l, !(Face2_data_l$ID=="05")), ]
+  Face2_data_r = Face2_data_r[with(Face2_data_r, !(Face2_data_r$ID=="05")), ]
+
+# Select time window of interest
+  Face2_data_l = Face2_data_l[(Face2_data_l$Time >= -200)& (Face2_data_l$Time <= 1000),]
+  Face2_data_r = Face2_data_r[(Face2_data_r$Time >= -200)& (Face2_data_r$Time <= 1000),]
+
+# Rename conditions
+  Face2_data_l$Condition[Face2_data_l$Condition == 1]='repeated';
+  Face2_data_l$Condition[Face2_data_l$Condition == 2]='novel';
+  Face2_data_l$Condition[Face2_data_l$Condition == 3]='prime';
+  Face2_data_l$Condition[Face2_data_l$Condition == 4]='c_happy';
+  Face2_data_l$Condition[Face2_data_l$Condition == 5]='c_neutral';
+  Face2_data_l$Condition[Face2_data_l$Condition == 6]='c_angry';
+  Face2_data_l$Condition[Face2_data_l$Condition == 7]='ic_happy';
+  Face2_data_l$Condition[Face2_data_l$Condition == 8]='ic_neutral';
+  Face2_data_l$Condition[Face2_data_l$Condition == 9]='ic_angry';
+
+  Face2_data_r$Condition[Face2_data_r$Condition == 1]='repeated';
+  Face2_data_r$Condition[Face2_data_r$Condition == 2]='novel';
+  Face2_data_r$Condition[Face2_data_r$Condition == 3]='prime';
+  Face2_data_r$Condition[Face2_data_r$Condition == 4]='c_happy';
+  Face2_data_r$Condition[Face2_data_r$Condition == 5]='c_neutral';
+  Face2_data_r$Condition[Face2_data_r$Condition == 6]='c_angry';
+  Face2_data_r$Condition[Face2_data_r$Condition == 7]='ic_happy';
+  Face2_data_r$Condition[Face2_data_r$Condition == 8]='ic_neutral';
+  Face2_data_r$Condition[Face2_data_r$Condition == 9]='ic_angry';
+
+# Select conditions of interest
+  Face2_data_icc_l = Face2_data_l[(Face2_data_l$Condition == 'repeated')  | (Face2_data_l$Condition == 'novel'),]
+  Face2_data_icc_r = Face2_data_r[(Face2_data_r$Condition == 'repeated') | (Face2_data_r$Condition == 'novel'),]
   
-      # 1) Check properties of DV / residuals 
+  Face2_data_icc_l$Condition = as.factor(Face2_data_icc_l$Condition)
+  Face2_data_icc_r$Condition = as.factor(Face2_data_icc_r$Condition)
+  
+# Average N170 trajectories for left and right hemisphere  
+  Face2_N170 = (Face2_data_icc_l + Face2_data_icc_r)/2
+  Face2_N170$Condition = Face2_data_icc_l$Condition  
+  
+# Plot N170 trajectory
+  N170_cat_traj = ggplot(Face2_N170,aes(Time,ROI_Average))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
+          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)))+
+    stat_summary(fun.y = mean,geom = "line",size = 0.8 ,linetype = "solid",aes(colour= Condition))+
+    scale_colour_manual(values =  nov_col)+
+    theme(legend.position="none")+          # turn off legend
+    labs(x = "\ntime (ms)",y = expression(paste("")),colour = "")+
+    coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
+    scale_y_continuous(breaks=seq(-6,6,2))+
+    scale_x_continuous(breaks=seq(-100,600,100))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    geom_text(x=200, y=-5, label = "N170", color="black", size=3)
+  
+# Load topography information
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
 
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          P1_Cat$Trans_P1 = P1_Cat$mean_ROI_P1 + 1 - min(P1_Cat$mean_ROI_P1)
-      
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(P1_Cat$Trans_P1 ~ P1_Cat$Group_pcic)   
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
 
-        # Visualize normality assumption of residuals (without log transform)
-          mod_P1_Cat = lm(Trans_P1 ~ Group_pcic, data=P1_Cat)
-          res.mod_P1_Cat = residuals(mod_P1_Cat)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_P1_Cat = qqPlot(res.mod_P1_Cat, main="QQplot before transformation")    
-          norm_mod_P1_Cat = plot(density(res.mod_P1_Cat), main="Density plot before transformation")  
-          par(mfrow=c(1,1))
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+
+# Change from wide to long format for electrodes
+  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+
+# Rename A1/A2
+  names(Topo_Cat)[names(Topo_Cat) == "A1"] <- "TP9"
+  names(Topo_Cat)[names(Topo_Cat) == "A2"] <- "TP10"
+
+# Plot topoplots for repeated trials
+  Topo_Cat_Rep = subset(Topo_Cat, Condition == 10)
+
+# Plot topoplots for novel trials
+  Topo_Cat_Nov = subset(Topo_Cat, Condition == 11)
+  
+  
+# Calculate difference score novel-repeated
+  Topo_Diff_Nov_Rep = data.frame(ID = Topo_Cat_Rep[,1], time = Topo_Cat_Rep[,3],
+                                  electrode = Topo_Cat_Rep[,4], amplitude = Topo_Cat_Nov$amplitude - Topo_Cat_Rep$amplitude)  
+  
+## P1
+
+# Select time windows
+  Topo_Diff_Nov_Rep_P1 = subset(Topo_Diff_Nov_Rep, time >= 80 & time <= 120)
+
+# Add electrode information  
+  Topo_Diff_Nov_Rep_P1 = electrode_locations(Topo_Diff_Nov_Rep_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+  topo_diff_Nov_Rep_P1 = ggplot(Topo_Diff_Nov_Rep_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P1 (80-120 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+  
+  
+## N170
+  
+# Select time windows
+  Topo_Diff_Nov_Rep_N170 = subset(Topo_Diff_Nov_Rep, time >= 170 & time <= 230)
+
+# Add electrode information  
+  Topo_Diff_Nov_Rep_N170 = electrode_locations(Topo_Diff_Nov_Rep_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+  
+  topo_diff_Nov_Rep_N170 = ggplot(Topo_Diff_Nov_Rep_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("N170 (170-230 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-1,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+  
+## P3
+  
+# Select time windows
+  Topo_Diff_Nov_Rep_P3 = subset(Topo_Diff_Nov_Rep, time >= 300 & time <= 600)
+
+# Add electrode information  
+  Topo_Diff_Nov_Rep_P3 = electrode_locations(Topo_Diff_Nov_Rep_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+  
+  topo_diff_Nov_Rep_P3 = ggplot(Topo_Diff_Nov_Rep_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P3 (300-600 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+
+```
+
+```{r ERP_cat_plot}
+
+# Get legend for trajectories
+  traj_leg_cat =ggplot(Face2_data_icc,aes(Time,ROI_Average))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+         legend.key = element_rect(fill = "white"))+
+    stat_summary(fun.y = mean,geom = "line", size = 1, linetype = "solid",aes(colour= Condition))+
+    scale_colour_manual(values = nov_col)+
+    #ggtitle("P1 & P3") +
+    theme(legend.position="bottom")+      
+    labs(x = "\ntime (ms)",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-2, 17),xlim=c(-100,600)) +
+    scale_y_continuous(breaks=seq(-2,17,2))+
+    scale_x_continuous(breaks=seq(-100,600,100))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
+
+  traj_leg_cat = get_legend(traj_leg_cat)
+
+# Get legend for topos
+  topo_P1_leg_cat = ggplot(Topo_Diff_Nov_Rep_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P1 (80-120 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+  
+  topo_P1_leg_cat = get_legend(topo_P1_leg_cat)
+  
+  topo_N170_leg_cat = ggplot(Topo_Diff_Nov_Rep_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("N170 (170-230 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-1,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+  
+  topo_N170_leg_cat = get_legend(topo_N170_leg_cat)
+  
+  topo_P3_leg_cat = ggplot(Topo_Diff_Nov_Rep_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P3 (300-600 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
+                              head_size = 1.5) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+    
+    
+  topo_P3_leg_cat = get_legend(topo_P3_leg_cat)
+
+
+# Get difference label
+  text = paste("\n Novel-\n", "Repeated\n")
+  
+  nov_rep_text = ggplot() + 
+    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          panel.background = element_rect(colour = "white", size = 0.5),
+          axis.ticks = element_blank())
+  
+# Get capital letters
+  text = paste("\n A\n","\n \n","\n \n","\n \n","\n B\n")
+  
+  first_plot = ggplot() + 
+    annotate("text", x = 4, y = 25, size=5, label = text) + 
+    theme_minimal() +
+    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
+          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
+          axis.text.x = element_blank(),
+          axis.text.y = element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank(),
+          panel.background = element_rect(colour = "white", size = 0.5),
+          axis.ticks = element_blank()) 
+  
+# Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
+  ggdraw(xlim = c(0, 1.2), ylim = c(0,1.4)) +
+    draw_plot(first_plot, -0.68, 0.25, 1.4, 1.4) +
+    draw_plot(P1_cat_traj, 0.05, 0.7, 0.5, 0.6) + 
+    draw_plot(N170_cat_traj, 0.55, 0.7, 0.5, 0.6) +
+    draw_plot(traj_leg_cat, 0.45, 0.6, 0.3, 0.25) +
+    draw_plot(nov_rep_text, -0.05, 0.15, 0.3, 0.3) +
+    draw_plot(topo_diff_Nov_Rep_P1, 0.1, 0.15, 0.4, 0.4) +
+    draw_plot(topo_P1_leg_cat, 0.25, 0.15, 0.4, 0.4) +
+    draw_plot(topo_diff_Nov_Rep_N170, 0.43, 0.15, 0.4, 0.4) +
+    draw_plot(topo_N170_leg_cat, 0.58, 0.15, 0.4, 0.4) +
+    draw_plot(topo_diff_Nov_Rep_P3, 0.75, 0.15, 0.4, 0.4) +
+    draw_plot(topo_P3_leg_cat, 0.9, 0.15, 0.4, 0.4) 
+  
+```
+
+<br>
+
+#### **Model specification** {.tabset .tabset-pills}
+
+<br>
+
+<!-- LMM Model specifications -->
+
+##### LMM_P1: Random effect structure
+
+```{r P1_cat_build_mod}
+
+# Select correct responses
+  P1_Cat = subset(ERP_data, Response == 1)    
+
+# Select targets
+  P1_Cat = subset(P1_Cat,Group_pt == 2)   
+
+# Prepare fixed factors 
+  P1_Cat$ID = as.factor(P1_Cat$ID)
+  P1_Cat$Stim_Type = as.factor(P1_Cat$Stim_Type)
+
+# Define novel vs repeated trials
+  P1_Cat[P1_Cat$Group_pcic==2,]$Group_pcic = "repeated"
+  P1_Cat[P1_Cat$Group_pcic==3,]$Group_pcic = "novel"
+
+# Create factor, get neutral as baseline
+  P1_Cat$Group_pcic = factor(P1_Cat$Group_pcic, levels=c("novel","repeated"))
+
+# Set treatment contrast
+  contrasts(P1_Cat$Group_pcic) = contr.sum(2)/2 
+           
+# Add contrast columns
+  mm_P1_Cat =  model.matrix( ~ Group_pcic, P1_Cat) 
+
+# Attach to dataframe
+  P1_Cat[,(ncol(P1_Cat)+1):(ncol(P1_Cat)+2)] = mm_P1_Cat
+  names(P1_Cat)[(ncol(P1_Cat)-1):ncol(P1_Cat)] = c("Mean","Nov_Rep") 
+
+# Build model 
+  mod_P1_cat.lmer1 = lmer(mean_ROI_P1 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep||ID) +
+                            (1 + Nov_Rep||Stim_Type),
+                          data = P1_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_P1_cat.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_P1_cat.lmer1),comp = "Variance")
+
+## Likelihood-ratio testing
+
+# ID
+  mod_P1_cat.lmer2 = lmer(mean_ROI_P1 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 | ID) +
+                            (1 + Nov_Rep||Stim_Type),
+                          data = P1_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P1_cat.lmer1, mod_P1_cat.lmer2)
+
+# Stim_Type
+  mod_P1_cat.lmer3 = lmer(mean_ROI_P1 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep|| ID) +
+                            (1 |Stim_Type),
+                          data = P1_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P1_cat.lmer1, mod_P1_cat.lmer3)
+
+
+# Final model
+  mod_P1_cat.lmer4 = lmer(mean_ROI_P1 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1|ID) +
+                            (1|Stim_Type),
+                          data = P1_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+```
+
+According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions (`Novel vs Repeated`. The final model was comprised of:
+
+  ``r format(formula(mod_P1_cat.lmer4))``
+
+---
+
+
+##### LMM_P1: Normality of residuals 
+
+
+```{r P1_cat_res_box, fig.width = 6, fig.asp = .62}
+
+## Check properties of DV / residuals 
+  P1_Cat$Trans_P1 = P1_Cat$mean_ROI_P1 + 1 - min(P1_Cat$mean_ROI_P1)
+
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(P1_Cat$Trans_P1 ~ P1_Cat$Group_pcic)   
+
+```
+
+P1 amplitudes met the assumption of normally distributed residuals.
+
+```{r P1_cat_res_plot, fig.width = 6, fig.asp = .62}
+
+# Visualize normality assumption of residuals (without log transform)
+  mod_P1_Cat = lm(Trans_P1 ~ Group_pcic, data=P1_Cat)
+  res.mod_P1_Cat = residuals(mod_P1_Cat)
+
+  par(mfrow=c(1,2))
+  qqpl_mod_P1_Cat = qqPlot(res.mod_P1_Cat, main="QQplot before transformation")    
+  norm_mod_P1_Cat = plot(density(res.mod_P1_Cat), main="Density plot before transformation")  
+  par(mfrow=c(1,1))
         
 ```
 
 ---
 
-###### LMM_P1: Random effect structure
+##### LMM_P1: Homoscedasticity 
 
-```{r P1_cat_build_mod, results = TRUE}
-     # 3) Construct full model     
-            
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Group_pcic, P1_Cat) 
-        
-        # Attach to dataframe
-          P1_Cat[,(ncol(P1_Cat)+1):(ncol(P1_Cat)+2)] = mm_c
-          names(P1_Cat)[(ncol(P1_Cat)-1):ncol(P1_Cat)] = c("Mean","Nov_Rep") 
-        
-        # Build model 
-          mod_P1_cat.lmer1 = lmer(mean_ROI_P1 ~ 
-                                Nov_Rep + scale(Age) + scale(WM) + 
-                                (1 + Nov_Rep||ID) +
-                                (1 + Nov_Rep||Stim_Type),
-                              data = P1_Cat,
-                              control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_P1_cat.lmer1))
-        
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_P1_cat.lmer1),comp = "Variance")
-        
-        
-        # Likelihood-ratio testing
-          
-          # ID
-            mod_P1_cat.lmer2 = lmer(mean_ROI_P1 ~ 
-                                      Nov_Rep + scale(Age) + scale(WM) + 
-                                      (1 | ID) +
-                                      (1 + Nov_Rep||Stim_Type),
-                                    data = P1_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
-            
-          # Calculate ANOVA
-            anova(mod_P1_cat.lmer1, mod_P1_cat.lmer2)
-            
-          # Stim_Type
-            mod_P1_cat.lmer3 = lmer(mean_ROI_P1 ~ 
-                                      Nov_Rep + scale(Age) + scale(WM) + 
-                                      (1 + Nov_Rep|| ID) +
-                                      (1 |Stim_Type),
-                                    data = P1_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
-            
-          # Calculate ANOVA
-            anova(mod_P1_cat.lmer1, mod_P1_cat.lmer3)
-            
-            
-        # Final model
-          mod_P1_cat.lmer4 = lmer(mean_ROI_P1 ~ 
-                                      Nov_Rep + scale(Age) + scale(WM) + 
-                                      (1|ID) +
-                                      (1|Stim_Type),
-                                    data = P1_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
+```{r P1_cat_homosk, fig.width = 6, fig.asp = .62}
+
+# Check homoscedasticity  
+  plot(fitted(mod_P1_cat.lmer4), residuals(mod_P1_cat.lmer4))
+  abline(0, 0)     
+  
 ```
+
+Based on visual inspection, we assumed homoscedasticity. 
 
 ---
 
-###### LMM_P1: Homoscedasticity 
+##### LMM_N170: Random effect structure
 
-```{r P1_cat_homosk}
-      # 4) Check homoscedasticity  
-        
-        # Whether residuals are equally dsitributed along regression line 
-          plot(fitted(mod_P1_cat.lmer4), residuals(mod_P1_cat.lmer4))
-          abline(0, 0)       
-```
+```{r N170_cat_build_mod}
 
----
+# Select targets
+  N170_Cat = subset(ERP_data, Group_pt == 2) 
 
-###### LMM_N170: Normality of residuals 
+# Select correct responses
+  N170_Cat = subset(N170_Cat, Response == 1)    
 
-```{r N170_cat_res}
-   # Select targets
-          N170_Cat = subset(All_Subj, Group_pt == 2) 
-        
-        # Define novel vs repeated trials
-          N170_Cat[N170_Cat$Group_pcic==2,]$Group_pcic = "repeated"
-          N170_Cat[N170_Cat$Group_pcic==3,]$Group_pcic = "novel"
-        
-        # Separate data in left and right hemisphere
-          N170_Cat = gather (N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
-          N170_Cat$Elect_site = as.character(N170_Cat$Elect_site)
-        
-        # Add variable name
-          N170_Cat$Elect_site[N170_Cat$Elect_site == "mean_ROI_N170l"] = 'left'
-          N170_Cat$Elect_site[N170_Cat$Elect_site == "mean_ROI_N170r"] = "right"
-        
-        # Set contrast for elect site
-          N170_Cat$Elect_site = factor(N170_Cat$Elect_site)
-          contrasts(N170_Cat$Elect_site) = contr.sum(2)/2
-        
-        # Factor random factors 
-          N170_Cat$ID = as.factor(N170_Cat$ID)
-          N170_Cat$Stim_Type = as.factor(N170_Cat$Stim_Type)
+# Define novel vs repeated trials
+  N170_Cat[N170_Cat$Group_pcic==2,]$Group_pcic = "repeated"
+  N170_Cat[N170_Cat$Group_pcic==3,]$Group_pcic = "novel"
 
-        # Create factor, get neutral as baseline
-          N170_Cat$Group_pcic = factor(N170_Cat$Group_pcic, levels=c("novel","repeated"))
-        
-        # Set treatment contrast
-          (contrasts(N170_Cat$Group_pcic) = contr.sum(2)/2)
-        
-        
-      # 1) Check properties of DV / residuals 
-        
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          N170_Cat$Trans_N170 = N170_Cat$N170_Amplitude + 1 - min(N170_Cat$N170_Amplitude)
+# Separate data in left and right hemisphere
+  N170_Cat = gather (N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
+  N170_Cat$Elect_site = as.character(N170_Cat$Elect_site)
 
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(N170_Cat$Trans_N170 ~ N170_Cat$Group_pcic)   
+# Add variable name
+  N170_Cat$Elect_site[N170_Cat$Elect_site == "mean_ROI_N170l"] = 'left'
+  N170_Cat$Elect_site[N170_Cat$Elect_site == "mean_ROI_N170r"] = "right"
 
-        # Visualize normality assumption of residuals (without log transform)
-          mod_N170_Cat = lm(Trans_N170 ~ Group_pcic, data=N170_Cat)
-          res.mod_N170_Cat = residuals(mod_N170_Cat)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_N170_Cat = qqPlot(res.mod_N170_Cat, main="QQplot before transformation")    
-          norm_mod_N170_Cat = plot(density(res.mod_N170_Cat), main="Density plot before transformation")  
-          par(mfrow=c(1,1))            
-      
+# Set contrast for elect site
+  N170_Cat$Elect_site = factor(N170_Cat$Elect_site)
+  contrasts(N170_Cat$Elect_site) = contr.sum(2)/2
+
+# Factor random factors 
+  N170_Cat$ID = as.factor(N170_Cat$ID)
+  N170_Cat$Stim_Type = as.factor(N170_Cat$Stim_Type)
+
+# Create factor, get neutral as baseline
+  N170_Cat$Group_pcic = factor(N170_Cat$Group_pcic, levels=c("novel","repeated"))
+
+# Set treatment contrast
+  contrasts(N170_Cat$Group_pcic) = contr.sum(2)/2
+
+# Add contrast columns
+  mm_N170_Cat =  model.matrix( ~ Group_pcic + Elect_site + Group_pcic*Elect_site, N170_Cat) 
+
+# Attach to dataframe
+  N170_Cat[,(ncol(N170_Cat)+1):(ncol(N170_Cat)+4)] = mm_N170_Cat
+  names(N170_Cat)[(ncol(N170_Cat)-3):ncol(N170_Cat)] = c("Mean","Nov_Rep","Elect_site","Nov_RepxElect_site") 
+
+# Get model 
+  mod_N170_cat.lmer1 = lmer(N170_Amplitude ~ 
+                              Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
+                              (1 + Nov_Rep + Nov_RepxElect_site + Elect_site||ID) +
+                              (1 + Nov_Rep + Nov_RepxElect_site + Elect_site||Stim_Type),
+                            data = N170_Cat,
+                            control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_N170_cat.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_N170_cat.lmer1),comp = "Variance")
+
+# Improved model 
+  mod_N170_cat.lmer2 = lmer(N170_Amplitude ~ 
+                              Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
+                              (1 + Elect_site||ID),
+                            data = N170_Cat,
+                            control=lmerControl(calc.derivs = FALSE))
+
+# Re-check variances
+  summary(rePCA(mod_N170_cat.lmer2))
+  print(VarCorr(mod_N170_cat.lmer2),comp = "Variance")
+
+## Likelihood ratio testing 
+
+# ID
+  mod_N170_cat.lmer3 = lmer(N170_Amplitude ~ 
+                              Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
+                              (1 |ID),
+                            data = N170_Cat,
+                            control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_N170_cat.lmer2 ,mod_N170_cat.lmer3 )
+
+# Final model
+  mod_N170_cat.lmer4 = lmer(N170_Amplitude ~ 
+                              Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
+                              (1 + Elect_site||ID),
+                            data = N170_Cat,
+                            control=lmerControl(calc.derivs = FALSE))
             
 ```
 
----
+According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions. For the N170, we also added a scaled sum contrast for Hemisphere (`ROI`) and the interaction of novelty with hemisphere (`NvsR x ROI`).The final model was comprised of:
 
-###### LMM_N170: Random effect structure
-
-```{r N170_cat_build_mod, results = TRUE}
-      # 3) Construct full model
-              
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Group_pcic + Elect_site + Condition*Elect_site, N170_Cat) 
-        
-        # Attach to dataframe
-          N170_Cat[,(ncol(N170_Cat)+1):(ncol(N170_Cat)+4)] = mm_c
-          names(N170_Cat)[(ncol(N170_Cat)-3):ncol(N170_Cat)] = c("Mean","Nov_Rep","Elect_site","Nov_RepxElect_site") 
-        
-        # Get model 
-          mod_N170_cat.lmer1 = lmer(N170_Amplitude ~ 
-                                  Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                                  (1 + Nov_Rep + Nov_RepxElect_site + Elect_site||ID) +
-                                  (1 + Nov_Rep + Nov_RepxElect_site + Elect_site||Stim_Type),
-                                data = N170_Cat,
-                                control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_N170_cat.lmer1))
-        
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_N170_cat.lmer1),comp = "Variance")
-        
-        # Improved model 
-          mod_N170_cat.lmer2 = lmer(N170_Amplitude ~ 
-                                      Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                                      (1 + Elect_site||ID),
-                                    data = N170_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
-          
-        # Re-check variances
-          summary(rePCA(mod_N170_cat.lmer2))
-          print(VarCorr(mod_N170_cat.lmer2),comp = "Variance")
-          
-        
-        # Likelihood ratio testing 
-          
-          # ID
-            mod_N170_cat.lmer3 = lmer(N170_Amplitude ~ 
-                                      Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                                      (1 |ID),
-                                    data = N170_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
-
-          # Calculate ANOVA
-            anova(mod_N170_cat.lmer2 ,mod_N170_cat.lmer3 )
-        
-        # Final model
-          mod_N170_cat.lmer4 = lmer(N170_Amplitude ~ 
-                                      Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                                      (1 + Elect_site||ID),
-                                      data = N170_Cat,
-                                      control=lmerControl(calc.derivs = FALSE))
-            
-```
+  ``r format(formula(mod_N170_cat.lmer4))``
 
 ---
 
-###### LMM_N170: Homoscedasticity 
 
-```{r N170_cat_homosk}
-      # 4) Check homoscedasticity  
-        
-        # Whether residuals are equally dsitributed along regression line 
-          plot(fitted(mod_N170_cat.lmer4), residuals(mod_N170_cat.lmer4))
-          abline(0, 0)         
+##### LMM_N170: Normality of residuals 
+
+```{r N170_cat_res_box, fig.width = 6, fig.asp = .62}
+
+## Check properties of DV / residuals 
+  N170_Cat$Trans_N170 = N170_Cat$N170_Amplitude + 1 - min(N170_Cat$N170_Amplitude)
+  
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(N170_Cat$Trans_N170 ~ N170_Cat$Group_pcic)   
          
 ```
 
----
+N170 amplitudes met the assumption of normally distributed residuals.
 
-###### LMM_P3: Normality of residuals 
+```{r N170_cat_res_plot, fig.width = 6, fig.asp = .62}
+# Visualize normality assumption of residuals (without log transform)
+  mod_N170_Cat = lm(Trans_N170 ~ Group_pcic, data=N170_Cat)
+  res.mod_N170_Cat = residuals(mod_N170_Cat)
 
-```{r P3_cat_res}
-#  Build model & check assumptions -----------------------------------------
-        
-        # Correct responses
-          P3_Cat = subset(All_Subj, Response == 1)
-  
-        # Factor random factors 
-          P3_Cat$ID = as.factor(P3_Cat$ID)
-          P3_Cat$Stim_Type = as.factor(P3_Cat$Stim_Type)
-          
-        # Select targets
-          P3_Cat = subset(P3_Cat,Group_pt == 2) 
-  
-        # Define novel vs repeated trials
-          P3_Cat[P3_Cat$Group_pcic==2,]$Group_pcic = "repeated"
-          P3_Cat[P3_Cat$Group_pcic==3,]$Group_pcic = "novel"
-  
-        # Create factor, get neutral as baseline
-          P3_Cat$Group_pcic = factor(P3_Cat$Group_pcic, levels=c("novel","repeated"))
-  
-        # Set treatment contrast
-          contrasts(P3_Cat$Group_pcic) = contr.sum(2)/2
-        
-      # 1) Check properties of DV / residuals 
-        
-        # Check which transformation of DV is suitable
-          # we have positive and negative single trial values
-          # hence: add constant value prior to box-cox
-          
-          P3_Cat$Trans_P3 = P3_Cat$mean_ROI_P3 + 1 - min(P3_Cat$mean_ROI_P3)
-      
-        # To make sure residuals follow ND: Calculate box-cox plot
-           boxcox(P3_Cat$Trans_P3 ~ P3_Cat$Group_pcic)   
-
-        # Visualize normality assumption of residuals (without log transform)
-          mod_P3_Cat = lm(Trans_P3 ~ Group_pcic, data=P3_Cat)
-          res.mod_P3_Cat = residuals(mod_P3_Cat)
-          
-          par(mfrow=c(1,2))
-          qqpl_mod_P3_Cat = qqPlot(res.mod_P3_Cat, main="QQplot before transformation")    
-          norm_mod_P3_Cat = plot(density(res.mod_P3_Cat), main="Density plot before transformation")  
-          par(mfrow=c(1,1))
+  par(mfrow=c(1,2))
+  qqpl_mod_N170_Cat = qqPlot(res.mod_N170_Cat, main="QQplot before transformation")    
+  norm_mod_N170_Cat = plot(density(res.mod_N170_Cat), main="Density plot before transformation")  
+  par(mfrow=c(1,1))  
 ```
+
 
 ---
 
-###### LMM_P3: Random effect structure
+##### LMM_N170: Homoscedasticity 
 
-```{r P3_cat_build_mod, results = TRUE}
-    # 3) Construct full model  
-            
-        # Add contrast columns
-          mm_c =  model.matrix( ~ Group_pcic, P3_Cat) 
-        
-        # Attach to dataframe
-          P3_Cat[,(ncol(P3_Cat)+1):(ncol(P3_Cat)+2)] = mm_c
-          names(P3_Cat)[(ncol(P3_Cat)-1):ncol(P3_Cat)] = c("Mean","Nov_Rep") 
-        
-        # Get model 
-          mod_P3_cat.lmer1 = lmer(mean_ROI_P3 ~ 
-                                Nov_Rep + scale(Age) + scale(WM) + 
-                                (1 + Nov_Rep||ID) +
-                                (1 + Nov_Rep||Stim_Type),
-                              data = P3_Cat,
-                              control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_P3_cat.lmer1))
-  
-        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_P3_cat.lmer1),comp = "Variance")
-  
-        # Improved model
-          mod_P3_cat.lmer2 = lmer(mean_ROI_P3 ~ 
-                                Nov_Rep + scale(Age) + scale(WM) + 
-                                (1 + Nov_Rep||ID) +
-                                (0 + Nov_Rep|Stim_Type),
-                              data = P3_Cat,
-                              control=lmerControl(calc.derivs = FALSE))
-          
-        # Re-check the model  
-          summary(rePCA(mod_P3_cat.lmer2))
-          print(VarCorr(mod_P3_cat.lmer2),comp = "Variance")
-          
-  
-  
-        # Likelhood ratio testing
-          
-          # ID
-            mod_P3_cat.lmer3 = lmer(mean_ROI_P3 ~ 
-                                  Nov_Rep + scale(Age) + scale(WM) + 
-                                  (1|ID) +
-                                  (0 + Nov_Rep|Stim_Type),
-                                data = P3_Cat,
-                                control=lmerControl(calc.derivs = FALSE))
-            
-          # Calculate ANOVA
-            anova(mod_P3_cat.lmer2,mod_P3_cat.lmer3)
-            
-            
-            
-          # Stim_Type
-            mod_P3_cat.lmer4 = lmer(mean_ROI_P3 ~ 
-                                      Nov_Rep + scale(Age) + scale(WM) + 
-                                      (1|ID) +
-                                      (1|Stim_Type),
-                                    data = P3_Cat,
-                                    control=lmerControl(calc.derivs = FALSE))
-            
-           # Calculate ANOVA
-            anova(mod_P3_cat.lmer2,mod_P3_cat.lmer4)
-            
-  
-        # Final model
-          mod_P3_cat.lmer4 = lmer(mean_ROI_P3 ~ 
-                              Nov_Rep + scale(Age) + scale(WM) + 
-                              (1|ID) +
-                              (0 + Nov_Rep|Stim_Type),
-                              data = P3_Cat,
-                              control=lmerControl(calc.derivs = FALSE))
+```{r N170_cat_homosk, fig.width = 6, fig.asp = .62}
+# Check homoscedasticity  
+  plot(fitted(mod_N170_cat.lmer4), residuals(mod_N170_cat.lmer4))
+  abline(0, 0)         
+         
+```
 
+Based on visual inspection, we assumed homoscedasticity. 
+
+---
+
+##### LMM_P3: Random effect structure
+
+```{r P3_cat_build_mod}
+
+# Correct responses
+  P3_Cat = subset(ERP_data, Response == 1)
+
+# Factor random factors 
+  P3_Cat$ID = as.factor(P3_Cat$ID)
+  P3_Cat$Stim_Type = as.factor(P3_Cat$Stim_Type)
+
+# Select targets
+  P3_Cat = subset(P3_Cat,Group_pt == 2) 
+
+# Define novel vs repeated trials
+  P3_Cat[P3_Cat$Group_pcic==2,]$Group_pcic = "repeated"
+  P3_Cat[P3_Cat$Group_pcic==3,]$Group_pcic = "novel"
+
+# Create factor, get neutral as baseline
+  P3_Cat$Group_pcic = factor(P3_Cat$Group_pcic, levels=c("novel","repeated"))
+
+# Set treatment contrast
+  contrasts(P3_Cat$Group_pcic) = contr.sum(2)/2
+
+           
+# Add contrast columns
+  mm_P3_Cat =  model.matrix( ~ Group_pcic, P3_Cat) 
+
+# Attach to dataframe
+  P3_Cat[,(ncol(P3_Cat)+1):(ncol(P3_Cat)+2)] = mm_P3_Cat
+  names(P3_Cat)[(ncol(P3_Cat)-1):ncol(P3_Cat)] = c("Mean","Nov_Rep") 
+
+# Get model 
+  mod_P3_cat.lmer1 = lmer(mean_ROI_P3 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep||ID) +
+                            (1 + Nov_Rep||Stim_Type),
+                          data = P3_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_P3_cat.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_P3_cat.lmer1),comp = "Variance")
+
+# Improved model
+  mod_P3_cat.lmer2 = lmer(mean_ROI_P3 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep||ID) +
+                            (0 + Nov_Rep|Stim_Type),
+                          data = P3_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Re-check the model  
+  summary(rePCA(mod_P3_cat.lmer2))
+  print(VarCorr(mod_P3_cat.lmer2),comp = "Variance")
+
+## Likelhood ratio testing
+
+# ID
+  mod_P3_cat.lmer3 = lmer(mean_ROI_P3 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1|ID) +
+                            (0 + Nov_Rep|Stim_Type),
+                          data = P3_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P3_cat.lmer2,mod_P3_cat.lmer3)
+
+# Stim_Type
+  mod_P3_cat.lmer4 = lmer(mean_ROI_P3 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1|ID) +
+                            (1|Stim_Type),
+                          data = P3_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_P3_cat.lmer2,mod_P3_cat.lmer4)
+
+
+# Final model
+  mod_P3_cat.lmer4 = lmer(mean_ROI_P3 ~ 
+                            Nov_Rep + scale(Age) + scale(WM) + 
+                            (1|ID) +
+                            (0 + Nov_Rep|Stim_Type),
+                          data = P3_Cat,
+                          control=lmerControl(calc.derivs = FALSE))
+
+```
+
+According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions (`Novel vs Repeated`. The final model was comprised of:
+
+``r format(formula(mod_P3_cat.lmer4))``
+
+---
+
+##### LMM_P3: Normality of residuals 
+
+```{r P3_cat_res_box, fig.width = 6, fig.asp = .62}
+
+## Check properties of DV / residuals 
+  P3_Cat$Trans_P3 = P3_Cat$mean_ROI_P3 + 1 - min(P3_Cat$mean_ROI_P3)
+
+# To make sure residuals follow ND: Calculate box-cox plot
+  boxcox(P3_Cat$Trans_P3 ~ P3_Cat$Group_pcic)   
+
+```
+
+P3 amplitudes met the assumption of normally distributed residuals.
+
+```{r P3_cat_res_plot, fig.width = 6, fig.asp = .62}
+
+# Visualize normality assumption of residuals (without log transform)
+  mod_P3_Cat = lm(Trans_P3 ~ Group_pcic, data=P3_Cat)
+  res.mod_P3_Cat = residuals(mod_P3_Cat)
+
+  par(mfrow=c(1,2))
+  qqpl_mod_P3_Cat = qqPlot(res.mod_P3_Cat, main="QQplot before transformation")    
+  norm_mod_P3_Cat = plot(density(res.mod_P3_Cat), main="Density plot before transformation")  
+  par(mfrow=c(1,1))
 ```
 
 ---
 
-###### LMM_P3: Homoscedasticity 
+##### LMM_P3: Homoscedasticity 
 
-```{r P3_cat_homosk}
-      # 4) Check homoscedasticity  
-          plot(fitted(mod_P3_cat.lmer4), residuals(mod_P3_cat.lmer4))
-          abline(0, 0)    
+```{r P3_cat_homosk, fig.width = 6, fig.asp = .62}
+
+# Check homoscedasticity  
+  plot(fitted(mod_P3_cat.lmer4), residuals(mod_P3_cat.lmer4))
+  abline(0, 0)  
+  
 ```
+
+Based on visual inspection, we assumed homoscedasticity. 
 
 ---
 
-##### 3.2.2.1 P1
+#### **Results**
 
-We evaluated whether trials in which a novel emotion was presented as "face 2" would elicit larger P1 amplitudes compared to trials in which the same emotion was repeated (See **Figure X A**). The best-fitted model included stimulus and participant as random intercepts. In contrast to our hypothesis, we did not find a difference between trials with novel in contrast to repeated emotions ($\hat{β}$ = `r coef(summary(mod_P1_cat.lmer4))[2,1]`, *p* = `r coef(summary(mod_P1_cat.lmer4))[2,5]`). None of the covariates reached significance (age: $\hat{β}$ = `r coef(summary(mod_P1_cat.lmer4))[3,1]`, *p* = `r coef(summary(mod_P1_cat.lmer4))[3,5]`; working memory: $\hat{β}$ = `r coef(summary(mod_P1_cat.lmer4))[4,1]`, *p* = `r coef(summary(mod_P1_cat.lmer4))[4,5]`).
-
-```{r ERP_cat_traj}
-
-  # Load "face 2" data
-        Target_data = read.csv("./data/ERPs/ROI_P1_target.csv",header = TRUE)
-
-      # De-select participants
-        Target_data = Target_data[with(Target_data, !(Target_data$ID=="05")), ]
-
-      # Select time window of interest
-        Target_data = Target_data[(Target_data$Time >= -200)& (Target_data$Time <= 600),]
-
-      # Rename values of target condition
-        Target_data$Condition[Target_data$Condition == 1]='repeated';
-        Target_data$Condition[Target_data$Condition == 2]='novel';
-        Target_data$Condition[Target_data$Condition == 3]='prime';
-        Target_data$Condition[Target_data$Condition == 4]='c_happy';
-        Target_data$Condition[Target_data$Condition == 5]='c_neutral';
-        Target_data$Condition[Target_data$Condition == 6]='c_angry';
-        Target_data$Condition[Target_data$Condition == 7]='ic_happy';
-        Target_data$Condition[Target_data$Condition == 8]='ic_neutral';
-        Target_data$Condition[Target_data$Condition == 9]='ic_angry';
-
-      # Plot ERP trajectory for P1/P3
-        Target_data_icc = Target_data[(Target_data$Condition == 'repeated')  | (Target_data$Condition == 'novel'),]
-
-        P1_cat_traj = ggplot(Target_data_icc,aes(Time,ROI_Average))+
-            theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                  axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)))+
-            stat_summary(fun.y = mean,geom = "line", size = 1, linetype = "solid",aes(colour= Condition))+
-            scale_colour_manual(values = c("gray32","#6AC2FF"))+
-            ggtitle("P1 & P3") +
-            #theme(axis.title.x=element_blank())+      # turn off x-axis title
-            #theme(axis.title.y=element_blank())+      # turn off y-axis title
-            theme(legend.position="bottom")+            # turn off legend
-            labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-            coord_cartesian(ylim=c(-2, 16),xlim=c(-100,600)) +
-            scale_y_continuous(breaks=seq(-2,16,2))+
-            scale_x_continuous(breaks=seq(-100,600,100))+
-            geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
-            geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
-
-
-# LEFT HEMISPHERE: N170
-
-        Target_data_l = read.csv("./data/ERPs/left_ROI_N170_target.csv",header = TRUE)
-        Target_data_r = read.csv("./data/ERPs/right_ROI_N170_target.csv",header = TRUE)
-
-      # De-select participants
-        Target_data_l = Target_data_l[with(Target_data_l, !(Target_data_l$ID=="05")), ]
-        Target_data_r = Target_data_r[with(Target_data_r, !(Target_data_r$ID=="05")), ]
-
-      # Select time window of interest
-        Target_data_l = Target_data_l[(Target_data_l$Time >= -200)& (Target_data_l$Time <= 1000),]
-
-      # Rename conditions
-        Target_data_l$Condition[Target_data_l$Condition == 1]='repeated';
-        Target_data_l$Condition[Target_data_l$Condition == 2]='novel';
-        Target_data_l$Condition[Target_data_l$Condition == 3]='prime';
-        Target_data_l$Condition[Target_data_l$Condition == 4]='c_happy';
-        Target_data_l$Condition[Target_data_l$Condition == 5]='c_neutral';
-        Target_data_l$Condition[Target_data_l$Condition == 6]='c_angry';
-        Target_data_l$Condition[Target_data_l$Condition == 7]='ic_happy';
-        Target_data_l$Condition[Target_data_l$Condition == 8]='ic_neutral';
-        Target_data_l$Condition[Target_data_l$Condition == 9]='ic_angry';
-
-      # Select conditions of interest
-        Target_data_icc_l = Target_data_l[(Target_data_l$Condition == 'repeated')  | (Target_data_l$Condition == 'novel'),]
-
-      # Plot N170 left hemisphere trajectory
-        N170l_cat_traj = ggplot(Target_data_icc_l,aes(Time,ROI_Average))+
-          theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)))+
-          stat_summary(fun.y = mean,geom = "line", size = 1,linetype = "solid",aes(colour= Condition))+
-          scale_colour_manual(values = c("gray32","#6AC2FF"))+
-          ggtitle("Left Hemisphere: 170") +
-          #theme(axis.title.x=element_blank())+      # turn off x-axis title
-          #theme(axis.title.y=element_blank())+      # turn off y-axis title
-          theme(legend.position="bottom")+            # turn off legend
-          labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-          coord_cartesian(ylim=c(-6, 6),xlim=c(-100,600)) +
-          scale_y_continuous(breaks=seq(-6,6,2))+
-          scale_x_continuous(breaks=seq(-100,600,100))+
-          geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
-          geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
-
-# RIGHT HEMISPHERE: N170
-
-        # Select time window of interest
-          Target_data_r = Target_data_r[(Target_data_r$Time >= -200)& (Target_data_r$Time <= 1000),]
-
-        # Rename conditions
-          Target_data_r$Condition[Target_data_r$Condition == 1]='repeated';
-          Target_data_r$Condition[Target_data_r$Condition == 2]='novel';
-          Target_data_r$Condition[Target_data_r$Condition == 3]='prime';
-          Target_data_r$Condition[Target_data_r$Condition == 4]='c_happy';
-          Target_data_r$Condition[Target_data_r$Condition == 5]='c_neutral';
-          Target_data_r$Condition[Target_data_r$Condition == 6]='c_angry';
-          Target_data_r$Condition[Target_data_r$Condition == 7]='ic_happy';
-          Target_data_r$Condition[Target_data_r$Condition == 8]='ic_neutral';
-          Target_data_r$Condition[Target_data_r$Condition == 9]='ic_angry';
-
-        # Select conditions of interest
-          Target_data_icc_r = Target_data_r[(Target_data_r$Condition == 'repeated') | (Target_data_r$Condition == 'novel'),]
-
-        # Plot N170 right hemisphere trajectory
-          N170r_cat_traj = ggplot(Target_data_icc_r,aes(Time,ROI_Average))+
-            theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-                  axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)))+
-            stat_summary(fun.y = mean,geom = "line",size = 1 ,linetype = "solid",aes(colour= Condition))+
-            scale_colour_manual(values = c("gray32","#6AC2FF"))+
-            ggtitle("Right Hemisphere: N170") +
-            #theme(axis.title.x=element_blank())+      # turn off x-axis title
-            #theme(axis.title.y=element_blank())+      # turn off y-axis title
-            theme(legend.position="bottom")+          # turn off legend
-            labs(x = "\ntime (ms)",y = expression(paste("Mean amplitude across ROI [",mu,"V]")),colour = "")+
-            coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
-            scale_y_continuous(breaks=seq(-6,6,2))+
-            scale_x_continuous(breaks=seq(-100,600,100))+
-            geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
-            geom_hline(yintercept = 0,linetype = "dashed",colour="grey")
-
-# Combine plots
-      combine_plots(P1_cat_traj, N170l_cat_traj, N170r_cat_traj,
-                               ncol = 3, nrow=1,
-                               labels = c("A", "B", "C"),
-                               caption.color = "black",
-                               caption.vjust = 0,
-                               caption.hjust = 1.3,
-                               caption.text = "Figure XX: ERP trajectories for category effects")
-
-        
-```
-
-<br>
-
-##### 3.2.2.2 N170
-
-For the analysis N170 amplitude differences for trials with novel in contrast to repeated emotions, we included hemisphere (left vs right) as additional fixed effect factor as well as the interaction between hemisphere and and novelty (See **Figure X B,C**). The LMM with the best fit included a random intercept for participant with a random slope for hemisphere. In contrast to our hypothesis, we did not find a significant effect of novelty ($\hat{β}$ = `r coef(summary(mod_N170_cat.lmer4))[2,1]`, *p* = `r coef(summary(mod_N170_cat.lmer4))[2,5]`). Neither the main effect of hemisphere ($\hat{β}$ = `r coef(summary(mod_N170_cat.lmer4))[4,1]`, *p* = `r coef(summary(mod_N170_cat.lmer4))[4,5]`) nor the interaction of hemisphere with novelty was significant  ($\hat{β}$ = `r coef(summary(mod_N170_cat.lmer4))[3,1]`, *p* = `r coef(summary(mod_N170_cat.lmer4))[3,5]`). Age as a covariate was not significant ($\hat{β}$ = `r coef(summary(mod_N170_cat.lmer4))[5,1]`, *p* = `r coef(summary(mod_N170_cat.lmer4))[5,2]`). The covariate working memory did not reach significance  ($\hat{β}$ = `r coef(summary(mod_N170_cat.lmer4))[6,1]`, *p* = `r coef(summary(mod_N170_cat.lmer4))[6,5]`).
-
-<br>
-
-```{r ERP_cat_topos, fig.width = 10, fig.height = 5}
-
-# Load topography information
-      Topo_Cat = read.csv(file="./data/ERPs/ERPs_Topo_Categorization.csv", header=TRUE, sep=",")
-
-      Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Emo$ID==5)), ]
-
-    # Re-name to fit topoplot function
-      names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
-
-    # Change from wide to long format for electrodes
-      Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
-
-    # Rename A1/A2
-      names(Topo_Cat)[names(Topo_Cat) == "A1"] <- "TP9"
-      names(Topo_Cat)[names(Topo_Cat) == "A2"] <- "TP10"
-
-    # Plot topoplots for repeated trials
-      Topo_Cat_Rep = subset(Topo_Cat, Condition == 10)
-
-    # Plot topoplots for novel trials
-      Topo_Cat_Nov = subset(Topo_Cat, Condition == 11)
-
-
-    # P1s
-      P1_rep=topoplot(Topo_Cat_Rep, time_lim = c(80, 120),interp_limit = "head", limits = c(-5,20))+
-        ggtitle("P1 (80-120 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="repeat", size=3)
-
-      P1_nov=topoplot(Topo_Cat_Nov, time_lim = c(80, 120),interp_limit = "head", limits = c(-5,20))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="novel", size=3)
-
-    # N170s
-      N170_rep=topoplot(Topo_Cat_Rep, time_lim = c(170, 230),interp_limit = "head", limits = c(-5,5))+
-        ggtitle("N170 (170-230 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="repeat", size=3)
-
-      N170_nov=topoplot(Topo_Cat_Nov, time_lim = c(170, 230),interp_limit = "head", limits = c(-5,5))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="novel", size=3)
-
-    # P3s
-      P3_rep=topoplot(Topo_Cat_Rep, time_lim = c(300, 600),interp_limit = "head", limits = c(-10,15))+
-        ggtitle("P3 (300-600 ms)")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="repeat", size=3)
-
-      P3_nov=topoplot(Topo_Cat_Nov, time_lim = c(300, 600),interp_limit = "head", limits = c(-10,15))+
-        ggtitle("")+
-        theme(plot.title = element_text(hjust = 0.5, face = "bold"))+
-        annotate(geom="text", x=-1.05, y=-1, label="novel", size=3)
-
-    # Combine plots
-      combine_plots(P1_rep, N170_rep, P3_rep,
-                               P1_nov, N170_nov, P3_nov,
-                               ncol = 3, nrow=2,
-                               caption.text = "Figure XX: Topographical maps of category condition",
-                               caption.color = "black",
-                               caption.vjust = -1,
-                               caption.hjust = 0.5)
-
-```
-
-
-##### 3.2.2.3 P3
-
-We tested whether novel "face 2" trials would elicit larger P3 amplitudes compared to repeated "face 2" trials (See **Figure X A**). The best-fitting LMM was comprised of a random intercept for participant and a random slope for novelty with no random intercept for stimulus (See **Table XX**). We did not find an effect of novelty ($\hat{β}$ = `r coef(summary(mod_P3_cat.lmer4))[2,1]`, *p* = `r coef(summary(mod_P3_cat.lmer4))[2,5]`), nor did any of the covariates reach significance (age: $\hat{β}$ = `r coef(summary(mod_P3_cat.lmer4))[3,1]`, *p* = `r coef(summary(mod_P3_cat.lmer4))[3,5]`; working memory: $\hat{β}$ = `r coef(summary(mod_P3_cat.lmer4))[4,1]`, *p* = `r coef(summary(mod_P3_cat.lmer4))[4,5]`).
-
+In contrast to our hypothesis, we did not find P1 amplitude difference between trials with novel in contrast to repeated emotions. We also failed to find a significant effect of novelty for N170 amplitudes. Neither the main effect of hemisphere nor the interaction of hemisphere with novelty was significant. P3 amplitudes did not differ for novelty either. 
 
 ```{r ERP_cat_results_table, results = TRUE}
 
-labels = c("Intercept","Novel vs Repeated", "Age", "Working Memory","NvsR X ROI", "ROI")
+# Define labels
+  labels = c("Intercept","Novel vs Repeated", "Age", "Working Memory","NvsR X ROI", "ROI")
 
-       # Create table
-          tab_model(mod_P1_cat.lmer4, mod_N170_cat.lmer4, mod_P3_cat.lmer4, 
-                    pred.labels=labels,
-                    show.se=TRUE, show.stat=TRUE, show.ci = FALSE, string.se = "SE",
-                    show.re.var=FALSE, show.obs=FALSE,
-                    emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
-                    show.icc = FALSE)
+# Create table
+  tab_model(mod_P1_cat.lmer4, mod_N170_cat.lmer4, mod_P3_cat.lmer4, 
+            pred.labels=labels,
+            string.est = "b",
+            show.se=TRUE, string.se = "SE",
+            show.stat=TRUE, string.stat = "t",
+            show.ci = FALSE, 
+            show.re.var = TRUE, show.obs = TRUE,
+            emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
+            show.icc = TRUE)
 
 ```
 
 <br>
 
-*Table XX: Results of LMMs for contrasting novel and repeated trials*
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
+
+<br>
+
+### Session info
+
+<!-- Provide session info  -->
+
+```{r session_info, results = TRUE}
+
+# Get session info 
+  sessionInfo()
+
+```
+

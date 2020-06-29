@@ -7,9 +7,9 @@ navbar:
     - text: "Introduction"
       icon: glyphicon-info-sign
       href: index.html
-    - text: "Method section"
+    - text: "Sample description"
       icon: glyphicon-wrench
-      href: R_Script_1_Method_Section.html
+      href: R_Script_1_Sample_descr.html
     - text: "EEG task measures"
       icon: glyphicon-hand-up
       href: R_Script_2_EEG_task_measures.html

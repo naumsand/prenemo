@@ -359,10 +359,10 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="R_Script_1_Method_Section.html">
+  <a href="R_Script_1_Sample_descr.html">
     <span class="glyphicon glyphicon-wrench"></span>
      
-    Method section
+    Sample description
   </a>
 </li>
 <li>
@@ -413,655 +413,321 @@ div.tocify {
 
 <!-- Set up workspace -->
 <!-- Load and prepare data sets -->
-<pre class="r"><code>  # Concatenate EMT task data --------------------------------------
-  
-    # Load questionnaire data
-      QN_data = readRDS(&quot;./data/QN_data.rds&quot;, refhook = NULL)
-    
-    # Get data file info
-      files_emt = list.files(path=&quot;./data/EMT&quot;, pattern=&quot;*t_file.csv&quot;)
-      nfiles = length(files_emt)
-  
-    # Get EMT task specifics
-      
-     # Picture order information
-        Pic_data = readWorksheetFromFile(&quot;./data/EMT_task_specifics.xlsx&quot;, 
-                                     sheet = &quot;Picture_order&quot;, 
-                                     startCol = 1,
-                                     endCol = 0)
-
-    # Match ID format
-        IDs = c(paste(&quot;0&quot;,c(1:2,4,6:9), sep=&quot;&quot;), paste(c(10:33), sep=&quot;&quot;))
-        QN_data$ID = IDs
-  
-    # Set number of trials
-        num_trials_emt = 72
-    
-    # Combine data   
-      for (i in 1:nfiles) {
-    
-        # Get EEG file per subject
-        if (i == 27) {
-        EMT_Indiv = read.csv(file=paste(&quot;./data/EMT/&quot;,files_emt [i], sep = &quot;&quot;), stringsAsFactors=FALSE, header=TRUE, sep=&quot;;&quot;)
-        
-        } else{
-        EMT_Indiv = read.csv(file=paste(&quot;./data/EMT/&quot;,files_emt [i], sep = &quot;&quot;), header=TRUE, sep=&quot;,&quot;,stringsAsFactors=FALSE)
-        }
-        
-        # Add ID
-          EMT_Indiv$ID = substr(files_emt [i],1,2)
-        
-        # Bring ID to the front
-          EMT_Indiv=EMT_Indiv[, c(6,1:5)] 
-        
-        if (i==1) {
-          
-          EMT_All = EMT_Indiv # first round: create EMT_All data frame
-          
-        } else {
-          
-          EMT_All = rbind(EMT_All,EMT_Indiv) # add to EMT_All data frame 
-          
-        }
-        
-        # Clear previous
-          remove(EMT_Indiv)
-        
-      }   
-    
-    # Add trial number  
-      EMT_All$Trial = c(rep(1:num_trials_emt,32))
-      
-    # Add stimulus information
-      EMT_All$Stim_Type = Pic_data$Stimulus[match(EMT_All$Image_1,Pic_data$Image_1,nomatch = NA)] 
-      
-    # Add age and working memory score 
-      EMT_All$Age = QN_data$age[match(EMT_All$ID,QN_data$ID,nomatch = NA)]
-      EMT_All$WM = QN_data$WM[match(EMT_All$ID,QN_data$ID,nomatch = NA)]   
-
-  # RT inspection and cleaning ----------------------------------------------
-    
-    # Re-code RTs into numeric format
-      EMT_All$RT_in_ms = as.numeric(EMT_All$RT_in_ms)
-        
-    # Transform reaction times from seconds to milliseconds 
-      EMT_All$RT_in_ms = EMT_All$RT_in_ms*1000 
-    
-    # Create variables which capture RT outliers (TRUE = outlier, FALSE = kept for further analyses)
-      EMT_All$Exclude_smaller_250ms = FALSE
-      EMT_All$Exclude_larger_7s = FALSE
-      EMT_All$Exclude_MAD = FALSE
-    
-    # Clean RT_in_ms for values &lt; 250 ms
-      EMT_All$Exclude_smaller_250ms[EMT_All$RT_in_ms &lt;=250] = TRUE
-    
-    # Clean RT_in_ms for values &lt; 10 s
-      EMT_All$Exclude_larger_7s[EMT_All$RT_in_ms &gt;=7000] = TRUE
-    
-    ## Calculate the median absolute deviation for each participant ##       
-    
-    # Define IDs
-      IDs = c(paste(&quot;0&quot;,c(1,2,4:9), sep=&quot;&quot;), paste(c(10:33), sep=&quot;&quot;))
-    
-    # Set MAD cutoff
-      MAD_cutoff = 2.5
-    
-    # Identify outliers +/- 2.5 times the MAD   
-      for (m in 1:length(IDs)) {
-        
-        EMT_All_outl_ind = subset (EMT_All[EMT_All$Exclude_smaller_250ms==FALSE|EMT_All$Exclude_larger_7s==FALSE,], ID == IDs[m]) 
-
-        MAD_ind = mad(EMT_All_outl_ind$RT_in_ms)
-        
-        EMT_All[EMT_All$ID==IDs[m],]$Exclude_MAD[EMT_All_outl_ind$RT_in_ms &lt; MAD_ind-MAD_cutoff*MAD_ind | EMT_All_outl_ind$RT_in_ms &gt; MAD_ind+MAD_cutoff*MAD_ind] = TRUE
-        
-      }
-      
-
-  # Save file as .rds -----------------------------------------------------
-    
-    # Remove image_1 / image_2
-      EMT_All = subset(EMT_All, select = -c(2,3) )
-      
-    # De-select participant     
-      EMT_All = EMT_All[with(EMT_All, !(EMT_All$ID==&quot;05&quot;)), ]
-      
-    # Save .rds file  
-      saveRDS(EMT_All, file = &quot;./data/EMT.rds&quot;)</code></pre>
-<div id="emotion--and-empathy-related-measures" class="section level3">
-<h3>3.3 Emotion- and empathy-related measures</h3>
 <p><br></p>
-<div id="emotion-matching-task" class="section level4">
-<h4>3.3.1 Emotion matching task</h4>
+<div id="emotion-matching-task" class="section level3">
+<h3>Emotion matching task</h3>
+<p>We employed an emotion matching task (EMT; adapted from Watling &amp; Damaskinou, 2018) to assess children’s emotion knowledge. Children saw two faces with the same identity but different facial expression. Both faces were presented at the same time. While the faces were on screen, the children heard an audio lay-over of one of the emotion words (happy, angry or neutral). The children had to indicate with a button press which face matched the audio lay-over. We measured reaction times and accuracy.</p>
+<p>We excluded:</p>
+<ul>
+<li>Reaction times &lt; 250 ms or &gt; 7s</li>
+<li>Values &lt;/&gt; 2.5 of the median absolute deviation (MAD) based on the individual participant</li>
+<li>Incorrect answers</li>
+</ul>
+<p>We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all (general) linear mixed model analyses to control for cognitive abilities of the children as well as potential differences in age.</p>
+<p>The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.</p>
+<p>We expected the highest accuracy rates for happy faces (tested with <code>GLMM</code>) and fastest reaction times for pairings where happy faces were involved (tested with <code>LMM</code>). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).</p>
 <p><br></p>
-<div id="accuracy" class="section level5">
-<h5>3.3.1.1 Accuracy</h5>
-<hr />
-</div>
-<div id="assumption-checks" class="section level5 tabset tabset-pills">
-<h5>Assumption Checks</h5>
-<div id="glmm_emt-random-effect-structure" class="section level6">
-<h6>GLMM_EMT: Random effect structure</h6>
-<pre class="r"><code> # RT cleaning criteria
-            EMT_Acc = subset(EMT_All,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-            
-          # Factor random effects 
-            EMT_Acc$ID = as.factor(EMT_Acc$ID)
-            EMT_Acc$Stim_Type = as.factor(EMT_Acc$Stim_Type)
-            
-          # Create factor, define neutral as baseline
-            EMT_Acc$emotion = factor(EMT_Acc$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
-            
-          # Set treatment contrast
-            contrasts(EMT_Acc$emotion) = contr.treatment(3)
-            
- 
-        # 1) Construct full model
-            
-          # Add contrast columns
-            mm_c =  model.matrix( ~ emotion, EMT_Acc) 
-            
-          # Attach to dataframe
-            EMT_Acc[,(ncol(EMT_Acc)+1):(ncol(EMT_Acc)+3)] = mm_c
-            names(EMT_Acc)[(ncol(EMT_Acc)-2):ncol(EMT_Acc)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
-            
-          # Construct model             
-            mod_EMT_Acc.glmm1 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                        (1 + Hap_Neu + Ang_Neu ||ID) + 
-                                        (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
-                                      data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                      family = binomial)         
-            
-            
-            # 1st: check how many zero variance terms you got in random effects
-              summary(rePCA(mod_EMT_Acc.glmm1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                        [,1]  [,2]   [,3]
-## Standard deviation     2.61 2.370 0.9531
-## Proportion of Variance 0.51 0.422 0.0682
-## Cumulative Proportion  0.51 0.932 1.0000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]   [,3]
-## Standard deviation     0.844 0.812 0.3587
-## Proportion of Variance 0.475 0.440 0.0857
-## Cumulative Proportion  0.475 0.914 1.0000</code></pre>
-<pre class="r"><code>            # 2nd: check which random terms explain the least variance
-              print(VarCorr(mod_EMT_Acc.glmm1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance
-##  Stim_Type   Ang_Neu     5.615   
-##  Stim_Type.1 Hap_Neu     6.796   
-##  Stim_Type.2 (Intercept) 0.908   
-##  ID          Ang_Neu     0.713   
-##  ID.1        Hap_Neu     0.129   
-##  ID.2        (Intercept) 0.660</code></pre>
-<pre class="r"><code>            # Likelihood ratio testing 
-            
-              # ID
-                mod_EMT_Acc.glmm2 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1 |ID) + 
-                                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)    
-                
-  
-                mod_EMT_Acc.glmm3 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1 + Hap_Neu|ID) + 
-                                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)  
-                
-                mod_EMT_Acc.glmm4 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1 + Ang_Neu|ID) + 
-                                            (1 + Hap_Neu + Ang_Neu || Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)  
-            
-              # Calculate ANOVA
-                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm2)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm2: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | ID) + 
-## mod_EMT_Acc.glmm2:     (1 + Hap_Neu + Ang_Neu || Stim_Type)
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm2  9 1394 1441   -688     1376             
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370  5.43      2
-##                   Pr(&gt;Chisq)  
-## mod_EMT_Acc.glmm2             
-## mod_EMT_Acc.glmm1      0.066 .
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code>                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm3)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-## mod_EMT_Acc.glmm3: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu | 
-## mod_EMT_Acc.glmm3:     ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370             
-## mod_EMT_Acc.glmm3 11 1396 1454   -687     1374     0      0
-##                   Pr(&gt;Chisq)
-## mod_EMT_Acc.glmm1           
-## mod_EMT_Acc.glmm3          1</code></pre>
-<pre class="r"><code>                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm4)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-## mod_EMT_Acc.glmm4: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Ang_Neu | 
-## mod_EMT_Acc.glmm4:     ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370             
-## mod_EMT_Acc.glmm4 11 1391 1449   -685     1369  1.36      0
-##                            Pr(&gt;Chisq)    
-## mod_EMT_Acc.glmm1                        
-## mod_EMT_Acc.glmm4 &lt;0.0000000000000002 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code>              # Stimulus type 
-            
-                mod_EMT_Acc.glmm5 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1  + Hap_Neu + Ang_Neu ||ID) + 
-                                            (1 + Hap_Neu |Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)    
-                
-                
-                mod_EMT_Acc.glmm6 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1  + Hap_Neu + Ang_Neu ||ID) + 
-                                            (1 + Ang_Neu|Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)    
-              
-                mod_EMT_Acc.glmm7 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                            (1  + Hap_Neu + Ang_Neu ||ID) + 
-                                            (1 |Stim_Type),                   
-                                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                          family = binomial)    
-            
-              # Calculate ANOVAs
-                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm5)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-## mod_EMT_Acc.glmm5: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm5:     Ang_Neu || ID) + (1 + Hap_Neu | Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370             
-## mod_EMT_Acc.glmm5 11 1421 1479   -700     1399     0      0
-##                   Pr(&gt;Chisq)
-## mod_EMT_Acc.glmm1           
-## mod_EMT_Acc.glmm5          1</code></pre>
-<pre class="r"><code>                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm6)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-## mod_EMT_Acc.glmm6: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm6:     Ang_Neu || ID) + (1 + Ang_Neu | Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370             
-## mod_EMT_Acc.glmm6 11 1470 1528   -724     1448     0      0
-##                   Pr(&gt;Chisq)
-## mod_EMT_Acc.glmm1           
-## mod_EMT_Acc.glmm6          1</code></pre>
-<pre class="r"><code>                anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm7)</code></pre>
-<pre><code>## Data: EMT_Acc
-## Models:
-## mod_EMT_Acc.glmm7: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm7:     Ang_Neu || ID) + (1 | Stim_Type)
-## mod_EMT_Acc.glmm1: Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 + Hap_Neu + 
-## mod_EMT_Acc.glmm1:     Ang_Neu || ID) + (1 + Hap_Neu + Ang_Neu || Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_EMT_Acc.glmm7  9 1564 1611   -773     1546             
-## mod_EMT_Acc.glmm1 11 1392 1451   -685     1370   175      2
-##                            Pr(&gt;Chisq)    
-## mod_EMT_Acc.glmm7                        
-## mod_EMT_Acc.glmm1 &lt;0.0000000000000002 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code>            # Final model
-              mod_EMT_Acc.glmm8 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                                        (1 + Hap_Neu + Ang_Neu || ID) + 
-                                        (1 + Hap_Neu + Ang_Neu || Stim_Type),                   
-                                      data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                                      
-                                      family = binomial)  </code></pre>
-<hr />
-</div>
-<div id="glmm_emt-overdispersion" class="section level6">
-<h6>GLMM_EMT: Overdispersion</h6>
-<p>If the p-value is &lt; 0.05, the data are overdispersed. Here p &gt; 0.05. Hence overdispersion is not a problem.</p>
-<pre class="r"><code># 2) Assumption check: Appropriate estimation of variance (no overdispersion)
-              
-              overdisp_fun(mod_EMT_Acc.glmm8)</code></pre>
-<pre><code>##   chisq   ratio     rdf       p 
-##  958.10    0.66 1446.00    1.00</code></pre>
-<hr />
-</div>
-</div>
-<div id="section" class="section level5">
-<h5></h5>
-<!-- EMT accuracy text -->
-<p>Within the analysis of accuracy of the EMT, we examined whether children would be more accurate to detect emotional vs neutral faces. Our final GLMM was comprised of random intercepts for participant and stimulus as well as a random slope for angry in contrast to neutral faces for participant and a random slope for both emotion contrasts for stimulus. We did not find a significant effect for happy in comparison to neutral faces (<span class="math inline">\(\hat{β}\)</span> = 0.41, <em>p</em> = 0.42, <em>OR</em> = 1.51 [95% CI:-0.97, 3.99]) or angry in comparison to neutral faces (<span class="math inline">\(\hat{β}\)</span> = 0.81, <em>p</em> = 0.11, <em>OR</em> = 2.25 [95% CI:-1.45, 5.96]; see <strong>Figure X A</strong>). None of the covariates reached significance (age: <span class="math inline">\(\hat{β}\)</span> = 0.24, <em>p</em> = 0.18, <em>OR</em> = 1.28 [95% CI:-0.82, 3.37]; working memory: <span class="math inline">\(\hat{β}\)</span> = 0.09, <em>p</em> = 0.61, <em>OR</em> = 1.1 [95% CI:-0.71, 2.9]).</p>
+<div id="descriptives" class="section level4">
+<h4><strong>Descriptives</strong></h4>
 <p><br></p>
 <!-- Plot EMT accuracy & reaction time -->
-<pre class="r"><code> # Select RT inspected criteria
-          EMT_Acc_Plot = subset(EMT_All,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-          
-        # Select correct trials
-          EMT_Acc_Plot = subset(EMT_Acc_Plot, Answer == 1)
-        
-        # Create factor, define neutral as baseline
-          EMT_Acc_Plot$emotion = factor(EMT_Acc_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
-          
-        # Get accuracy for novel and repeated condition 
-          acc_all = data.frame(xtabs(~ID+emotion, EMT_Acc_Plot)) 
-          
-        # Recode to accuracy in percent
-          # 24 trials per emotion condition (neutral, happy, angry)
-          acc_all$Freq = (acc_all$Freq/24)*100
-          
-        # Calculate descriptives on accuracy
-          stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;emotion&quot;))
-          
-        # Plot accuracy
-          EMT_Acc_bar = ggplot(stats_acc_all, aes(x=emotion, y=Freq, fill = emotion)) + 
-            geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=1,width=0.9) +
-            geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-            labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-            ylim(0, 80) + 
-            scale_fill_manual(values=c(&quot;#276CB3&quot;,&quot;grey20&quot;,&quot;#FF5B4F&quot;))+
-            theme_minimal()+
-            theme(axis.title.y = element_text(size = 20, margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                  text=element_text(size = 20, family = &quot;Segoe UI&quot;),
-                  legend.position = &quot;none&quot;)      
-      
-        # Check whether plot accounts for colorblindness / desaturation
-          # view_cvd(fig)
+<pre class="r"><code># Select RT inspected criteria
+  EMT_Acc_Plot = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE) 
 
-          
+# Select correct trials
+  EMT_Acc_Plot = subset(EMT_Acc_Plot, Answer == 1)
+
+# Create factor, define neutral as baseline
+  EMT_Acc_Plot$emotion = factor(EMT_Acc_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+
+# Get accuracy for novel and repeated condition 
+  acc_all = data.frame(xtabs(~ID+emotion, EMT_Acc_Plot)) 
+
+# Recode to accuracy in percent
+  acc_all$Freq = (acc_all$Freq/24)*100
+
+# Calculate descriptives on accuracy
+  stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;emotion&quot;))
+
+# Plot accuracy
+  EMT_Acc_bar = ggplot(stats_acc_all, aes(x=emotion, y=Freq, fill = emotion)) + 
+    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
+    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
+    labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
+    coord_cartesian(ylim = c(0, 60)) +
+    scale_y_continuous(breaks=seq(0,60,20))+
+    scale_fill_manual(values=emotion_col)+
+    theme_bw()+
+    theme_SN
+
 # Raincloud plot EMT RT
 
 # Only examine clean data
-             EMT_RT_Plot = subset(EMT_All,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+  EMT_RT_Plot = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
 
-           # Select correct responses
-             EMT_RT_Plot = subset(EMT_RT_Plot, Answer == 1)
+# Select correct responses
+  EMT_RT_Plot = subset(EMT_RT_Plot, Answer == 1)
 
-           # Create factor, define neutral as baseline
-           EMT_RT_Plot$emotion = factor(EMT_RT_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+# Create factor, define neutral as baseline
+  EMT_RT_Plot$emotion = factor(EMT_RT_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
 
-           # Set theme
-           raincloud_theme = theme(
-            text = element_text(size = 10, color = &quot;black&quot;),
-            axis.title.x = element_text(size = 16, margin = margin(t = 20, r = 0, b = 0, l = 0)),
-             axis.title.y = element_text(size = 16),
-             axis.text = element_text(size = 14, color = &quot;black&quot;),
-             axis.text.x = element_text(angle = 0, vjust = 0.5),
-             legend.title=element_text(size=16),
-             legend.text=element_text(size=16),
-             legend.position = &quot;right&quot;,
-             plot.title = element_text(lineheight=.8, face=&quot;bold&quot;, size = 16),
-             panel.border = element_blank(),
-             panel.grid.minor = element_blank(),
-             panel.grid.major = element_blank(),
-             axis.line.x = element_line(colour = &#39;black&#39;, size=0.5, linetype=&#39;solid&#39;),
-             axis.line.y = element_line(colour = &#39;black&#39;, size=0.5, linetype=&#39;solid&#39;))
-
-           # Calculate summary
-             lb = function(x) mean(x) - sd(x)
-             ub = function(x) mean(x) + sd(x)
-
-             sumld = ddply(EMT_RT_Plot , ~ emotion, summarise,
-                         mean = mean(RT_in_ms), median = median(RT_in_ms), lower = lb(RT_in_ms), upper = ub(RT_in_ms))
-
-           # Plot rainclouds
-            EMT_RT_rain = ggplot(data = EMT_RT_Plot, aes(y = RT_in_ms, x = emotion, fill = emotion))  +
-               geom_flat_violin(position = position_nudge(x = .2, y = 0), alpha = 1, color=&quot;black&quot;) +
-               ylab(&quot;Reaction time [ms]&quot;)+
-               scale_y_continuous(name=&quot;Reaction time [ms]&quot;, breaks=seq(0,6500,1000), limits=c(0,6500))+
-               xlab(&quot;&quot;)+
-               geom_point(aes(y = RT_in_ms, color = emotion), shape = 19,
-                          position = position_jitter(width = .15), size = .7, alpha = 1) +
-               geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = 0.3), size = 2.5) +
-               geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = 0.3), width = 0) +
-               expand_limits(x = 2.00) +
-               guides(fill = FALSE) +
-               guides(color = FALSE) +
-               coord_flip() + # flip or not?
-               scale_fill_manual(values=c(&quot;#276CB3&quot;,&quot;grey20&quot;,&quot;#FF5B4F&quot;)) +
-               scale_color_manual(values=c(&quot;#276CB3&quot;,&quot;#000000&quot;,&quot;#FF5B4F&quot;))+
-               theme_bw() +
-               raincloud_theme
-            
-    # Combine plots
-      combine_plots(EMT_Acc_bar, EMT_RT_rain,
-                               ncol = 2, nrow=1,
-                               labels = c(&quot;A&quot;, &quot;B&quot;),
-                               caption.color = &quot;black&quot;,
-                               caption.vjust = 0,
-                               caption.hjust = 1.3,
-                               caption.text = &quot;Figure XX: Accuracy and RT results of EMT task&quot;)   </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_plot-1.png" width="1152" /></p>
+# Calculate summary
+  lb = function(x) mean(x) - sd(x)
+  ub = function(x) mean(x) + sd(x)
+  
+  sumld = ddply(EMT_RT_Plot , ~ emotion, summarise,
+                mean = mean(RT_in_ms), median = median(RT_in_ms), lower = lb(RT_in_ms), upper = ub(RT_in_ms))
+  
+# Plot rainclouds
+  EMT_RT_rain =  ggplot(data = EMT_RT_Plot, aes(y = RT_in_ms, x = emotion, fill = emotion))  +
+    geom_flat_violin(position = position_nudge(x = .12, y = 0), alpha = 1, color=&quot;black&quot;) +
+    geom_point(aes(y = RT_in_ms, color = emotion), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1)  +
+    geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = .2), size = 2.5) +
+    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .2, y = 0), width = 0)+
+    scale_y_continuous(name=&quot;Reaction time [ms]&quot;, breaks=seq(0,6500,1000), limits=c(0,6500))+
+    xlab(&quot;&quot;)+
+    expand_limits(x = 2.00) +
+    guides(fill = FALSE) +
+    guides(color = FALSE) +
+    coord_flip() + # flip or not?
+    scale_fill_manual(values=emotion_col) +
+    scale_color_manual(values=emotion_col)+
+    theme_bw() +
+    theme_SN+
+    theme(panel.grid.major.y = element_blank())
+  
+# Combine plots
+  combine_plots(EMT_Acc_bar, EMT_RT_rain,
+                ncol = 2, nrow = 1,
+                labels = c(&quot;A&quot;, &quot;B&quot;))</code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_RT_plot-1.png" width="1056" /></p>
 <p><br></p>
-</div>
-<div id="reaction-time" class="section level5">
-<h5>3.3.1.2 Reaction time</h5>
 <hr />
 </div>
-<div id="assumption-checks-1" class="section level5 tabset tabset-pills">
-<h5>Assumption Checks</h5>
-<p><br></p>
-<div id="lmm_emt-normality-of-residuals" class="section level6">
-<h6>LMM_EMT: Normality of residuals</h6>
+<div id="model-specification" class="section level4 tabset tabset-pills">
+<h4><strong>Model specification</strong></h4>
+<!-- GLMM / LMM assumption checks -->
+<div id="glmm-random-effect-structure" class="section level5">
+<h5>GLMM: Random effect structure</h5>
+<pre class="r"><code># RT cleaning criteria
+  EMT_Acc = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+
+# Factor random effects 
+  EMT_Acc$ID = as.factor(EMT_Acc$ID)
+  EMT_Acc$Stim_Type = as.factor(EMT_Acc$Stim_Type)
+
+# Create factor, define neutral as baseline
+  EMT_Acc$emotion = factor(EMT_Acc$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+
+# Set treatment contrast
+  contrasts(EMT_Acc$emotion) = contr.treatment(3)
+
+# Add contrast columns
+  mm_mod_EMT_Acc =  model.matrix( ~ emotion, EMT_Acc) 
+
+# Attach to dataframe
+  EMT_Acc[,(ncol(EMT_Acc)+1):(ncol(EMT_Acc)+3)] = mm_mod_EMT_Acc
+  names(EMT_Acc)[(ncol(EMT_Acc)-2):ncol(EMT_Acc)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
+
+# Construct model             
+  mod_EMT_Acc.glmm1 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
+                            (1 + Hap_Neu + Ang_Neu ||ID) + 
+                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
+                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)         
+
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_EMT_Acc.glmm1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_EMT_Acc.glmm1),comp = &quot;Variance&quot;)
+
+# Likelihood ratio testing 
+
+# ID
+  mod_EMT_Acc.glmm2 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
+                            (1 |ID) + 
+                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
+                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)    
+
+# Calculate ANOVA
+  anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm2)
+
+
+# Stimulus type 
+  mod_EMT_Acc.glmm3 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
+                            (1  + Hap_Neu + Ang_Neu ||ID) + 
+                            (1 |Stim_Type),                   
+                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)    
+
+
+# Calculate ANOVAs
+  anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm3)
+
+
+# Final model
+  mod_EMT_Acc.glmm4 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + (1|ID)+(1 + Hap_Neu + Ang_Neu || Stim_Type),                   
+                            data = EMT_Acc,control=glmerControl(calc.derivs = FALSE), family = binomial)  </code></pre>
+<p>We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Hap_Neu</code>, <code>Ang_Neu</code>). Accordingly, we fitted single-trial data to the following model:</p>
+<p><code>Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | ID) + ,     (1 + Hap_Neu + Ang_Neu || Stim_Type)</code></p>
+<hr />
+</div>
+<div id="glmm-overdispersion" class="section level5">
+<h5>GLMM: Overdispersion</h5>
+<p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
+<pre class="r"><code># Assumption check: Appropriate estimation of variance
+  overdisp_fun(mod_EMT_Acc.glmm4)</code></pre>
+<pre><code>##   chisq   ratio     rdf       p 
+## 1036.50    0.72 1448.00    1.00</code></pre>
+<hr />
+</div>
+<div id="lmm-random-effect-structure" class="section level5">
+<h5>LMM: Random effect structure</h5>
 <pre class="r"><code># Correct responses
-            EMT_RT = subset(EMT_All, Answer == 1)
-        
-          # RT cleaning criteria
-            EMT_RT = subset(EMT_RT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-        
-          # Factor random effects 
-            EMT_RT$ID = as.factor(EMT_RT$ID)
-            EMT_RT$Stim_Type = as.factor(EMT_RT$Stim_Type)
-        
-          # Create factor, define neutral as baseline
-            EMT_RT$emotion = factor(EMT_RT$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
-        
-          # Set treatment contrast
-            contrasts(EMT_RT$emotion) = contr.treatment(3)
-            
-      # 1) Check properties of DV / residuals 
-  
-        # Visualize normality assumption of residuals (without log transform)
-          mod_RT_lmm_no_log = lm(RT_in_ms ~ emotion, data=EMT_RT)
-          res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
-          
-          par(mfrow=c(1,2))
-          
-          
-          qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-          norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-1.png" width="768" /></p>
-<pre class="r"><code>          par(mfrow=c(1,1))
-          
-        # Check which transformation of DV is suitable
-        
-        # Calculate box-cox plot
-          mod_RT_targ = lm(RT_in_ms ~ emotion, data=EMT_RT)
-          boxcox(mod_RT_targ)   </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-2.png" width="768" /></p>
-<pre class="r"><code>        # In that case: Decision to log transform!
-          
-        # Visualize normality assumption of residuals (with log transform)
-          mod_RT_lmm_log = lm(log(RT_in_ms) ~ emotion, data=EMT_RT)
-          res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
-          
-          par(mfrow=c(1,2))
-          qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
-          norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-3.png" width="768" /></p>
-<pre class="r"><code>          par(mfrow=c(1,1))            </code></pre>
-<hr />
-</div>
-<div id="lmm_emt-random-effect-structure" class="section level6">
-<h6>LMM_EMT: Random effect structure</h6>
-<pre class="r"><code>      # 3) Construct full model       
-                
-        # Add contrast columns
-          mm_c =  model.matrix( ~ emotion, EMT_RT) 
-        
-        # Attach to dataframe
-          EMT_RT[,(ncol(EMT_RT)+1):(ncol(EMT_RT)+3)] = mm_c
-          names(EMT_RT)[(ncol(EMT_RT)-2):ncol(EMT_RT)] =  c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
-        
-        # Build model 
-          mod_EMT_RT.lmer1 = lmer(log(RT_in_ms) ~ 
-                               Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                               (1 + Hap_Neu + Ang_Neu||ID) +
-                               (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                             data = EMT_RT,
-                             control=lmerControl(calc.derivs = FALSE))
-        
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_EMT_RT.lmer1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                          [,1]     [,2]    [,3]
-## Standard deviation     0.0859 0.000226 0.00017
-## Proportion of Variance 1.0000 0.000010 0.00000
-## Cumulative Proportion  1.0000 1.000000 1.00000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2] [,3]
-## Standard deviation     0.919 0.267    0
-## Proportion of Variance 0.922 0.078    0
-## Cumulative Proportion  0.922 1.000    1</code></pre>
-<pre class="r"><code>        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_EMT_RT.lmer1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance     
-##  Stim_Type   Ang_Neu     0.00000000586
-##  Stim_Type.1 Hap_Neu     0.00000000333
-##  Stim_Type.2 (Intercept) 0.00084987218
-##  ID          Ang_Neu     0.00822557019
-##  ID.1        Hap_Neu     0.00000000000
-##  ID.2        (Intercept) 0.09720416779
-##  Residual                0.11506785075</code></pre>
-<pre class="r"><code>        # Improved model
-          mod_EMT_RT.lmer2 = lmer(log(RT_in_ms) ~ 
-                                 Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                 (1 + Ang_Neu||ID) +
-                                 (0 + Ang_Neu||Stim_Type),
-                               data = EMT_RT,
-                               control=lmerControl(calc.derivs = FALSE))
-        
-        
-        # Re-check the model
-          summary(rePCA(mod_EMT_RT.lmer2))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                        [,1]
-## Standard deviation        0
-## Proportion of Variance  NaN
-## Cumulative Proportion   NaN
-## 
-## $ID
-## Importance of components:
-##                         [,1]   [,2]
-## Standard deviation     0.916 0.2679
-## Proportion of Variance 0.921 0.0787
-## Cumulative Proportion  0.921 1.0000</code></pre>
-<pre class="r"><code>          print(VarCorr(mod_EMT_RT.lmer2 ),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups    Name        Variance
-##  Stim_Type Ang_Neu     0.00000 
-##  ID        Ang_Neu     0.00832 
-##  ID.1      (Intercept) 0.09733 
-##  Residual              0.11587</code></pre>
-<pre class="r"><code>        # Likelihood ratio testing
-          
-          # ID
-            mod_EMT_RT.lmer3 = lmer(log(RT_in_ms) ~ 
-                                   Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                   (1 |ID) +
-                                   (0 + Ang_Neu||Stim_Type),
-                                 data = EMT_RT,
-                                 control=lmerControl(calc.derivs = FALSE))
-  
-          # Calculate ANOVA
-            anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer3)</code></pre>
-<pre><code>## Data: EMT_RT
-## Models:
-## mod_EMT_RT.lmer3: log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-## mod_EMT_RT.lmer3:     (1 | ID) + (0 + Ang_Neu || Stim_Type)
-## mod_EMT_RT.lmer2: log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-## mod_EMT_RT.lmer2:     (1 + Ang_Neu || ID) + (0 + Ang_Neu || Stim_Type)
-##                  Df AIC BIC logLik deviance Chisq Chi Df
-## mod_EMT_RT.lmer3  8 800 839   -392      784             
-## mod_EMT_RT.lmer2  9 798 843   -390      780  3.24      1
-##                  Pr(&gt;Chisq)  
-## mod_EMT_RT.lmer3             
-## mod_EMT_RT.lmer2      0.072 .
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code>          # Stim_Type 
-            mod_EMT_RT.lmer4 = lmer(log(RT_in_ms) ~ 
-                                      Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                      (1 + Ang_Neu|ID) +
-                                      (1|Stim_Type),
-                                    data = EMT_RT,
-                                    control=lmerControl(calc.derivs = FALSE))
-            
-          # Calculate ANOVA
-            anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer4)</code></pre>
-<pre><code>## Data: EMT_RT
-## Models:
-## mod_EMT_RT.lmer2: log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-## mod_EMT_RT.lmer2:     (1 + Ang_Neu || ID) + (0 + Ang_Neu || Stim_Type)
-## mod_EMT_RT.lmer4: log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-## mod_EMT_RT.lmer4:     (1 + Ang_Neu | ID) + (1 | Stim_Type)
-##                  Df AIC BIC logLik deviance Chisq Chi Df
-## mod_EMT_RT.lmer2  9 798 843   -390      780             
-## mod_EMT_RT.lmer4 10 800 849   -390      780  0.99      1
-##                  Pr(&gt;Chisq)
-## mod_EMT_RT.lmer2           
-## mod_EMT_RT.lmer4       0.32</code></pre>
-<pre class="r"><code>        # Final model
-          mod_EMT_RT.lmer5 = lmer(log(RT_in_ms) ~ 
-                                 Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                 (1 | ID)+
-                                 (1 | Stim_Type),
-                               data = EMT_RT,
-                               control=lmerControl(calc.derivs = FALSE))</code></pre>
-<hr />
-</div>
-<div id="lmm_emt-homoscedasticity" class="section level6">
-<h6>LMM_EMT: Homoscedasticity</h6>
-<pre class="r"><code># 4) Check homoscedasticity  
-          plot(fitted(mod_EMT_RT.lmer5), residuals(mod_EMT_RT.lmer5))
-          abline(0, 0)         </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_homosk-1.png" width="768" /></p>
-<hr />
-</div>
-</div>
-<div id="section-1" class="section level5">
-<h5></h5>
-<!-- EMT RT text -->
-<p>We built another LMM to test whether children were also faster to detect emotional compared to neutral faces. The final model included participant and stimulus as random intercepts. Children were significantly faster for happy compared to neutral faces (<span class="math inline">\(\hat{β}\)</span> = -0.06, <em>p</em> &lt;0.05), but not for angry compared to neutral faces (<span class="math inline">\(\hat{β}\)</span> = -0.05, <em>p</em> = 0.06; see <strong>Figure X B</strong>). None of the covariates reached significance (age: <span class="math inline">\(\hat{β}\)</span> = -0.09, <em>p</em> = 0.14; working memory: <span class="math inline">\(\hat{β}\)</span> = 0.08, <em>p</em> = 0.18).</p>
-<p><br></p>
-<pre class="r"><code>labels = c(&quot;Intercept&quot;,&quot;Happy vs Neutral&quot;, &quot;Angry vs Neutral&quot;, &quot;Age&quot;,&quot;Working memory&quot;)
+  EMT_RT = subset(EMT, Answer == 1)
 
-   tab_model(mod_EMT_Acc.glmm8, mod_EMT_RT.lmer5,
-                    pred.labels=labels,
-                    show.se=TRUE, show.stat=TRUE, show.ci = FALSE, string.se = &quot;SE&quot;,
-                    show.re.var=FALSE, show.obs=FALSE,
-                    emph.p = TRUE, dv.labels=c(&quot;Accuracy&quot;,&quot;Reaction time&quot;) , show.icc = FALSE)</code></pre>
+# RT cleaning criteria
+  EMT_RT = subset(EMT_RT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+
+# Factor random effects 
+  EMT_RT$ID = as.factor(EMT_RT$ID)
+  EMT_RT$Stim_Type = as.factor(EMT_RT$Stim_Type)
+
+# Create factor, define neutral as baseline
+  EMT_RT$emotion = factor(EMT_RT$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+
+# Set treatment contrast
+  contrasts(EMT_RT$emotion) = contr.treatment(3)
+
+# Add contrast columns
+  mm_c =  model.matrix( ~ emotion, EMT_RT) 
+
+# Attach to dataframe
+  EMT_RT[,(ncol(EMT_RT)+1):(ncol(EMT_RT)+3)] = mm_c
+  names(EMT_RT)[(ncol(EMT_RT)-2):ncol(EMT_RT)] =  c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
+
+# Build model 
+  mod_EMT_RT.lmer1 = lmer(log(RT_in_ms) ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Hap_Neu + Ang_Neu||ID) +
+                            (1 + Hap_Neu + Ang_Neu||Stim_Type),
+                          data = EMT_RT,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_EMT_RT.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_EMT_RT.lmer1),comp = &quot;Variance&quot;)
+
+
+# Improved model
+  mod_EMT_RT.lmer2 = lmer(log(RT_in_ms) ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Ang_Neu||ID) +
+                            (0 + Ang_Neu||Stim_Type),
+                          data = EMT_RT,
+                          control=lmerControl(calc.derivs = FALSE))
+
+
+# Re-check the model
+  summary(rePCA(mod_EMT_RT.lmer2))
+  print(VarCorr(mod_EMT_RT.lmer2 ),comp = &quot;Variance&quot;)
+
+## Likelihood ratio testing
+
+# ID
+  mod_EMT_RT.lmer3 = lmer(log(RT_in_ms) ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 |ID) +
+                            (0 + Ang_Neu||Stim_Type),
+                          data = EMT_RT,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer3)
+
+# Stim_Type 
+  mod_EMT_RT.lmer4 = lmer(log(RT_in_ms) ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Ang_Neu|ID) +
+                            (1|Stim_Type),
+                          data = EMT_RT,
+                          control=lmerControl(calc.derivs = FALSE))
+
+# Calculate ANOVA
+  anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer4)
+
+
+# Final model
+  mod_EMT_RT.lmer5 = lmer(log(RT_in_ms) ~ 
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 | ID)+
+                            (1 | Stim_Type),
+                          data = EMT_RT,
+                          control=lmerControl(calc.derivs = FALSE))</code></pre>
+<p>We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). Accordingly, we fitted single-trial data to the following model:</p>
+<p><code>log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + ,     (1 | ID) + (1 | Stim_Type)</code></p>
+<hr />
+</div>
+<div id="lmm-normality-of-residuals" class="section level5">
+<h5>LMM: Normality of residuals</h5>
+<p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
+<pre class="r"><code># Visualize normality assumption of residuals (without log transform)
+  mod_RT_lmm_no_log = lm(RT_in_ms ~ emotion, data=EMT_RT)
+  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+  
+  par(mfrow=c(1,2))
+  
+  
+  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
+  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-1.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))
+
+# Check which transformation of DV is suitable
+
+# Calculate box-cox plot
+  mod_RT_targ = lm(RT_in_ms ~ emotion, data=EMT_RT)
+  boxcox(mod_RT_targ)   </code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-2.png" width="576" /></p>
+<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
+  mod_RT_lmm_log = lm(log(RT_in_ms) ~ emotion, data=EMT_RT)
+  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+  
+  par(mfrow=c(1,2))
+  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
+  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-3.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))            </code></pre>
+<hr />
+</div>
+<div id="lmm-homoscedasticity" class="section level5">
+<h5>LMM: Homoscedasticity</h5>
+<pre class="r"><code># Check homoscedasticity  
+  plot(fitted(mod_EMT_RT.lmer5), residuals(mod_EMT_RT.lmer5))
+  abline(0, 0)         </code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_homosk-1.png" width="480" /></p>
+<hr />
+</div>
+</div>
+<div id="results" class="section level4">
+<h4><strong>Results</strong></h4>
+<!-- Print GLMM / LMM results -->
+<p>With regard to accuracy, we did not find a significant effect for happy vs neutral faces or angry vs neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.</p>
+<pre class="r"><code># Define labels      
+  labels = c(&quot;Intercept&quot;,&quot;Happy vs Neutral&quot;, &quot;Angry vs Neutral&quot;, &quot;Age&quot;,&quot;Working memory&quot;)
+
+# Show results
+  tab_model(mod_EMT_Acc.glmm4, mod_EMT_RT.lmer5,
+          pred.labels=labels, show.ci = FALSE,
+          show.se = TRUE, string.se = &quot;SE&quot;,
+          show.stat = TRUE, string.stat = &quot;t&quot;,
+          show.re.var = TRUE, show.obs = TRUE,
+          emph.p = TRUE, dv.labels=c(&quot;Accuracy&quot;,&quot;Reaction time&quot;) , show.icc = TRUE)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
@@ -1085,7 +751,7 @@ Odds Ratios
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
 p
@@ -1097,7 +763,7 @@ Estimates
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
 p
@@ -1108,13 +774,13 @@ p
 Intercept
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-2.58
+2.60
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.25
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-3.82
+3.81
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -1146,7 +812,7 @@ Happy vs Neutral
 0.81
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.420
+0.421
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 -0.06
@@ -1166,16 +832,16 @@ Happy vs Neutral
 Angry vs Neutral
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-2.25
+1.91
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.50
+0.45
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.61
+1.44
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.106
+0.151
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 -0.05
@@ -1195,16 +861,16 @@ Angry vs Neutral
 Age
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.28
+1.30
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.18
+0.19
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.33
+1.42
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.184
+0.155
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 -0.09
@@ -1224,16 +890,16 @@ Age
 Working memory
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.10
+1.09
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.18
+0.19
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.50
+0.47
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.614
+0.636
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.08
@@ -1248,6 +914,68 @@ Working memory
 0.171
 </td>
 </tr>
+<tr>
+<td colspan="9" style="font-weight:bold; text-align:left; padding-top:.8em;">
+Random Effects
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+σ<sup>2</sup>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+3.29
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.12
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+τ<sub>00</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+5.02 <sub>Stim_Type</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.00 <sub>Stim_Type</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+7.06 <sub>Stim_Type.1</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.10 <sub>ID</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.89 <sub>Stim_Type.2</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+ 
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.71 <sub>ID</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+ 
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+ICC
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.41
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.45
+</td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 N
@@ -1269,114 +997,155 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+1457
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+994
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-0.033 / 0.399
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.027 / 0.428
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.054 / 0.483
 </td>
 </tr>
 </table>
 <p><br></p>
-<p><em>Table XX: Results of GLMM and LMM for the analysis of accuracy and reaction time of the emotion matching task (EMT)</em></p>
+<p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
 <p><br></p>
 </div>
 </div>
-<div id="emk-and-connection-to-erps" class="section level4">
-<h4>3.3.2 EMK and connection to ERPs</h4>
-<pre class="r"><code>    # Load data
-      ERPs = readRDS(&quot;data/ERPs.rds&quot;, refhook = NULL)
-            
-    # Correlation  ERP P1/P3 with EMT 
-      
-      # Separate data set for neutral and angry and dalculate participant&#39;s P1/P3 mean
-      
-        # angry
-          ERPs_ang = subset(ERPs, Condition == 3)
-          ERPs_mean = data.frame(tapply(ERPs_ang$mean_ROI_P1,ERPs_ang$ID, mean))
-          names(ERPs_mean)[1] = &quot;P1_ang&quot;
-          ERPs_mean$P3_ang = tapply(ERPs_ang$mean_ROI_P3,ERPs_ang$ID, mean)
+<div id="emotion--and-empathy-related-measures-and-erp" class="section level3">
+<h3>Emotion- and empathy related measures and ERP</h3>
+<p>We also investigated the link between ERP amplitudes and emotion- and empathy-related measures. We calculated correlations between the amplitude differences of angry and neutral faces with composite scores parents’ and experimenter’s rating of children’s empathy and emotion knowledge.</p>
+<!-- Display correlation plots -->
+<pre class="r"><code>## Separate data set for neutral and angry and dalculate participant&#39;s P1/P3 mean
 
-        # neutral  
-          ERPs_neu = subset(ERPs, Condition == 2)
-          ERPs_mean$P1_neu = tapply(ERPs_neu$mean_ROI_P1,ERPs_neu$ID, mean)
-          ERPs_mean$P3_neu = tapply(ERPs_neu$mean_ROI_P3,ERPs_neu$ID, mean)
-  
-      # Calculate difference score for angry-neutral
-        ERPs_mean$P1_Diff_Ang_Neu = ERPs_mean$P1_ang-ERPs_mean$P1_neu
-        ERPs_mean$P3_Diff_Ang_Neu = ERPs_mean$P3_ang-ERPs_mean$P3_neu
-        
-      # Remove rows of de-selected participants 
-        ERPs_mean = ERPs_mean[-c(4),]  
-  
-      # Integrate questionnare data   
-        ERPs_mean$EMK_EK_P = QN_data$EMK_EK_P
-        ERPs_mean$EMK_EM_P = QN_data$EMK_EM_P
-        ERPs_mean$EMK_EK_Ch = QN_data$EMK_EK_Ch
-        ERPs_mean$EMK_EM_Ch = QN_data$EMK_EM_Ch
+# angry
+  ERPs_ang = subset(ERPs, Condition == 3)
+  ERPs_mean = data.frame(tapply(ERPs_ang$mean_ROI_P1,ERPs_ang$ID, mean))
+  names(ERPs_mean)[1] = &quot;P1_ang&quot;
+  ERPs_mean$P3_ang = tapply(ERPs_ang$mean_ROI_P3,ERPs_ang$ID, mean)
 
-      # Compute composite scores for parental/children measures of EMK
-        ERPs_mean$EMK_EK = ERPs_mean$EMK_EK_P + ERPs_mean$EMK_EK_Ch
-        ERPs_mean$EMK_EM = ERPs_mean$EMK_EM_Ch + ERPs_mean$EMK_EM_Ch
-        
-      # Select variables
-        ERPs_corr = subset(ERPs_mean,select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM,EMK_EK))
-  
-      # Compute single correlations
-        P1_EM = cor.test(ERPs_corr$P1_Diff_Ang_Neu,ERPs_corr$EMK_EM, method = c(&quot;pearson&quot;))
-        P3_EM = cor.test(ERPs_corr$P3_Diff_Ang_Neu,ERPs_corr$EMK_EM, method = c(&quot;pearson&quot;))
-        P1_EK = cor.test(ERPs_corr$P1_Diff_Ang_Neu,ERPs_corr$EMK_EK, method = c(&quot;pearson&quot;))
-        P3_EK = cor.test(ERPs_corr$P3_Diff_Ang_Neu,ERPs_corr$EMK_EK, method = c(&quot;pearson&quot;))
-        
-      # Correct for multiple comparisons 
-        # options: &quot;holm&quot;, &quot;hochberg&quot;, &quot;hommel&quot;, &quot;bonferroni&quot;, &quot;BH&quot;, &quot;BY&quot;, &quot;fdr&quot;, &quot;none&quot;
-        #p = c(P1_EM$p.value, P1_EK$p.value, P3_EM$p.value, P3_EK$p.value)
-        #p.adjust(p, method = &quot;fdr&quot;, n = length(p))</code></pre>
+# neutral  
+  ERPs_neu = subset(ERPs, Condition == 2)
+  ERPs_mean$P1_neu = tapply(ERPs_neu$mean_ROI_P1,ERPs_neu$ID, mean)
+  ERPs_mean$P3_neu = tapply(ERPs_neu$mean_ROI_P3,ERPs_neu$ID, mean)
+
+# Calculate difference score for angry-neutral
+  ERPs_mean$P1_Diff_Ang_Neu = ERPs_mean$P1_ang-ERPs_mean$P1_neu
+  ERPs_mean$P3_Diff_Ang_Neu = ERPs_mean$P3_ang-ERPs_mean$P3_neu
+
+# Remove rows of de-selected participants 
+  ERPs_mean = ERPs_mean[-c(4),]  
+
+# Integrate questionnare data   
+  ERPs_mean$EMK_EK_P = qn_data$EMK_EK_P
+  ERPs_mean$EMK_EM_P = qn_data$EMK_EM_P
+  ERPs_mean$EMK_EK_Ch = qn_data$EMK_EK_Ch
+  ERPs_mean$EMK_EM_Ch = qn_data$EMK_EM_Ch
+
+# Compute composite scores for parental/children measures of EMK
+  ERPs_mean$EMK_EK = ERPs_mean$EMK_EK_P + ERPs_mean$EMK_EK_Ch
+  ERPs_mean$EMK_EM = ERPs_mean$EMK_EM_Ch + ERPs_mean$EMK_EM_Ch
+
+# Select variables
+  ERPs_corr = subset(ERPs_mean,select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM,EMK_EK))
+
+## Plot correlations
+
+# Empathy and P1 difference  
+  EMT_ERP_scat1 = ggplot(ERPs_mean,aes(x = EMK_EM, y = P1_Diff_Ang_Neu))+
+    geom_point(shape = 21, size = 2, color =&quot;gray0&quot;, fill = &quot;gray0&quot;)+
+    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
+    labs(x = &quot;Empathy Score&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
+    theme_bw()
+
+# Empathy and P3 difference  
+  EMT_ERP_scat2 = ggplot(ERPs_mean,aes(x= EMK_EM, y = P3_Diff_Ang_Neu))+
+    geom_point(shape = 21, size = 2, color =&quot;gray27&quot;, fill =&quot;gray27&quot;)+
+    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
+    labs(x = &quot;Empathy Score&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
+    theme_bw()
+
+# EK and P1 difference  
+  EMT_ERP_scat3 = ggplot(ERPs_mean,aes(x = EMK_EK, y = P1_Diff_Ang_Neu))+
+    geom_point(shape = 21, size = 2, color =&quot;gray35&quot;, fill = &quot;gray35&quot;)+
+    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
+    labs(x = &quot;Emotion knowledge&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
+    theme_bw()
+
+# EK and P3 difference  
+  EMT_ERP_scat4 = ggplot(ERPs_mean,aes(x= EMK_EK, y = P3_Diff_Ang_Neu))+
+    geom_point(shape = 21, size = 2, color =&quot;gray52&quot;, fill =&quot;gray52&quot;)+
+    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
+    labs(x = &quot;Emotion knowledge&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
+    theme_bw()
+
+# Combine plots
+  # Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
+  ggdraw(xlim = c(0, 1), ylim = c(0,1)) +
+    draw_plot(EMT_ERP_scat1, 0, 0.5, 0.5, 0.5) +
+    draw_plot(EMT_ERP_scat2, 0.5, 0.5, 0.5, 0.5) +
+    draw_plot(EMT_ERP_scat3, 0, 0, 0.5, 0.5) +
+    draw_plot(EMT_ERP_scat4, 0.5, 0, 0.5, 0.5) </code></pre>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="672" /></p>
 <p><br></p>
-<p>We also investigated the link between ERP amplitudes and emotion- and empathy-related measures. We calculated correlations between the amplitude differences of angry and neutral faces with composite scores parents’ and experimenter’s rating of children’s empathy and emotion knowledge. Empathy scores correlated positively with P1 and P3 amplitude differences (P1-Empathy: <em>r</em>(29) = 0.23, <em>p</em> = 0.22; P3-Empathy: <em>r</em>(29) = 0.11, <em>p</em> = 0.56. Emotion knowledge correlated slightly negatively with P1 and P3 amplitude differences (<em>r</em>(29) = -0.08, <em>p</em> = 0.67; <em>r</em>(29) = -0.16, <em>p</em> = 0.4). However, none of these correlations reached significance (See <strong>Figure X A-D</strong>).</p>
-<pre class="r"><code>      # Plot correlation EMK_EM P1 / P3 
-
-        # Empathy and P1 difference  
-          EMT_ERP_scat1 = ggplot(ERPs_mean,aes(x = EMK_EM, y = P1_Diff_Ang_Neu))+
-            geom_point(shape = 21, size = 2, color =&quot;black&quot;, fill = &quot;#8DB852&quot;)+
-            geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-            labs(x = &quot;Compos. Empathy Score&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
-            theme_bw()
-    
-        # Empathy and P3 difference  
-          EMT_ERP_scat2 = ggplot(ERPs_mean,aes(x= EMK_EM, y = P3_Diff_Ang_Neu))+
-            geom_point(shape = 21, size = 2, color =&quot;black&quot;, fill =&quot;firebrick&quot;)+
-            geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-            labs(x = &quot;Compos. Empathy Score&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
-            theme_bw()
-          
-        # EK and P1 difference  
-          EMT_ERP_scat3 = ggplot(ERPs_mean,aes(x = EMK_EK, y = P1_Diff_Ang_Neu))+
-            geom_point(shape = 21, size = 2, color =&quot;black&quot;, fill = &quot;darkslategray&quot;)+
-            geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-            labs(x = &quot;Compos. EK Score&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
-            theme_bw()
-    
-        # EK and P3 difference  
-          EMT_ERP_scat4 = ggplot(ERPs_mean,aes(x= EMK_EK, y = P3_Diff_Ang_Neu))+
-            geom_point(shape = 21, size = 2, color =&quot;black&quot;, fill =&quot;#3371B8&quot;)+
-            geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-            labs(x = &quot;Compos. EK Score&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
-            theme_bw()
-
-          
-    # Combine plots
-      combine_plots(EMT_ERP_scat1, EMT_ERP_scat2, EMT_ERP_scat3, EMT_ERP_scat4,
-                               ncol = 4, nrow=1,
-                               labels = c(&quot;A&quot;, &quot;B&quot;,&quot;C&quot;,&quot;D&quot;),
-                               caption.color = &quot;black&quot;,
-                               caption.vjust = 0,
-                               caption.hjust = 0.5,
-                               caption.text = &quot;Figure XX: Correlations or ERP Amplitude-Difference with Empathy- and emotion-related measures&quot;)      </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="768" /></p>
-</div>
+<p>None of the correlations between ERP amplitude differences and emotion- and empathy-related measures reached significance.</p>
+<!-- Display correlation table -->
+<pre class="r"><code># Create correlation table
+  ERP_corr_table  = apaCorr(as.matrix(ERPs_corr), corrtype = &quot;spearman&quot;)
+  kable(ERP_corr_table , format = &quot;markdown&quot;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">1</th>
+<th align="left">2</th>
+<th align="left">3</th>
+<th align="left">4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1. P1 Diff Ang Neu</td>
+<td align="left">-</td>
+<td align="left"></td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">2. P3 Diff Ang Neu</td>
+<td align="left">0.5**</td>
+<td align="left">-</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">3. EMK EM</td>
+<td align="left">0.26</td>
+<td align="left">0.05</td>
+<td align="left">-</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">4. EMK EK</td>
+<td align="left">-0.11</td>
+<td align="left">-0.2</td>
+<td align="left">0.11</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<p><em>Note:</em> Correlation coefficients were computed with Spearman’s rank correlations. * p&lt; .05; ** p&lt; .01; *** p&lt; .001.</p>
 </div>
 
 
@@ -1430,7 +1199,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3,h4,h5",
+      selectors: "h1,h2,h3",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {
