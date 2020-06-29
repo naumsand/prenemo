@@ -359,10 +359,10 @@ div.tocify {
   </a>
 </li>
 <li>
-  <a href="R_Script_1_Method_Section.html">
+  <a href="R_Script_1_Sample_descr.html">
     <span class="glyphicon glyphicon-wrench"></span>
      
-    Method section
+    Sample description
   </a>
 </li>
 <li>
@@ -412,539 +412,322 @@ div.tocify {
 
 
 <!-- Set up workspace -->
-<!-- Load and prepare data sets -->
-<pre class="r"><code># Load and prepare datasets -----------------------------------------------
-
- # Load Questionnaire data -----------------------------------------------
-
-    # Load data based on script: R_Script_1_Method_Section
-      QN_data = readRDS(&quot;./data/QN_data.rds&quot;, refhook = NULL)
-    
- # Concatenate EEG task data ------------------------------------
-
-  # Get stimulus information 
-    Stim_data = readWorksheetFromFile(&quot;./data/Stim_Descr.xlsx&quot;, 
-                                      sheet = 1, 
-                                      startCol = 1,
-                                      endCol = 0) # 0 takes into account all columns starting from startCol 
-    
-  # List files of Accuracy/RT within a folder and get number of participants
-    files_RT = list.files(path = &quot;./data/EEG_task_data&quot;, pattern=&quot;*.txt&quot;)
-    nfiles = length(files_RT)
-    
-  # Combine single trials of participants into data frame 
-    for (i in 1:nfiles) {  
-      
-      # Get RT file per subject  
-       Indiv_RT = read.delim(file=paste(&quot;./data/EEG_task_data/&quot;,files_RT[i], sep = &quot;&quot;), header = TRUE, sep = &quot;\t&quot;, dec = &quot;.&quot;)
-      
-      # Add ID 
-       Indiv_RT$ID = substr(files_RT [i],1,2)
-      
-      if (i==1) {
-        EEG_behav_data = Indiv_RT # first round: create EEG_behav_data data frame
-      } else {
-        EEG_behav_data = rbind(EEG_behav_data,Indiv_RT) # add to EEG_behav_data data frame 
-      }
-      
-      remove(Indiv_RT) # Clear previous participant
-    }
-    
-    
-  # Add Congruency (novel vs repeated) 
-    
-    # (p=prime, c=congruent [will be recoded into repeated], ic=incongruent [will be recoded into novel])
-    # 1 - p_happy; 2 - p_neutral; 3 - p_angry
-    # 4 - c_happy / repeated happy ; 5 - c_neutral / repeated neutral; 6 - c_angry / repeated angry
-    # 7 - ic_happy / novel happy; 8 - ic_neutral / novel neutral; 9 - ic_angry / novel angry
-    
-    # 1 for repeated, 2 for novel 
-      EEG_behav_data$Cong[EEG_behav_data$Emo_Target == 4 |EEG_behav_data$Emo_Target == 5 |EEG_behav_data$Emo_Target == 6] = 1
-      EEG_behav_data$Cong[EEG_behav_data$Emo_Target == 7 |EEG_behav_data$Emo_Target == 8 |EEG_behav_data$Emo_Target == 9] = 2
-      
-    # Get columns of interest (and bring them in order)
-      EEG_behav_data = EEG_behav_data [c(&quot;ID&quot;, &quot;Trial&quot;, &quot;Block&quot;,&quot;Response&quot;,&quot;RTs&quot;,&quot;Cong&quot;,&quot;Emo_Prime&quot;,&quot;Emo_Target&quot;)]
-      names(EEG_behav_data)[names(EEG_behav_data) == &quot;Emo_Prime&quot;] = &quot;Prime&quot;
-      names(EEG_behav_data)[names(EEG_behav_data) == &quot;Emo_Target&quot;] = &quot;Target&quot;
-      
-      
-  # Change block numeration for all participants
-      
-    # Participant 1 and 2 have wrong coding for block numbers (show &quot;1&quot; for all 144 trials)
-      xtabs(~ID+Block,EEG_behav_data)
-      
-    # Create blocks
-      block_count = rep(1:3, times=32, each=48)
-      EEG_behav_data$Block = block_count 
-      
-    # Re-check - OK
-      xtabs(~ID+Block,EEG_behav_data)
-      
-    # Add trial numbers to match with EEG data        
-      trial_eeg_count = rep(1:144, times=32)
-      EEG_behav_data$Trial_EEG = trial_eeg_count
-      
-    # Check trials for EEG - OK 
-      xtabs(~ID+Trial_EEG,EEG_behav_data)
-      
-    # Check trials - OK
-      data.frame(xtabs(~ID+Trial,EEG_behav_data))
-      
-     # Check congruency - one trial more for novel condition compared to repeated condition 
-      xtabs(~ID+Cong,EEG_behav_data)
-      
-    # Check prime (48 happy, 49 neutral, 47 angry)
-      xtabs(~ID+Prime,EEG_behav_data)
-      
-    # Check target (all 24, except for c_angry: 23 and ic_angry: 25)
-      xtabs(~ID+Target,EEG_behav_data)     
-
-      
-  # Add age and working memory score 
-      
-      # Change QN_data ID format to ID format of EEG_behav_data
-        IDs = c(paste(&quot;0&quot;,c(1,2,4,6:9), sep=&quot;&quot;), paste(c(10:33), sep=&quot;&quot;))  
-        QN_data$ID = IDs  
-        
-        EEG_behav_data$Age = QN_data$age[match(EEG_behav_data$ID,QN_data$ID,nomatch = NA)]
-        EEG_behav_data$WM = QN_data$WM[match(EEG_behav_data$ID,QN_data$ID,nomatch = NA)]
-
-        
-  # Add randomization / stimulus info
-      
-      # Match with randomization
-        EEG_behav_data$EEG_Random = QN_data$random_EEG[match(EEG_behav_data$ID,QN_data$ID,nomatch = NA)]
-        
-      # Subset for randomization 1 and 2
-        EEG_behav_data_R1 = subset(EEG_behav_data, EEG_Random == &quot;R1&quot;)
-        EEG_behav_data_R2 = subset(EEG_behav_data, EEG_Random == &quot;R2&quot;)
-        
-      # Subset for the randomizations
-        Stim_Data_R1 = subset(Stim_data, Randomization == &quot;R1&quot;)
-        Stim_Data_R2 = subset(Stim_data, Randomization == &quot;R2&quot;)
-        
-      # Option &quot;times&quot; refers to number of participants for each randomization
-        stimuli_R1 = rep(Stim_Data_R1$Identity, times=16, each=1)
-        stimuli_R2 = rep(Stim_Data_R2$Identity, times=15, each=1)
-        
-        EEG_behav_data_R1$Stim_Type = stimuli_R1
-        EEG_behav_data_R2$Stim_Type = stimuli_R2
-      
-      # Bind R1 and R2 together to one column and add it to all subjects data
-        EEG_behav_data = rbind(EEG_behav_data_R1,EEG_behav_data_R2)
-        
-      # Check randomization - OK
-        xtabs(~ID+EEG_Random,EEG_behav_data)
-        
-      # Check stim_type - Slightly unbalanced: R2 have m10 three times, but f10 only one time
-        xtabs(~ID+Stim_Type,EEG_behav_data)
-        
-        
-  # Switch error and accuracy rate of participant 02 &amp; 04
-        # Two children (02,04) mixed up the button order (&lt; 25 % accuracy).
-        # We switched their error and accuracy rate. 
-        # Every 0 is going to become 1 and every 1 is going to become a 0.
-        
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;02&#39; &amp; EEG_behav_data$Response == 1] = 2
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;02&#39; &amp; EEG_behav_data$Response == 0] = 1
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;02&#39; &amp; EEG_behav_data$Response == 2] = 0
- 
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;04&#39; &amp; EEG_behav_data$Response == 1] = 2
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;04&#39; &amp; EEG_behav_data$Response == 0] = 1
-        EEG_behav_data$Response[EEG_behav_data$ID == &#39;04&#39; &amp; EEG_behav_data$Response == 2] = 0
-    
- # Data inspection &amp; cleaning ----------------------------------------------
-  
-  # Create variables which capture RT outliers (TRUE = outlier, FALSE = kept for further analyses)
-      EEG_behav_data$Exclude_smaller_250ms = FALSE
-      EEG_behav_data$Exclude_larger_7s = FALSE
-      EEG_behav_data$Exclude_MAD = FALSE
-        
-  # Clean RTs for values &lt; 250 ms
-      EEG_behav_data$Exclude_smaller_250ms[EEG_behav_data$RTs &lt;=250] = TRUE
-        
-  # Clean RTs for values &lt; 10 s
-      EEG_behav_data$Exclude_larger_7s[EEG_behav_data$RTs &gt;=7000] = TRUE
-    
-  # Calculate the median absolute deviation for each participant       
-    
-    # Define IDs
-     IDs = c(paste(&quot;0&quot;,c(2,4,6:9), sep=&quot;&quot;), paste(c(10:33), sep=&quot;&quot;))
-    
-      MAD_cutoff = 2.5
-      
-      for (m in 1:length(IDs)) {
-        
-        EEG_behav_data_outl_ind = subset (EEG_behav_data[EEG_behav_data$Exclude_smaller_250ms==FALSE|EEG_behav_data$Exclude_larger_7s==FALSE,], ID == IDs[m]) 
-        
-        # Identify outliers +/- 2.5 times the MAD 
-        
-        MAD_ind = mad(EEG_behav_data_outl_ind$RTs)
-        
-        EEG_behav_data[EEG_behav_data$ID==IDs[m],]$Exclude_MAD[EEG_behav_data_outl_ind$RTs &lt; MAD_ind-MAD_cutoff*MAD_ind | EEG_behav_data_outl_ind$RTs &gt; MAD_ind+MAD_cutoff*MAD_ind] = TRUE
-        
-      }
-      
-# De-select excluded participant
-    EEG_behav_data = EEG_behav_data[with(EEG_behav_data, !(EEG_behav_data$ID==&quot;05&quot;)), ] </code></pre>
-<div id="eeg-task-measures" class="section level3">
-<h3>3.1 EEG task measures</h3>
+<!-- Load data set-->
 <p><br></p>
-<div id="accuracy" class="section level4">
-<h4>3.1.1 Accuracy</h4>
-<hr />
-<div id="assumption-checks" class="section level5 tabset tabset-pills">
-<h5>Assumption checks</h5>
+<p>Our paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). We measured participants’ accuracy rates and reaction times.</p>
+<p>We excluded:</p>
+<ul>
+<li>Reaction times &lt; 250 ms or &gt; 7s</li>
+<li>Values &lt;/&gt; 2.5 of the median absolute deviation (MAD) based on the individual participant</li>
+<li>Incorrect answers</li>
+</ul>
+<p>We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all (general) linear mixed model analyses to control for cognitive abilities of the children as well as potential differences in age.</p>
+<p>The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.</p>
+<p><br></p>
+<div id="accuracy" class="section level3">
+<h3>Accuracy</h3>
+<p>We predicted that children would be less accurate when Face 1 and Face 2 were repeated (<code>GLMM 1</code>). We also expected the highest accuracy rates for pairings where happy faces were involved (<code>GLMM 2</code>).</p>
+<p><br></p>
+<div id="descriptive-statistics" class="section level5">
+<h5><strong>Descriptive statistics</strong></h5>
+<!-- Draw EEG task accuracy plots -->
+<pre class="r"><code># Select outlier-free data and correct trials
+  EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+  EEG_task_Acc_plot = subset(EEG_task_Acc_plot, Response == 1)
+
+## Plot separated by novel vs repeated trials  
+  
+# Recode variable
+  EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 1] = &quot;repeated&quot;
+  EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 2] = &quot;novel&quot;
+
+# Get accuracy for novel and repeated condition
+  acc_all = data.frame(xtabs(~ID+Cong, EEG_task_Acc_plot))
+
+# Recode to accuracy in percent (72 novel trials, 72 repeated trials)
+  acc_all$Freq = (acc_all$Freq/72)*100
+
+# Factor condition
+  acc_all$Cong = as.factor(acc_all$Cong)
+
+# Calculate descriptives on accuracy
+  stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Cong&quot;))
+
+# Plot accuracy
+  EEG_acc_plot=ggplot(stats_acc_all, aes(x=Cong, y=Freq, fill = Cong)) +
+    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
+    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
+    labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
+    scale_fill_manual(values=nov_col)+
+    coord_cartesian(ylim = c(0, 65)) +
+    scale_y_continuous(breaks=seq(0,60,20))+
+    theme_bw()+
+    theme_SN
+
+## Plot separated by emotions
+
+# Select outlier-free data and correct trials
+  EEG_task_Acc_targ_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+  EEG_task_Acc_targ_plot = subset(EEG_task_Acc_targ_plot,Response == 1)
+  
+# Recode variable
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==4] = &quot;happy&quot;
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==5] = &quot;neutral&quot;
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==6] = &quot;angry&quot;
+  
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==7] = &quot;happy&quot;
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==8] = &quot;neutral&quot;
+  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==9] = &quot;angry&quot;
+  
+  EEG_task_Acc_targ_plot$Target = factor(EEG_task_Acc_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+  
+# Get accuracy for novel and repeated condition
+  acc_emo = data.frame(xtabs(~ID+Target, EEG_task_Acc_targ_plot))
+  
+# Recode to accuracy in percent (48 happy trials, 49 neutral trials, 47 angry trials)
+  acc_emo$Freq[acc_emo$Target== &quot;happy&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;happy&quot;]/48)*100
+  acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;]/49)*100
+  acc_emo$Freq[acc_emo$Target== &quot;angry&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;angry&quot;]/47)*100
+  
+# Factor condition
+  acc_emo$Target = as.factor(acc_emo$Target)
+  
+# Calculate descriptives on accuracy
+  stats_acc_emo = summarySE(acc_emo, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Target&quot;))
+  
+# Plot accuracy
+  EEG_acc_emo_plot=ggplot(stats_acc_emo, aes(x=Target, y=Freq, fill = Target)) +
+    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
+    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
+    labs (x = &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
+    coord_cartesian(ylim = c(0, 65)) +
+    scale_y_continuous(breaks=seq(0,60,20))+
+    scale_fill_manual(values=emotion_col)+
+    theme_bw()+
+    theme_SN+
+    theme(axis.title.y=element_blank(),
+          axis.text.y=element_blank())
+
+# Display plots
+  fig_EEG_acc = cowplot::plot_grid(EEG_acc_plot, EEG_acc_emo_plot, ncol=2, rel_widths=c(1, 1))
+  fig_EEG_acc  </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_Acc_plots-1.png" width="672" /></p>
+</div>
+<div id="model-specification" class="section level5 tabset tabset-pills">
+<h5><strong>Model specification</strong></h5>
+<!-- GLMM model specifications -->
+<p><br></p>
 <div id="glmm-1-random-effect-structure" class="section level6">
 <h6>GLMM 1: Random effect structure</h6>
-<pre class="r"><code> # Select outlier-free data
-          EEG_behav_Acc_glmm = subset(EEG_behav_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+<pre class="r"><code># Select outlier-free data
+  EEG_task_Acc_glmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
 
-        # Factor random effects
-          EEG_behav_Acc_glmm$ID = as.factor(EEG_behav_Acc_glmm$ID)
-          EEG_behav_Acc_glmm$Stim_Type = as.factor(EEG_behav_Acc_glmm$Stim_Type)
+# Factor random effects
+  EEG_task_Acc_glmm$ID = as.factor(EEG_task_Acc_glmm$ID)
+  EEG_task_Acc_glmm$Stim_Type = as.factor(EEG_task_Acc_glmm$Stim_Type)
 
-        # Factor fixed factor congruency
-          EEG_behav_Acc_glmm$Cong[EEG_behav_Acc_glmm$Cong==1] = &quot;repeated&quot;
-          EEG_behav_Acc_glmm$Cong[EEG_behav_Acc_glmm$Cong==2] = &quot;novel&quot;
-          EEG_behav_Acc_glmm$Cong = factor(EEG_behav_Acc_glmm$Cong)
+# Factor fixed factor congruency
+  EEG_task_Acc_glmm$Cong[EEG_task_Acc_glmm$Cong==1] = &quot;repeated&quot;
+  EEG_task_Acc_glmm$Cong[EEG_task_Acc_glmm$Cong==2] = &quot;novel&quot;
+  EEG_task_Acc_glmm$Cong = factor(EEG_task_Acc_glmm$Cong)
 
-        # Set effect coding contrast
-          contrasts(EEG_behav_Acc_glmm$Cong) = contr.sum(2)/2
+# Set effect coding contrast
+  contrasts(EEG_task_Acc_glmm$Cong) = contr.sum(2)/2
 
-      # 1) Construct full model
+## Construct full model
 
-        # Create contrast matrix
-          mm_c =  model.matrix( ~ Cong, EEG_behav_Acc_glmm)
+# Create contrast matrix
+  mm_EEG_task_Acc =  model.matrix( ~ Cong, EEG_task_Acc_glmm)
 
-        # Attach to dataframe
-          EEG_behav_Acc_glmm = EEG_behav_Acc_glmm
-          EEG_behav_Acc_glmm[,(ncol(EEG_behav_Acc_glmm)+1):(ncol(EEG_behav_Acc_glmm)+2)] = mm_c
-          names(EEG_behav_Acc_glmm)[(ncol(EEG_behav_Acc_glmm)-1):ncol(EEG_behav_Acc_glmm)] = c(&quot;Grand Mean&quot;, &quot;Repeated_Novel&quot;)
+# Attach to dataframe
+  EEG_task_Acc_glmm = EEG_task_Acc_glmm
+  EEG_task_Acc_glmm[,(ncol(EEG_task_Acc_glmm)+1):(ncol(EEG_task_Acc_glmm)+2)] = mm_EEG_task_Acc
+  names(EEG_task_Acc_glmm)[(ncol(EEG_task_Acc_glmm)-1):ncol(EEG_task_Acc_glmm)] = c(&quot;Grand Mean&quot;, &quot;Nov_Rep&quot;)
 
-        # Build full model
-          mod_Acc_EEG.glmm1 = glmer(Response ~ Repeated_Novel + scale(Age) + scale(WM) +
-                                (1 + Repeated_Novel||ID) +
-                                (1 + Repeated_Novel||Stim_Type),
-                              data = EEG_behav_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+# Build full model
+  mod_Acc_EEG.glmm1 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                              (1 + Nov_Rep||ID) +
+                              (1 + Nov_Rep||Stim_Type),
+                              data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
                               family = binomial)
 
+## Check random effect structure (cut-off: 0.005 - 0.001)
 
-# 2) Check random effect structure
-        # PCA to check random effect structure (whether all random terms explain variance)
-        # if you do not take them out: over-parametrization of model (+ to control for type 1 error)
-        # cut-off: 0.005 - 0.001 (everything below does not explain enough variance )
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_Acc_EEG.glmm1))
 
-        # 1st: check how many zero variance terms you got in random effects
-          summary(rePCA(mod_Acc_EEG.glmm1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.300 0.123
-## Proportion of Variance 0.856 0.144
-## Cumulative Proportion  0.856 1.000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     1.647 1.090
-## Proportion of Variance 0.695 0.305
-## Cumulative Proportion  0.695 1.000</code></pre>
-<pre class="r"><code>        # 2nd: check which random terms explain the least variance
-          print(VarCorr(mod_Acc_EEG.glmm1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name           Variance
-##  Stim_Type   Repeated_Novel 0.0901  
-##  Stim_Type.1 (Intercept)    0.0152  
-##  ID          Repeated_Novel 2.7117  
-##  ID.1        (Intercept)    1.1880</code></pre>
-<pre class="r"><code>        # 3rd: Likelihood-ratio-testing
-          mod_Acc_EEG.glmm2 = glmer(Response ~ Repeated_Novel + scale(Age) + scale(WM) +
-                                  (1 | ID) +
-                                  (1 + Repeated_Novel||Stim_Type),
-                                data = EEG_behav_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                                family = binomial)
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_Acc_EEG.glmm1),comp = &quot;Variance&quot;)
 
-          mod_Acc_EEG.glmm3 = glmer(Response ~ Repeated_Novel + scale(Age) + scale(WM) +
-                                  (1 + Repeated_Novel||ID)  +
-                                  (1 |Stim_Type),
-                                data = EEG_behav_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                                family = binomial)
+## Likelihood-ratio-testing
+  
+# ID   
+  mod_Acc_EEG.glmm2 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                            (1 | ID) +
+                            (1 + Nov_Rep||Stim_Type),
+                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)
 
-        # Calculate ANOVAs
-          anov_glmm1_glmm2 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
-          anov_glmm1_glmm3 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
+# Stim Type
+  mod_Acc_EEG.glmm3 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                            (1 + Nov_Rep||ID)  +
+                            (1 |Stim_Type),
+                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)
+
+# Calculate ANOVAs
+  anov_glmm1_glmm2 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
+  anov_glmm1_glmm3 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
 
 
- # Final model
-          mod_Acc_EEG.glmm4 = glmer(Response ~ Repeated_Novel + scale(Age) + scale(WM) +
-                                      (1 + Repeated_Novel||ID) +
-                                      (1 |Stim_Type),
-                                    data = EEG_behav_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                                    family = binomial)</code></pre>
+# Final model
+  mod_Acc_EEG.glmm4 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                            (1 + Nov_Rep||ID) +
+                            (1 | Stim_Type),
+                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                          family = binomial)</code></pre>
+<p>According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotions (<code>Novel vs Repeated</code>). Consequently, we fitted single-trial data to the following model:</p>
+<p><code>Response ~ Nov_Rep + scale(Age) + scale(WM) + (1 + Nov_Rep || ,     ID) + (1 | Stim_Type)</code></p>
 <hr />
 </div>
 <div id="glmm-1-overdispersion" class="section level6">
 <h6>GLMM 1: Overdispersion</h6>
-<pre class="r"><code>    # 3) Assumption check: Appropriate estimation of variance (no overdispersion)
-
-          overdisp_fun(mod_Acc_EEG.glmm4)</code></pre>
+<p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
+<pre class="r"><code># Assumption check: Appropriate estimation of variance - check for overdispersion
+  overdisp_fun(mod_Acc_EEG.glmm4)</code></pre>
 <pre><code>##   chisq   ratio     rdf       p 
 ## 2725.06    0.87 3139.00    1.00</code></pre>
-<p>If the p-value is &lt; 0.05, the data are overdispersed. Here p &gt; 0.05. Hence overdispersion is not a problem.</p>
 <hr />
 </div>
 <div id="glmm-2-random-effect-structure" class="section level6">
 <h6>GLMM 2: Random effect structure</h6>
-<pre class="r"><code>      # Build model &amp; check assumptions -----------------------------------------
+<pre class="r"><code># Get outlier-free data
+  EEG_task_Acc_targ_glmm = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
 
-      # Get outlier-free data
-        EEG_behav_Acc_targ_glmm = subset(EEG_behav_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+# Rename variables
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==4] = &quot;hap&quot;
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==5] = &quot;neu&quot;
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==6] = &quot;ang&quot;
+  
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==7] = &quot;hap&quot;
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==8] = &quot;neu&quot;
+  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==9] = &quot;ang&quot;
 
-      # Rename variables
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==4] = &quot;hap&quot;
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==5] = &quot;neu&quot;
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==6] = &quot;ang&quot;
+# Create factor, get neutral as baseline
+  EEG_task_Acc_targ_glmm$Target = factor(EEG_task_Acc_targ_glmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
+  EEG_task_Acc_targ_glmm$ID = as.factor(EEG_task_Acc_targ_glmm$ID)
+  EEG_task_Acc_targ_glmm$Stim_Type = as.factor(EEG_task_Acc_targ_glmm$Stim_Type)
 
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==7] = &quot;hap&quot;
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==8] = &quot;neu&quot;
-        EEG_behav_Acc_targ_glmm$Target[EEG_behav_Acc_targ_glmm$Target==9] = &quot;ang&quot;
+# Set treatment contrast
+  contrasts(EEG_task_Acc_targ_glmm$Target) = contr.treatment(3)
 
-      # Create factor, get neutral as baseline
-        EEG_behav_Acc_targ_glmm$Target = factor(EEG_behav_Acc_targ_glmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
-        EEG_behav_Acc_targ_glmm$ID = as.factor(EEG_behav_Acc_targ_glmm$ID)
-        EEG_behav_Acc_targ_glmm$Stim_Type = as.factor(EEG_behav_Acc_targ_glmm$Stim_Type)
+## Construct full model
 
-      # Set treatment contrast
-        contrasts(EEG_behav_Acc_targ_glmm$Target) = contr.treatment(3)
+# Add contrast columns
+  mm_EEG_task_Acc_targ =  model.matrix( ~ Target, EEG_task_Acc_targ_glmm)
 
-    # 1) Construct full model
+# Attach to dataframe
+  EEG_task_Acc_targ_glmm[,(ncol(EEG_task_Acc_targ_glmm)+1):(ncol(EEG_task_Acc_targ_glmm)+3)] = mm_EEG_task_Acc_targ
+  names(EEG_task_Acc_targ_glmm)[(ncol(EEG_task_Acc_targ_glmm)-2):ncol(EEG_task_Acc_targ_glmm)] = c(&quot;Mean&quot;,&quot;Neu_Hap&quot;, &quot;Neu_Ang&quot;)
 
-      # Add contrast columns
-        mm_c =  model.matrix( ~ Target, EEG_behav_Acc_targ_glmm)
+# Build full model
+  mod_Acc_targ.glmm1 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
+                             + (1 + Neu_Hap + Neu_Ang||ID)
+                             + (1 + Neu_Hap + Neu_Ang||Stim_Type),
+                             data = EEG_task_Acc_targ_glmm,
+                             control=glmerControl(calc.derivs = FALSE),
+                             family = binomial)
 
-      # Attach to dataframe
-        EEG_behav_Acc_targ_glmm[,(ncol(EEG_behav_Acc_targ_glmm)+1):(ncol(EEG_behav_Acc_targ_glmm)+3)] = mm_c
-        names(EEG_behav_Acc_targ_glmm)[(ncol(EEG_behav_Acc_targ_glmm)-2):ncol(EEG_behav_Acc_targ_glmm)] = c(&quot;Mean&quot;,&quot;Neu_Hap&quot;, &quot;Neu_Ang&quot;)
+## Check random effect structure (cut-off: 0.005 - 0.001)
 
-      # Build full model
-        mod_Acc_targ.glmm1 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                              + (1 + Neu_Hap + Neu_Ang||ID)
-                              + (1 + Neu_Hap + Neu_Ang||Stim_Type),
-                              data = EEG_behav_Acc_targ_glmm,
-                              control=glmerControl(calc.derivs = FALSE),
-                              family = binomial)
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_Acc_targ.glmm1))
 
-    # 2) Check random effect structure
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_Acc_targ.glmm1),comp = &quot;Variance&quot;)
 
-      # PCA to check random effect structure (whether all random terms explain variance)
-      # if you do not take them out: over-parametrization of model (+ to control for type 1 error)
-      # cut-off: 0.005 - 0.001 (everything below does not explain enough variance )
 
-      # 1st: check how many zero variance terms you got in random effects
-        summary(rePCA(mod_Acc_targ.glmm1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]  [,2]    [,3]
-## Standard deviation     0.354 0.334 0.00114
-## Proportion of Variance 0.530 0.470 0.00001
-## Cumulative Proportion  0.530 1.000 1.00000
-## 
-## $ID
-## Importance of components:
-##                         [,1]   [,2]     [,3]
-## Standard deviation     1.057 0.1395 0.000656
-## Proportion of Variance 0.983 0.0171 0.000000
-## Cumulative Proportion  0.983 1.0000 1.000000</code></pre>
-<pre class="r"><code>      # 2nd: check which random terms explain the least variance
-        print(VarCorr(mod_Acc_targ.glmm1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance  
-##  Stim_Type   Neu_Ang     0.11129620
-##  Stim_Type.1 Neu_Hap     0.12546092
-##  Stim_Type.2 (Intercept) 0.00000130
-##  ID          Neu_Ang     0.01945516
-##  ID.1        Neu_Hap     0.00000043
-##  ID.2        (Intercept) 1.11740863</code></pre>
-<pre class="r"><code>      # Re-build model
-        mod_Acc_targ.glmm2 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                            + (1 + Neu_Ang||ID)
-                            + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                            data = EEG_behav_Acc_targ_glmm,
-                            control=glmerControl(calc.derivs = FALSE),
-                            family = binomial)
+# Re-build model
+  mod_Acc_targ.glmm2 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
+                           + (1 + Neu_Ang||ID)
+                           + (0 + Neu_Hap + Neu_Ang||Stim_Type),
+                           data = EEG_task_Acc_targ_glmm,
+                           control=glmerControl(calc.derivs = FALSE),
+                           family = binomial)
 
-      # Re-check random structure
-        summary(rePCA(mod_Acc_targ.glmm2))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.354 0.334
-## Proportion of Variance 0.530 0.470
-## Cumulative Proportion  0.530 1.000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     1.057 0.139
-## Proportion of Variance 0.983 0.017
-## Cumulative Proportion  0.983 1.000</code></pre>
-<pre class="r"><code>        print(VarCorr(mod_Acc_targ.glmm2),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance
-##  Stim_Type   Neu_Ang     0.1113  
-##  Stim_Type.1 Neu_Hap     0.1254  
-##  ID          Neu_Ang     0.0194  
-##  ID.1        (Intercept) 1.1170</code></pre>
-<pre class="r"><code>    # 3) Likelihood-ratio testing
 
-        mod_Acc_targ.glmm3 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                            + (1 |ID)
-                            + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                            data = EEG_behav_Acc_targ_glmm,
-                            control=glmerControl(calc.derivs = FALSE),
-                            family = binomial)
+# Re-check random structure
+  summary(rePCA(mod_Acc_targ.glmm2))
+  print(VarCorr(mod_Acc_targ.glmm2),comp = &quot;Variance&quot;)
 
-        mod_Acc_targ.glmm4 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                            + (1 + Neu_Ang||ID)
-                            + (1|Stim_Type),
-                            data = EEG_behav_Acc_targ_glmm,
-                            control=glmerControl(calc.derivs = FALSE),
-                            family = binomial)
 
-      # Calculate ANOVAs
-        anov_glmm2_glmm3 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm3)
-        anov_glmm2_glmm4 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm4)
+## Likelihood-ratio testing
 
-      # Final model
-        mod_Acc_targ.glmm5 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                              + (1 |ID)
-                              + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                              data = EEG_behav_Acc_targ_glmm,
-                              control=glmerControl(calc.derivs = FALSE),
-                              family = binomial)</code></pre>
+# ID
+  mod_Acc_targ.glmm3 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
+                             + (1 |ID)
+                             + (0 + Neu_Hap + Neu_Ang||Stim_Type),
+                             data = EEG_task_Acc_targ_glmm,
+                             control=glmerControl(calc.derivs = FALSE),
+                             family = binomial)
+# Stimulus type  
+  mod_Acc_targ.glmm4 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
+                             + (1 + Neu_Ang||ID)
+                             + (1|Stim_Type),
+                             data = EEG_task_Acc_targ_glmm,
+                             control=glmerControl(calc.derivs = FALSE),
+                             family = binomial)
+
+# Calculate ANOVAs
+  anov_glmm2_glmm3 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm3)
+  anov_glmm2_glmm4 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm4)
+
+
+# Final model
+  mod_Acc_targ.glmm5 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
+                             + (1 |ID)
+                             + (0 + Neu_Hap + Neu_Ang||Stim_Type),
+                             data = EEG_task_Acc_targ_glmm,
+                             control=glmerControl(calc.derivs = FALSE),
+                             family = binomial)</code></pre>
+<p>According to our hypothesis, the main fixed effects of interest was emotion of Face 2. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). The final model was comprised of:</p>
+<p><code>Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM) + (1 | ,     ID) + (0 + Neu_Hap + Neu_Ang || Stim_Type)</code></p>
 <hr />
 </div>
 <div id="glmm-2-overdispersion" class="section level6">
 <h6>GLMM 2: Overdispersion</h6>
-<pre class="r"><code>      # 3) Assumption check: Appropriate estimation of variance (no overdispersion)
-          overdisp_fun(mod_Acc_targ.glmm5)</code></pre>
+<p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
+<pre class="r"><code># Assumption check: Appropriate estimation of variance - check for overdispersion
+  overdisp_fun(mod_Acc_targ.glmm5)</code></pre>
 <pre><code>##  chisq  ratio    rdf      p 
 ## 2813.2    0.9 3138.0    1.0</code></pre>
-<p>If the p-value is &lt; 0.05, the data are overdispersed. Here p &gt; 0.05. Hence overdispersion is not a problem.</p>
 <hr />
 </div>
 </div>
-<div id="section" class="section level5">
-<h5></h5>
-<!-- Accuracy result text -->
-<p>We evaluated whether children were more accurate in detecting an emotion they had seen emotion before (See <strong>Figure X A</strong>). We constructed a GLMM with novelty as fixed effect factor and chronological age and working memory as covariates. The model with the best fit included an intercept for participant with a random slope for novelty and a random intercept for stimulus. Model results indicated that participants were equally accurate in trials with repeated in comparison to a novel emotion at “face 2” (<span class="math inline">\(\hat{β}\)</span> = &lt;0.001 , <em>p</em> = 1.00, <em>OR</em> = 1.00 [95% CI: -0.64, 2.64]).</p>
-<pre class="r"><code>      # Select outlier-free data and correct trials
-        EEG_behav_Acc_plot = subset(EEG_behav_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
-        EEG_behav_Acc_plot = subset(EEG_behav_Acc_plot,Response == 1)
+<div id="results" class="section level5">
+<h5><strong>Results</strong></h5>
+<!-- Print GLMM results -->
+<p>Model results indicated that participants were equally accurate in trials with repeated in comparison to a novel emotion at Face 2. Descriptively, participants showed the highest accuracy when happy faces were presented as Face 2. This difference, however, was not significant in comparison to neutral faces. Similarly, there was no significant difference between angry and neutral facial expressions.</p>
+<pre class="r"><code># Create labels
+  labels = c(&quot;Intercept&quot;,&quot;Novel vs Repeated&quot;,&quot;Age&quot;,&quot;Working memory&quot;, &quot;Neutral vs Happy&quot;, &quot;Neutral vs Angry&quot;)
 
-      # Recode variable
-        EEG_behav_Acc_plot$Cong[EEG_behav_Acc_plot$Cong==1] = &quot;repeated&quot;
-        EEG_behav_Acc_plot$Cong[EEG_behav_Acc_plot$Cong==2] = &quot;novel&quot;
-
-      # Get accuracy for novel and repeated condition
-        acc_all = data.frame(xtabs(~ID+Cong, EEG_behav_Acc_plot))
-
-      # Recode to accuracy in percent
-        # 72 novel trials, 72 repeated trials
-        acc_all$Freq = (acc_all$Freq/72)*100
-
-      # Factor condition
-        acc_all$Cong = as.factor(acc_all$Cong)
-
-      # Calculate descriptives on accuracy
-        stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Cong&quot;))
-
-      # Plot accuracy
-        EEG_acc_plot=ggplot(stats_acc_all, aes(x=Cong, y=Freq, fill = Cong)) +
-          geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=1,width=0.9) +
-          geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-          labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-          ylim(0, 80) +
-          scale_fill_manual(values=c(&quot;gray32&quot;,&quot;#6AC2FF&quot;))+
-          theme_minimal()+
-          theme(axis.title.y = element_text(size = 20, margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                text=element_text(size = 20, family = &quot;Segoe UI&quot;),
-                legend.position = &quot;none&quot;)
-
-
-# Plot separated by emotions
-
- # Select outlier-free data and correct trials
-        EEG_behav_Acc_targ_plot = subset(EEG_behav_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
-        EEG_behav_Acc_targ_plot = subset(EEG_behav_Acc_targ_plot,Response == 1)
-
-      # Recode variable
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==4] = &quot;happy&quot;
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==5] = &quot;neutral&quot;
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==6] = &quot;angry&quot;
-
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==7] = &quot;happy&quot;
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==8] = &quot;neutral&quot;
-        EEG_behav_Acc_targ_plot$Target[EEG_behav_Acc_targ_plot$Target==9] = &quot;angry&quot;
-
-        EEG_behav_Acc_targ_plot$Target = factor(EEG_behav_Acc_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
-
-      # Get accuracy for novel and repeated condition
-        acc_emo = data.frame(xtabs(~ID+Target, EEG_behav_Acc_targ_plot))
-
-      # Recode to accuracy in percent
-        # 48 happy trials, 49 neutral trials, 47 angry trials
-        acc_emo$Freq[acc_emo$Target== &quot;happy&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;happy&quot;]/48)*100
-        acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;]/49)*100
-        acc_emo$Freq[acc_emo$Target== &quot;angry&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;angry&quot;]/47)*100
-
-      # Factor condition
-        acc_emo$Target = as.factor(acc_emo$Target)
-
-      # Calculate descriptives on accuracy
-        stats_acc_emo = summarySE(acc_emo, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Target&quot;))
-
-      # Plot accuracy
-        EEG_acc_emo_plot=ggplot(stats_acc_emo, aes(x=Target, y=Freq, fill = Target)) +
-            geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=1,width=0.9) +
-            geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-            labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-            ylim(0, 65) +
-            scale_fill_manual(values= c(&quot;#276CB3&quot;,&quot;gray20&quot;,&quot;#FF5B4F&quot;))+
-            theme_minimal()+
-            theme(axis.title.y = element_text(size = 20, margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                  text=element_text(size = 20, family = &quot;Segoe UI&quot;),
-                  legend.position = &quot;none&quot;)
-
-
-# Combine plots
-      combine_plots(EEG_acc_plot, EEG_acc_emo_plot,
-                               ncol = 2, nrow=1,
-                               labels = c(&quot;A&quot;, &quot;B&quot;),
-                               caption.color = &quot;black&quot;,
-                               caption.vjust = 0,
-                               caption.hjust = 1.3,
-                               caption.text = &quot;Figure XX: Accuracy of EEG task &quot;)</code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_Acc_plots-1.png" width="768" /></p>
-<p><br></p>
-<p>We built an additional GLMM separated by emotions of “face 2” to identify potential matching differences elicited by emotion. We averaged across trials with repeated and novel emotions for “face 2”. As a fixed factor, we used emotion (happy vs neutral and angry vs neutral).The final model was comprised of a random intercept for participant and a random slope for emotion, with no random intercept for stimulus. Descriptively, participants showed the highest accuracy when happy faces were presented as “face 2” (See <strong>Figure X B</strong>). This difference, however, is not significant in comparison to neutral faces (<span class="math inline">\(\hat{β}\)</span> = 0.16 , <em>p</em> = 0.17, <em>OR</em> = 1.17 [95% CI: -0.76, 1.17]; see <strong>Table X</strong>). Similarly, there was no significant difference between angry and neutral faces presented as “face 2” (<span class="math inline">\(\hat{β}\)</span> = 0.03 , <em>p</em> = 0.82, <em>OR</em> = 1.03 [95% CI: -0.66, 1.03).</p>
-<p><br></p>
-<pre class="r"><code>       # Create labels
-          labels = c(&quot;Intercept&quot;,&quot;Novel vs Repeated&quot;,&quot;Age&quot;,&quot;Working memory&quot;, &quot;Neutral vs Happy&quot;, &quot;Neutral vs Angry&quot;)
-
-       # Create table
-          tab_model(mod_Acc_EEG.glmm4, mod_Acc_targ.glmm5,
-                    pred.labels=labels, show.ci = FALSE,
-                    show.se=TRUE, show.stat=TRUE, string.se = &quot;SE&quot;,
-                    show.re.var=FALSE, show.obs=FALSE,
-                    emph.p = TRUE, dv.labels=c(&quot;Accuracy&quot;,&quot;&quot;) , show.icc = FALSE)</code></pre>
+# Create table
+  tab_model(mod_Acc_EEG.glmm4, mod_Acc_targ.glmm5,
+          pred.labels=labels, show.ci = FALSE,
+          show.se = TRUE, string.se = &quot;SE&quot;,
+          show.stat = TRUE, string.stat = &quot;t&quot;,
+          show.re.var = TRUE, show.obs = TRUE,
+          emph.p = TRUE, dv.labels=c(&quot;Face 2 Novelty&quot;,&quot;Face 2 Emotion&quot;) , show.icc = TRUE)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
  
 </th>
 <th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-Accuracy
+Face 2 Novelty
 </th>
 <th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+Face 2 Emotion
 </th>
 </tr>
 <tr>
@@ -958,7 +741,7 @@ Odds Ratios
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
 p
@@ -970,7 +753,7 @@ Odds Ratios
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
 p
@@ -1139,6 +922,59 @@ Neutral vs Angry
 </td>
 </tr>
 <tr>
+<td colspan="9" style="font-weight:bold; text-align:left; padding-top:.8em;">
+Random Effects
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+σ<sup>2</sup>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+3.29
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+3.29
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+τ<sub>00</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.02 <sub>Stim_Type</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.11 <sub>Stim_Type</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+2.69 <sub>ID</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.13 <sub>Stim_Type.1</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+1.18 <sub>ID.1</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+1.11 <sub>ID</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+ICC
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.17
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.26
+</td>
+<tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 N
 </td>
@@ -1159,557 +995,387 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+3146
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+3146
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.015 / 0.186
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.015 / 0.270
 </td>
 </tr>
 </table>
 <p><br></p>
-<p><em>Table XX: Results of GLMMs for accuracy of the EEG task</em></p>
-<p><br></p>
+<p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
 <p><br></p>
 </div>
 </div>
-<div id="reaction-time" class="section level4">
-<h4>3.1.2 Reaction time</h4>
-<hr />
-<div id="assumption-checks-1" class="section level5 tabset tabset-pills">
-<h5>Assumption checks</h5>
-<div id="lmm1-normality-of-residuals" class="section level6">
-<h6>LMM1: Normality of residuals</h6>
-<pre class="r"><code>    # LMM X: Novel trials &gt; Repeated trials ------------------------------------------------------
-      # Build model &amp; check assumptions -------------------------------------------------------
-    
-        # Choose outlier-free data and correct answers    
-         EEG_behav_RT_lmm = subset(EEG_behav_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-         EEG_behav_RT_lmm = subset(EEG_behav_RT_lmm, Response == 1)
-         
-        # Recode for repeated and novel trials
-         EEG_behav_RT_lmm$Cong[EEG_behav_RT_lmm$Cong==1] = &quot;repeated&quot;
-         EEG_behav_RT_lmm$Cong[EEG_behav_RT_lmm$Cong==2] = &quot;novel&quot;
-         
-        # Prepare fixed factors 
-          EEG_behav_RT_lmm$Cong = factor(EEG_behav_RT_lmm$Cong)
-      
-        # Factor ID and stimulus type 
-          EEG_behav_RT_lmm$Stim_Type = factor(EEG_behav_RT_lmm$Stim_Type)
-          EEG_behav_RT_lmm$ID = factor(EEG_behav_RT_lmm$ID)
-    
-        # Define effect coding contrast for novelty 
-          contrasts(EEG_behav_RT_lmm$Cong) = contr.sum(2)/2
-          # interpretation: intercept = grand average across both conditions, slope = correct-incorrect
-    
-      # 1) Check properties of DV / residuals 
+<div id="reaction-time" class="section level3">
+<h3>Reaction time</h3>
+<p>We expected children to be slower when Face 1 and Face 2 showed the same emotion (<code>LMM1</code>). Additionally, we expected the lowest reaction times for pairings where happy faces were involved (<code>LMM2</code>). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).</p>
+<p><br></p>
+<div id="descriptives" class="section level4">
+<h4><strong>Descriptives</strong></h4>
+<!-- Draw EEG task RT plots -->
+<pre class="r"><code>## Plot separated by novel vs repeated trials 
+
+# Choose outlier-free and correct trial data
+  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+  EEG_task_RT_plot = subset(EEG_task_RT_plot, Response == 1)
+
+# Rename values for repeated and novel trials 
+  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==1] = &quot;repeated&quot;
+  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==2] = &quot;novel&quot;
   
-        # Visualize normality assumption of residuals (without log transform)
-          mod_RT_lmm_no_log = lm(RTs ~ Cong, data=EEG_behav_RT_lmm)
-          res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
-          
-          par(mfrow=c(1,2))
-          qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-          norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_res-1.png" width="768" /></p>
-<pre class="r"><code>          par(mfrow=c(1,1))
-          
-        # Check which transformation of DV is suitable
-        
-        # Calculate box-cox plot
-          mod_RT_targ = lm(RTs ~ Cong, data=EEG_behav_RT_lmm)
-          boxcox(mod_RT_targ)   </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_res-2.png" width="768" /></p>
-<pre class="r"><code>        # In that case: Decision to log transform!
-          
-        # Visualize normality assumption of residuals (with log transform)
-          mod_RT_lmm_log = lm(log(RTs) ~ Cong, data=EEG_behav_RT_lmm)
-          res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
-          
-          par(mfrow=c(1,2))
-          qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
-          norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_res-3.png" width="768" /></p>
-<pre class="r"><code>          par(mfrow=c(1,1))</code></pre>
-<hr />
-</div>
-<div id="lmm1-random-effect-structure" class="section level6">
-<h6>LMM1: Random effect structure</h6>
-<pre class="r"><code>    # 3) Construct full model 
+# Calculate summary
+  lb = function(x) mean(x) - sd(x)
+  ub = function(x) mean(x) + sd(x)
+  
+  sumld = ddply(EEG_task_RT_plot , ~ Cong, summarise,
+                mean = mean(RTs), median = median(RTs), lower = lb(RTs), upper = ub(RTs))
 
-      # First: add covariate structure
-        # Add contrast as numerical covariate via model matrix in order to enter contrasts individually in model 
-        # Use || to not calculate correlations between slopes / intercepts (not important to generalise) 
-    
-      # Create contrast matrix 
-        mm_c =  model.matrix( ~ Cong, EEG_behav_RT_lmm) 
-    
-      # Attach to dataframe
-        EEG_behav_RT_lmm[,(ncol(EEG_behav_RT_lmm)+1):(ncol(EEG_behav_RT_lmm)+2)] = mm_c
-        names(EEG_behav_RT_lmm)[(ncol(EEG_behav_RT_lmm)-1):ncol(EEG_behav_RT_lmm)] = c(&quot;Grand Mean&quot;, &quot;Repeated_Novel&quot;)            
-    
-    
-      # Build full model with new names                
-        mod_RT_EEG.lmer1 = lmer(log(RTs) ~ Repeated_Novel + scale(Age) + scale(WM) + 
-                                  (1 + Repeated_Novel ||ID) + 
-                                  (1 + Repeated_Novel ||Stim_Type),                   
-                                data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-      # PCA to check random effect structure (whether all random terms explain variance)
-        # If you do not remove them: over-parametrization of model (+ to control for type 1 error)
-        # Cut-off: 0.005 - 0.001 (everything below threshold does not explain enough variance )
-      
-      # 1st: check how many zero variance terms you got in random effects
-        summary(rePCA(mod_RT_EEG.lmer1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]     [,2]
-## Standard deviation     0.106 0.000193
-## Proportion of Variance 1.000 0.000000
-## Cumulative Proportion  1.000 1.000000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.552 0.194
-## Proportion of Variance 0.890 0.110
-## Cumulative Proportion  0.890 1.000</code></pre>
-<pre class="r"><code>      # 2nd: check which random terms explain the least variance
-        print(VarCorr(mod_RT_EEG.lmer1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name           Variance    
-##  Stim_Type   Repeated_Novel 0.0000000135
-##  Stim_Type.1 (Intercept)    0.0040530156
-##  ID          Repeated_Novel 0.0136555446
-##  ID.1        (Intercept)    0.1106881645
-##  Residual                   0.3628280265</code></pre>
-<pre class="r"><code>      # 3rd: remove all terms with zero variance --&gt; comprises final model 
-        mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                (1 + Repeated_Novel||ID) + 
-                                (1 + Repeated_Novel||Stim_Type),                   
-                              data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-      # 4th: re-check the model PCA / variance of random factors
-        summary(rePCA(mod_RT_EEG.lmer2))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]     [,2]
-## Standard deviation     0.106 0.000193
-## Proportion of Variance 1.000 0.000000
-## Cumulative Proportion  1.000 1.000000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.552 0.194
-## Proportion of Variance 0.890 0.110
-## Cumulative Proportion  0.890 1.000</code></pre>
-<pre class="r"><code>        print(VarCorr(mod_RT_EEG.lmer2),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name           Variance    
-##  Stim_Type   Repeated_Novel 0.0000000135
-##  Stim_Type.1 (Intercept)    0.0040530156
-##  ID          Repeated_Novel 0.0136555446
-##  ID.1        (Intercept)    0.1106881645
-##  Residual                   0.3628280265</code></pre>
-<pre class="r"><code>      # 5th: Do Likelihood Ratio Test (LRT) - to check whether all random slopes improve the model
-        
-        # LRT without random slope Repeated_Novel for ID
-          mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                    (1 + Repeated_Novel||ID) + 
-                                    (1 + Repeated_Novel||Stim_Type),                   
-                                  data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-      
-          mod_RT_EEG.lmer3 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                    (1 |ID) + 
-                                    (1 + Repeated_Novel||Stim_Type),                   
-                                  data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-      
-        # Calculate ANOVA
-          anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)</code></pre>
-<pre><code>## Data: EEG_behav_RT_lmm
-## Models:
-## mod_RT_EEG.lmer3: log(RTs) ~ Repeated_Novel + scale(Age) + scale(WM) + (1 | ID) + 
-## mod_RT_EEG.lmer3:     (1 + Repeated_Novel || Stim_Type)
-## mod_RT_EEG.lmer2: log(RTs) ~ Repeated_Novel + scale(Age) + scale(WM) + (1 + Repeated_Novel || 
-## mod_RT_EEG.lmer2:     ID) + (1 + Repeated_Novel || Stim_Type)
-##                  Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_RT_EEG.lmer3  8 4458 4504  -2221     4442             
-## mod_RT_EEG.lmer2  9 4454 4506  -2218     4436  6.17      1
-##                  Pr(&gt;Chisq)  
-## mod_RT_EEG.lmer3             
-## mod_RT_EEG.lmer2      0.013 *
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<pre class="r"><code>        # LRT without random slope Repeated_Novel for Stim_Type
-          mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                (1 + Repeated_Novel||ID) + 
-                                (1 + Repeated_Novel||Stim_Type),                   
-                              data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-      
-          mod_RT_EEG.lmer4 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                (1 + Repeated_Novel||ID) + 
-                                (1 |Stim_Type),                   
-                              data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-        # Calculate ANOVA
-          anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer4)</code></pre>
-<pre><code>## Data: EEG_behav_RT_lmm
-## Models:
-## mod_RT_EEG.lmer4: log(RTs) ~ Repeated_Novel + scale(Age) + scale(WM) + (1 + Repeated_Novel || 
-## mod_RT_EEG.lmer4:     ID) + (1 | Stim_Type)
-## mod_RT_EEG.lmer2: log(RTs) ~ Repeated_Novel + scale(Age) + scale(WM) + (1 + Repeated_Novel || 
-## mod_RT_EEG.lmer2:     ID) + (1 + Repeated_Novel || Stim_Type)
-##                  Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_RT_EEG.lmer4  8 4452 4498  -2218     4436             
-## mod_RT_EEG.lmer2  9 4454 4506  -2218     4436     0      1
-##                  Pr(&gt;Chisq)
-## mod_RT_EEG.lmer4           
-## mod_RT_EEG.lmer2          1</code></pre>
-<pre class="r"><code>      # 6th: remove random slopes which did not improve the model 
-          mod_RT_EEG.lmer5 = lmer(log(RTs) ~ Repeated_Novel  + scale(Age) + scale(WM) + 
-                                    (1 + Repeated_Novel||ID) + 
-                                    (1 |Stim_Type),                   
-                                  data = EEG_behav_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-      # 7th: re-check the model PCA / variance of random factors
-          summary(rePCA(mod_RT_EEG.lmer5))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]
-## Standard deviation     0.106
-## Proportion of Variance 1.000
-## Cumulative Proportion  1.000
-## 
-## $ID
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.552 0.194
-## Proportion of Variance 0.890 0.110
-## Cumulative Proportion  0.890 1.000</code></pre>
-<pre class="r"><code>          print(VarCorr(mod_RT_EEG.lmer5),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups    Name           Variance
-##  Stim_Type (Intercept)    0.00405 
-##  ID        Repeated_Novel 0.01365 
-##  ID.1      (Intercept)    0.11064 
-##  Residual                 0.36283</code></pre>
-<hr />
-</div>
-<div id="lmm1-homoscedasticity" class="section level6">
-<h6>LMM1: Homoscedasticity</h6>
-<pre class="r"><code>    # 4) Check homoscedasticity (Are residuals equally distributed along regression line?)
-      
-      plot(fitted(mod_RT_EEG.lmer5), residuals(mod_RT_EEG.lmer5))
-      abline(0, 0) </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_homosk-1.png" width="768" /></p>
-<hr />
-</div>
-<div id="lmm2-normality-of-residuals" class="section level6">
-<h6>LMM2: Normality of residuals</h6>
-<pre class="r"><code> # LMM X: Happy face 2 trials &lt; neutral or angry face 2 trials --------
-      # Build model &amp; check assumptions -----------------------------------------
+# Plot rainclouds
+  EEG_task_RT_rain = ggplot(data = EEG_task_RT_plot, aes(y = RTs, x = Cong, fill = Cong))  +
+    geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha = 1, color=&quot;black&quot;) +
+    geom_point(aes(y = RTs, color = Cong), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
+    geom_point(data = sumld, aes(x = Cong, y = mean), position = position_nudge(x = .22), size = 2.5) +
+    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
+    scale_y_continuous(name=&quot;Reaction time [ms]&quot;, breaks=seq(0,7000,2000), limits=c(250,7000))+
+    scale_x_discrete(name=&quot;&quot;)+
+    expand_limits(x = 5, y = 3) +
+    guides(fill = FALSE, color = FALSE) +
+    coord_flip() + # flip or not?
+    scale_fill_manual(values=nov_col) +
+    scale_color_manual(values=nov_col)+
+    theme_bw()+
+    theme_SN +
+    theme(panel.grid.major.y = element_blank())
 
-      # Choose outlier-free data and correct answers          
-        EEG_behav_RT_targ_lmm = subset(EEG_behav_data, Response == 1)
-        EEG_behav_RT_targ_lmm = subset(EEG_behav_RT_targ_lmm,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+## Plot separated by emotions
 
-      # Rename variables 
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==4] = &quot;hap&quot;
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==5] = &quot;neu&quot;
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==6] = &quot;ang&quot;
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==7] = &quot;hap&quot;
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==8] = &quot;neu&quot;
-        EEG_behav_RT_targ_lmm$Target[EEG_behav_RT_targ_lmm$Target==9] = &quot;ang&quot;
-        
-      # Create factors, get neutral as baseline
-        EEG_behav_RT_targ_lmm$Target = factor(EEG_behav_RT_targ_lmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
-        EEG_behav_RT_targ_lmm$ID = as.factor(EEG_behav_RT_targ_lmm$ID)
-        EEG_behav_RT_targ_lmm$Stim_Type = as.factor(EEG_behav_RT_targ_lmm$Stim_Type)
-        
-      # Create contrast for emotion
-        (contrasts(EEG_behav_RT_targ_lmm$Target) = contr.treatment(3, base = 1))
-    
-    # 1) Check properties of DV / residuals 
-        
-      # Visualize normality assumption of residuals (without log transform)
-        mod_RT_lmm_no_log = lm(RTs ~ Target, data=EEG_behav_RT_lmm)
-        res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
-        
-        par(mfrow=c(1,2))
-        qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-        norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_res-1.png" width="768" /></p>
-<pre class="r"><code>        par(mfrow=c(1,1))
+# Choose outlier-free and correct trial data
+  EEG_task_RT_targ_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+  EEG_task_RT_targ_plot = subset(EEG_task_RT_targ_plot, Response == 1)
 
-      # Check which transformation of DV is suitable 
-          
-        # Calculate box-cox plot
-          mod_resp = lm(RTs ~ Target, data=EEG_behav_RT_targ_lmm)
-          boxcox(mod_resp)   </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_res-2.png" width="768" /></p>
-<pre class="r"><code>        # In that case: Decision to log transform!
-          
-        # Visualize normality assumption of residuals (with log transform)
-          mod_RT_lmm_log = lm(log(RTs) ~ Target, data=EEG_behav_RT_targ_lmm)
-          res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
-          
-          par(mfrow=c(1,2))
-          qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log,main=&quot;QQplot after transformation&quot;)    
-          norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)</code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_res-3.png" width="768" /></p>
-<pre class="r"><code>          par(mfrow=c(1,1))</code></pre>
+# Choose EEG task data with correct trials
+  EEG_task_RT_targ_plot = subset(EEG_task_RT_targ_plot, Response == 1)
+
+# Rename variables
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==4] = &quot;happy&quot;
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==5] = &quot;neutral&quot;
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==6] = &quot;angry&quot;
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==7] = &quot;happy&quot;
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==8] = &quot;neutral&quot;
+  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==9] = &quot;angry&quot;
+
+# Set target as factor / Recode target
+  EEG_task_RT_targ_plot$Target = factor(EEG_task_RT_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+
+# Create summary  
+  sumld = ddply(EEG_task_RT_targ_plot , ~ Target, summarise,
+                mean = mean(RTs), median = median(RTs), lower = lb(RTs), upper = ub(RTs))
+
+# Plot rainclouds
+  EEG_RT_emo_rain = ggplot(data = EEG_task_RT_targ_plot, aes(y = RTs, x = Target, fill = Target))  +
+    geom_point(aes(y = RTs, color = Target), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
+    geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha= 1, color=&quot;black&quot;) +
+    geom_point(data = sumld, aes(x = Target, y = mean), position = position_nudge(x = .22), size = 2.5) +
+    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
+    scale_y_continuous(name=&quot;Reaction time [ms]&quot;,breaks=seq(0,7000,2000), limits=c(250,7000))+
+    xlab(&quot;&quot;)+
+    expand_limits(x = 5.00, y = 1) +
+    guides(fill = FALSE, color = FALSE) +
+    coord_flip() + # flip or not?
+    scale_fill_manual(values=emotion_col) +
+    scale_color_manual(values=emotion_col)+
+    theme_bw()+
+    theme_SN +
+    theme(panel.grid.major.y = element_blank())
+  
+# Display plots
+  fig_EEG_RT = cowplot::plot_grid(EEG_task_RT_rain, EEG_RT_emo_rain, ncol=2, rel_widths=c(1, 1))
+  fig_EEG_RT</code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_plots-1.png" width="1152" /></p>
+</div>
+<div id="model-specification-1" class="section level4 tabset tabset-pills">
+<h4><strong>Model specification</strong></h4>
+<!-- LMM assumption checks -->
+<div id="lmm1-random-effect-structure" class="section level5">
+<h5>LMM1: Random effect structure</h5>
+<pre class="r"><code># Choose outlier-free data and correct answers    
+  EEG_task_RT_lmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+  EEG_task_RT_lmm = subset(EEG_task_RT_lmm, Response == 1)
+
+# Recode for repeated and novel trials
+  EEG_task_RT_lmm$Cong[EEG_task_RT_lmm$Cong==1] = &quot;repeated&quot;
+  EEG_task_RT_lmm$Cong[EEG_task_RT_lmm$Cong==2] = &quot;novel&quot;
+
+# Prepare fixed factors 
+  EEG_task_RT_lmm$Cong = factor(EEG_task_RT_lmm$Cong)
+
+# Factor ID and stimulus type 
+  EEG_task_RT_lmm$Stim_Type = factor(EEG_task_RT_lmm$Stim_Type)
+  EEG_task_RT_lmm$ID = factor(EEG_task_RT_lmm$ID)
+
+# Define effect coding contrast for novelty 
+  contrasts(EEG_task_RT_lmm$Cong) = contr.sum(2)/2
+
+# Create contrast matrix 
+  mm_EEG_task_RT =  model.matrix( ~ Cong, EEG_task_RT_lmm) 
+
+# Attach to dataframe
+  EEG_task_RT_lmm[,(ncol(EEG_task_RT_lmm)+1):(ncol(EEG_task_RT_lmm)+2)] = mm_EEG_task_RT
+  names(EEG_task_RT_lmm)[(ncol(EEG_task_RT_lmm)-1):ncol(EEG_task_RT_lmm)] = c(&quot;Grand Mean&quot;, &quot;Nov_Rep&quot;)            
+
+# Build full model with new names                
+  mod_RT_EEG.lmer1 = lmer(log(RTs) ~ Nov_Rep + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep ||ID) + 
+                            (1 + Nov_Rep ||Stim_Type),                   
+                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+## PCA to check random effect structure (Cut-off: 0.005 - 0.001)
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_RT_EEG.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_RT_EEG.lmer1),comp = &quot;Variance&quot;)
+
+# 3rd: remove all terms with zero variance --&gt; comprises final model 
+  mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
+                          (1 + Nov_Rep||ID) + 
+                          (1 + Nov_Rep||Stim_Type),                   
+                        data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# 4th: re-check the model PCA / variance of random factors
+  summary(rePCA(mod_RT_EEG.lmer2))
+  print(VarCorr(mod_RT_EEG.lmer2),comp = &quot;Variance&quot;)
+
+# 5th: Do Likelihood Ratio Test (LRT) - to check whether all random slopes improve the model
+
+# LRT without random slope Nov_Rep for ID
+  mod_RT_EEG.lmer3 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
+                          (1 |ID) + 
+                          (1 + Nov_Rep||Stim_Type),                   
+                        data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# Calculate ANOVA
+  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)
+
+# LRT without random slope Nov_Rep for Stim_Type
+  mod_RT_EEG.lmer4 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep||ID) + 
+                            (1 |Stim_Type),                   
+                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+  
+# Calculate ANOVA
+  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer4)
+
+
+# 6th: remove random slopes which did not improve the model 
+  mod_RT_EEG.lmer5 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
+                            (1 + Nov_Rep||ID) + 
+                            (1 |Stim_Type),                   
+                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# 7th: re-check the model PCA / variance of random factors
+  summary(rePCA(mod_RT_EEG.lmer5))
+  print(VarCorr(mod_RT_EEG.lmer5),comp = &quot;Variance&quot;)</code></pre>
+<p>We applied a scaled sum contrast to compare reaction times for novel vs repeated facial expressions. The final model was built as:</p>
+<p><code>log(RTs) ~ Nov_Rep + scale(Age) + scale(WM) + ((1 | ID) + (0 + ,     Nov_Rep | ID)) + (1 | Stim_Type)</code></p>
+</div>
+<div id="lmm1-normality-of-residuals" class="section level5">
+<h5>LMM1: Normality of residuals</h5>
+<p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
+<pre class="r"><code>## Check properties of DV / residuals 
+
+# Visualize normality assumption of residuals (without log transform)
+  mod_RT_lmm_no_log = lm(RTs ~ Cong, data=EEG_task_RT_lmm)
+  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+
+  par(mfrow=c(1,2))
+  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
+  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-1.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))
+
+# Check which transformation of DV is suitable
+
+# Calculate box-cox plot
+  mod_RT_targ = lm(RTs ~ Cong, data=EEG_task_RT_lmm)
+  boxcox(mod_RT_targ)   </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-2.png" width="576" /></p>
+<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
+  mod_RT_lmm_log = lm(log(RTs) ~ Cong, data=EEG_task_RT_lmm)
+  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+  
+  par(mfrow=c(1,2))
+  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
+  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-3.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))</code></pre>
 <hr />
 </div>
-<div id="lmm2-random-effect-structure" class="section level6">
-<h6>LMM2: Random effect structure</h6>
-<pre class="r"><code>    # 3) Construct full model    
-    
-      # Add contrast columns
-        mm_c =  model.matrix( ~ Target, EEG_behav_RT_targ_lmm) 
-      
-      # Attach to dataframe
-        EEG_behav_RT_targ_lmm[,(ncol(EEG_behav_RT_targ_lmm)+1):(ncol(EEG_behav_RT_targ_lmm)+3)] = mm_c
-      
-        names(EEG_behav_RT_targ_lmm)[(ncol(EEG_behav_RT_targ_lmm)-2):ncol(EEG_behav_RT_targ_lmm)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;)    
-      
-      # Get model 
-        mod_RT_targ.lmer1 = lmer(log(RTs) ~ 
-                                Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                (1 + Hap_Neu + Ang_Neu||ID) +
-                                (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                                data = EEG_behav_RT_targ_lmm,
-                                control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-      # 1st: check how many zero variance terms you got in random effects
-        summary(rePCA(mod_RT_targ.lmer1))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]  [,2]     [,3]
-## Standard deviation     0.173 0.110 0.000563
-## Proportion of Variance 0.712 0.288 0.000010
-## Cumulative Proportion  0.712 1.000 1.000000
-## 
-## $ID
-## Importance of components:
-##                         [,1]   [,2]      [,3]
-## Standard deviation     0.552 0.0566 0.0000628
-## Proportion of Variance 0.990 0.0104 0.0000000
-## Cumulative Proportion  0.990 1.0000 1.0000000</code></pre>
-<pre class="r"><code>      # 2nd: check which random terms explain the least variance
-        print(VarCorr(mod_RT_targ.lmer1),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance     
-##  Stim_Type   Ang_Neu     0.00000011479
-##  Stim_Type.1 Hap_Neu     0.01079300451
-##  Stim_Type.2 (Intercept) 0.00437426230
-##  ID          Ang_Neu     0.00115791218
-##  ID.1        Hap_Neu     0.00000000142
-##  ID.2        (Intercept) 0.11019319118
-##  Residual                0.36163994091</code></pre>
-<pre class="r"><code>      # 3rd: remove all terms with zero variance --&gt; comprises final model
-        mod_RT_targ.lmer2 = lmer(log(RTs) ~ 
-                                Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                                (1 |ID) +
-                                (0 + Hap_Neu + Ang_Neu||Stim_Type),
-                              data = EEG_behav_RT_targ_lmm,
-                              control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-        
-      # 4th: re-check the model PCA / variance of random factors
-        summary(rePCA(mod_RT_targ.lmer2))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]  [,2]
-## Standard deviation     0.183 0.127
-## Proportion of Variance 0.673 0.327
-## Cumulative Proportion  0.673 1.000
-## 
-## $ID
-## Importance of components:
-##                         [,1]
-## Standard deviation     0.551
-## Proportion of Variance 1.000
-## Cumulative Proportion  1.000</code></pre>
-<pre class="r"><code>        print(VarCorr(mod_RT_targ.lmer2),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups      Name        Variance
-##  Stim_Type   Ang_Neu     0.0059  
-##  Stim_Type.1 Hap_Neu     0.0121  
-##  ID          (Intercept) 0.1105  
-##  Residual                0.3636</code></pre>
-<pre class="r"><code>     # 5th: Likelihood-ratio-testing
-        mod_RT_targ.lmer2 = lmer(log(RTs) ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 |ID) +
-                              (0 + Hap_Neu + Ang_Neu||Stim_Type),
-                            data = EEG_behav_RT_targ_lmm,
-                            control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-        mod_RT_targ.lmer3 = lmer(log(RTs) ~ 
-                              Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                              (1 |ID) +
-                              (1 |Stim_Type),
-                            data = EEG_behav_RT_targ_lmm,
-                            control=lmerControl(calc.derivs = FALSE), REML = FALSE)
-    
-      # Calculate ANOVA  
-        anova(mod_RT_targ.lmer2,mod_RT_targ.lmer3)</code></pre>
-<pre><code>## Data: EEG_behav_RT_targ_lmm
-## Models:
-## mod_RT_targ.lmer3: log(RTs) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | 
-## mod_RT_targ.lmer3:     ID) + (1 | Stim_Type)
-## mod_RT_targ.lmer2: log(RTs) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | 
-## mod_RT_targ.lmer2:     ID) + (0 + Hap_Neu + Ang_Neu || Stim_Type)
-##                   Df  AIC  BIC logLik deviance Chisq Chi Df
-## mod_RT_targ.lmer3  8 4452 4498  -2218     4436             
-## mod_RT_targ.lmer2  9 4454 4506  -2218     4436     0      1
-##                   Pr(&gt;Chisq)
-## mod_RT_targ.lmer3           
-## mod_RT_targ.lmer2          1</code></pre>
-<pre class="r"><code>      # Re-check the model PCA / variance of random factors
-        summary(rePCA(mod_RT_targ.lmer3))</code></pre>
-<pre><code>## $Stim_Type
-## Importance of components:
-##                         [,1]
-## Standard deviation     0.115
-## Proportion of Variance 1.000
-## Cumulative Proportion  1.000
-## 
-## $ID
-## Importance of components:
-##                        [,1]
-## Standard deviation     0.55
-## Proportion of Variance 1.00
-## Cumulative Proportion  1.00</code></pre>
-<pre class="r"><code>        print(VarCorr(mod_RT_targ.lmer3),comp = &quot;Variance&quot;)</code></pre>
-<pre><code>##  Groups    Name        Variance
-##  Stim_Type (Intercept) 0.00479 
-##  ID        (Intercept) 0.11052 
-##  Residual              0.36484</code></pre>
+<div id="lmm1-homoscedasticity" class="section level5">
+<h5>LMM1: Homoscedasticity</h5>
+<p>Based on the figure, we assume homoscedasticity.</p>
+<pre class="r"><code># Check homoscedasticity
+  plot(fitted(mod_RT_EEG.lmer5), residuals(mod_RT_EEG.lmer5))
+  abline(0, 0) </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_homosk-1.png" width="480" /></p>
 <hr />
 </div>
-<div id="lmm2-homoscedasticity" class="section level6">
-<h6>LMM2: Homoscedasticity</h6>
-<pre class="r"><code>   # 4) Check homoscedasticity (equal disttribution of residulas along regression line)
-        plot(fitted(mod_RT_targ.lmer2), residuals(mod_RT_targ.lmer3))
-        abline(0, 0)    </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_homosk-1.png" width="768" /></p>
+<div id="lmm2-random-effect-structure" class="section level5">
+<h5>LMM2: Random effect structure</h5>
+<pre class="r"><code># Choose outlier-free data and correct answers          
+  EEG_task_RT_targ_lmm = subset(EEG_task_data, Response == 1)
+  EEG_task_RT_targ_lmm = subset(EEG_task_RT_targ_lmm,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+
+# Rename variables 
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==4] = &quot;hap&quot;
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==5] = &quot;neu&quot;
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==6] = &quot;ang&quot;
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==7] = &quot;hap&quot;
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==8] = &quot;neu&quot;
+  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==9] = &quot;ang&quot;
+
+# Create factors, define neutral as baseline
+  EEG_task_RT_targ_lmm$Target = factor(EEG_task_RT_targ_lmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
+  EEG_task_RT_targ_lmm$ID = as.factor(EEG_task_RT_targ_lmm$ID)
+  EEG_task_RT_targ_lmm$Stim_Type = as.factor(EEG_task_RT_targ_lmm$Stim_Type)
+
+# Create contrast for emotion
+  contrasts(EEG_task_RT_targ_lmm$Target) = contr.treatment(3, base = 1)
+
+# Add contrast columns
+  mm_EEG_task_RT_targ =  model.matrix( ~ Target, EEG_task_RT_targ_lmm) 
+
+# Attach to dataframe
+  EEG_task_RT_targ_lmm[,(ncol(EEG_task_RT_targ_lmm)+1):(ncol(EEG_task_RT_targ_lmm)+3)] = mm_EEG_task_RT_targ
+  names(EEG_task_RT_targ_lmm)[(ncol(EEG_task_RT_targ_lmm)-2):ncol(EEG_task_RT_targ_lmm)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;)    
+
+## Define model 
+  mod_RT_targ.lmer1 = lmer(log(RTs) ~ 
+                             Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                             (1 + Hap_Neu + Ang_Neu||ID) +
+                             (1 + Hap_Neu + Ang_Neu||Stim_Type),
+                           data = EEG_task_RT_targ_lmm,
+                           control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_RT_targ.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_RT_targ.lmer1),comp = &quot;Variance&quot;)
+
+# 3rd: remove all terms with zero variance --&gt; comprises final model
+  mod_RT_targ.lmer2 = lmer(log(RTs) ~ 
+                           Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                           (1 |ID) +
+                           (0 + Hap_Neu + Ang_Neu||Stim_Type),
+                         data = EEG_task_RT_targ_lmm,
+                         control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# 4th: re-check the model PCA / variance of random factors
+  summary(rePCA(mod_RT_targ.lmer2))
+  print(VarCorr(mod_RT_targ.lmer2),comp = &quot;Variance&quot;)
+
+# 5th: Likelihood-ratio-testing
+# Stim Type
+  mod_RT_targ.lmer3 = lmer(log(RTs) ~ 
+                           Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                           (1 |ID) +
+                           (1 |Stim_Type),
+                         data = EEG_task_RT_targ_lmm,
+                         control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+
+# Calculate ANOVA  
+  anova(mod_RT_targ.lmer2,mod_RT_targ.lmer3)
+
+
+# Re-check the model PCA / variance of random factors
+  summary(rePCA(mod_RT_targ.lmer3))
+  print(VarCorr(mod_RT_targ.lmer3),comp = &quot;Variance&quot;)</code></pre>
+<p>According to our hypothesis, the main fixed effects of interest was emotion of Face 2. we applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). The final model was comprised of:</p>
+<p><code>log(RTs) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | ,     ID) + (1 | Stim_Type)</code></p>
+<hr />
+</div>
+<div id="lmm2-normality-of-residuals" class="section level5">
+<h5>LMM2: Normality of residuals</h5>
+<p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
+<pre class="r"><code>## Check properties of DV / residuals 
+
+# Visualize normality assumption of residuals (without log transform)
+  mod_RT_lmm_no_log = lm(RTs ~ Target, data=EEG_task_RT_lmm)
+  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+  
+  par(mfrow=c(1,2))
+  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
+  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-1.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))
+
+# Check which transformation of DV is suitable 
+
+# Calculate box-cox plot
+  mod_resp = lm(RTs ~ Target, data=EEG_task_RT_targ_lmm)
+  boxcox(mod_resp)   </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-2.png" width="576" /></p>
+<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
+  mod_RT_lmm_log = lm(log(RTs) ~ Target, data=EEG_task_RT_targ_lmm)
+  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+  
+  par(mfrow=c(1,2))
+  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log,main=&quot;QQplot after transformation&quot;)    
+  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)</code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-3.png" width="576" /></p>
+<pre class="r"><code>  par(mfrow=c(1,1))</code></pre>
+<hr />
+</div>
+<div id="lmm2-homoscedasticity" class="section level5">
+<h5>LMM2: Homoscedasticity</h5>
+<p>Based on the figure, we assume homoscedasticity.</p>
+<pre class="r"><code># Check homoscedasticity
+  plot(fitted(mod_RT_targ.lmer2), residuals(mod_RT_targ.lmer3))
+  abline(0, 0)    </code></pre>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_homosk-1.png" width="480" /></p>
 <hr />
 </div>
 </div>
-</div>
-<div id="section-1" class="section level4">
-<h4></h4>
-<!-- RT result text -->
-<p>We tested whether children detected a match of two identical emotions at “face 2” faster than a mismatch. We only used correct answers within this model. We built an LMM with novelty as fixed effect factor and chronological age and working memory as covariates. The best fitted model included a random intercept for participant and random slope for novelty with no random intercept for stimulus. Contrary to our hypothesis, we did not find a significant main effect of novelty (<span class="math inline">\(\hat{β}\)</span> = 0.04, <em>p</em> = 0.29). Children seemed to be equally fast in detecting novel and repeated facial expression. None of the covariates reached significance (age: <span class="math inline">\(\hat{β}\)</span> = -0.05, <em>p</em> = 0.46; working memory: <span class="math inline">\(\hat{β}\)</span> = 0.09, <em>p</em> = 0.18; see <strong>Figure X A</strong> and <strong>Table XX</strong>).</p>
-<pre class="r"><code># PLOT 1
-
-  # Choose outlier-free and correct trial data
-        EEG_behav_RT_plot = subset(EEG_behav_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-        EEG_behav_RT_plot = subset(EEG_behav_RT_plot, Response == 1)
-      
-      # Rename values for repeated and novel trials 
-        EEG_behav_RT_plot$Cong[EEG_behav_RT_plot$Cong==1] = &quot;repeated&quot;
-        EEG_behav_RT_plot$Cong[EEG_behav_RT_plot$Cong==2] = &quot;novel&quot;
-      
-      # Draw violin plot
-       EEG_RT_plot = ggplot(EEG_behav_RT_plot, aes(y = RTs, x = Cong, color = Cong, fill = Cong)) + 
-          geom_violin(trim=FALSE, lwd = 0.5,adjust=1.5) +
-          geom_boxplot(width=0.13, lwd = 1, fill=&#39;white&#39;) +
-          theme_minimal() +
-          scale_color_manual(values=c(&quot;gray32&quot;,&quot;#276CB3&quot;))+
-          scale_fill_manual(values=c(&quot;gray87&quot;, &quot;#6AC2FF&quot;))+
-          theme(legend.position=&quot;none&quot;)+
-          xlab(&quot;&quot;)+
-          ylab(&quot;Reaction time [ms]&quot;)+
-          theme(axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                text=element_text(family = &quot;Arial&quot;, size = 20))
-       
-# PLOT 2
-       
-        # Choose outlier-free and correct trial data
-        EEG_behav_RT_targ_plot = subset(EEG_behav_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-        EEG_behav_RT_targ_plot = subset(EEG_behav_RT_targ_plot, Response == 1)        
-            
-      # Choose EEG task data with correct trials           
-        EEG_behav_RT_targ_plot = subset(EEG_behav_RT_targ_plot, Response == 1)
-              
-      # Rename variables 
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==4] = &quot;happy&quot;
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==5] = &quot;neutral&quot;
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==6] = &quot;angry&quot;
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==7] = &quot;happy&quot;
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==8] = &quot;neutral&quot;
-        EEG_behav_RT_targ_plot$Target[EEG_behav_RT_targ_plot$Target==9] = &quot;angry&quot;
-        
-      # Set target as factor / Recode target
-        EEG_behav_RT_targ_plot$Target = factor(EEG_behav_RT_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
-        
-      # Subset happy        
-        EEG_behav_RT_targ_plot_hap = subset(EEG_behav_RT_targ_plot, Target == &quot;happy&quot;)
-       
-      # Subset neutral  
-        EEG_behav_RT_targ_plot_neu = subset(EEG_behav_RT_targ_plot, Target == &quot;neutral&quot;)
-        
-      # Subset angry 
-        EEG_behav_RT_targ_plot_ang = subset(EEG_behav_RT_targ_plot, Target == &quot;angry&quot;)
-        
-      # Get mean reaction time for novel and repeated condition
-        RT_hap = data.frame(tapply(EEG_behav_RT_targ_plot_hap$RT,EEG_behav_RT_targ_plot_hap$ID,mean))
-        RT_hap$emo = &quot;happy&quot;
-        names(RT_hap)[1] = &quot;RT&quot;
-        
-        RT_ang = data.frame(tapply(EEG_behav_RT_targ_plot_ang$RT,EEG_behav_RT_targ_plot_ang$ID,mean))
-        RT_ang$emo = &quot;angry&quot;
-        names(RT_ang)[1] = &quot;RT&quot;
-        
-        RT_neu = data.frame(tapply(EEG_behav_RT_targ_plot_neu$RT,EEG_behav_RT_targ_plot_neu$ID,mean))
-        RT_neu$emo = &quot;neutral&quot;
-        names(RT_neu)[1] = &quot;RT&quot;
-
-      # Combine dataframes
-        RT_emo = rbind(RT_hap, RT_neu, RT_ang)
-
-      # Factor condition
-        RT_emo$emo = as.factor(RT_emo$emo)
-        
-      # Calculate descriptives on accuracy
-        stats_RT_emo = summarySE(RT_emo, measurevar=&quot;RT&quot;, groupvars=c(&quot;emo&quot;))
-        
-      # Plot accuracy
-        EEG_RT_emo_plot = ggplot(stats_RT_emo, aes(x=emo, y=RT, fill = emo)) + 
-          geom_bar(position=position_dodge(), stat=&quot;identity&quot;, colour=&quot;black&quot;, size=1,width=0.9) +
-          geom_errorbar(aes(ymin=RT-se, ymax=RT+se), size=1, width=0.2, position=position_dodge(.9)) +
-          labs (x= &quot;&quot;, y = &quot;Reaction time [ms]&quot;)+
-          scale_fill_manual(values= c(&quot;#FF5B4F&quot;,&quot;gray20&quot;,&quot;#276CB3&quot;))+
-          theme_minimal()+
-          theme(axis.title.y = element_text(size = 20, margin = margin(t = 0, r = 20, b = 0, l = 0)),
-                text=element_text(size = 20, family = &quot;Arial&quot;),
-                legend.position = &quot;none&quot;)
-        
-        
-# Combine plots
-      combine_plots(EEG_RT_plot, EEG_RT_emo_plot,
-                               ncol = 2, nrow=1,
-                               labels = c(&quot;A&quot;, &quot;B&quot;),
-                               caption.color = &quot;black&quot;,
-                               caption.vjust = 0,
-                               caption.hjust = 1.3,
-                               caption.text = &quot;Figure XX: RT results of EEG task&quot;)        </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_plots-1.png" width="768" /></p>
-<p><br></p>
-<p>We built an additional LMM to identify potential matching differences for different emotions for “face 2” (contrast: happy vs neutral, angry vs neutral). The model with the best fit included random intercepts for participant and stimulus. Trials in which the emotion happy was presented as “face 2” were significantly detected faster compared to neutral faces (<span class="math inline">\(\hat{β}\)</span> = -0.08, <em>p</em> &lt;0.01; see <strong>Figure X B</strong>). No difference between angry and neutral as “face 2” could be found (<span class="math inline">\(\hat{β}\)</span> = -0.03, <em>p</em> = 0.36). None of the covariates reached significance (age: <span class="math inline">\(\hat{β}\)</span> = -0.05, <em>p</em> = 0.46; working memory: <span class="math inline">\(\hat{β}\)</span> = 0.09, <em>p</em> = 0.17).</p>
-<pre class="r"><code>       # Create table
-          tab_model(mod_RT_EEG.lmer5, mod_RT_targ.lmer3,
-                    pred.labels=labels,
-                    show.se=TRUE, show.stat=TRUE, show.ci = FALSE, string.se = &quot;SE&quot;,
-                    show.re.var=FALSE, show.obs=FALSE,
-                    emph.p = TRUE, dv.labels=c(&quot;Reaction time&quot;,&quot;&quot;) , show.icc = FALSE)</code></pre>
+<div id="results-1" class="section level4">
+<h4><strong>Results</strong></h4>
+<!-- Print LMM results -->
+<p>Contrary to our hypothesis, we did not find a significant main effect of novelty. Children seemed to be equally fast in detecting novel and repeated facial expression. Trials in which the emotion happy was presented as Face 2 were detected significantly faster compared to neutral faces. No difference between angry and neutral as Face 2 could be found.</p>
+<pre class="r"><code># Create table
+  tab_model(mod_RT_EEG.lmer5, mod_RT_targ.lmer3,
+          pred.labels=labels,
+          string.est = &quot;b&quot;,
+          show.se=TRUE, string.se = &quot;SE&quot;,
+          show.stat=TRUE, string.stat = &quot;t&quot;,
+          show.ci = FALSE, 
+          show.re.var = TRUE, show.obs = TRUE,
+          emph.p = TRUE, dv.labels=c(&quot;Face 2 Novelty&quot;,&quot;Face 2 Emotion&quot;) , show.icc = TRUE)</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
  
 </th>
 <th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
-Reaction time
+Face 2 Novelty
 </th>
 <th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+Face 2 Emotion
 </th>
 </tr>
 <tr>
@@ -1717,25 +1383,25 @@ Reaction time
 Predictors
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
+b
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
 p
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
-Estimates
+b
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
 SE
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
-Statistic
+t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
 p
@@ -1752,7 +1418,7 @@ Intercept
 0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-107.62
+107.60
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 <strong>&lt;0.001
@@ -1904,6 +1570,59 @@ Neutral vs Angry
 </td>
 </tr>
 <tr>
+<td colspan="9" style="font-weight:bold; text-align:left; padding-top:.8em;">
+Random Effects
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+σ<sup>2</sup>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.36
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.36
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+τ<sub>00</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.00 <sub>Stim_Type</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.00 <sub>Stim_Type</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.01 <sub>ID</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.11 <sub>ID</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.11 <sub>ID.1</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+ 
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+ICC
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.24
+</td>
+<tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 N
 </td>
@@ -1924,19 +1643,158 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Observations
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+2361
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+2361
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.022 / 0.041
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.019 / 0.254
 </td>
 </tr>
 </table>
 <p><br></p>
-<p><em>Table XX: Results of LMMs for reaction times of the EEG task</em></p>
+<p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>b</em>: unstandardized coefficient; <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
+<p><br></p>
 </div>
+</div>
+<div id="session-info" class="section level3">
+<h3>Session info</h3>
+<!-- Provide session info  -->
+<pre class="r"><code># Get session info 
+  sessionInfo()</code></pre>
+<pre><code>## R version 3.6.2 (2019-12-12)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 16299)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
+## [3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
+## [5] LC_TIME=German_Germany.1252    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+##  [1] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
+##  [4] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
+##  [7] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
+## [10] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
+## [13] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
+## [16] lmerTest_3.1-2       lme4_1.1-23          Matrix_1.2-18       
+## [19] Hmisc_4.4-0          Formula_1.2-3        survival_3.1-8      
+## [22] lattice_0.20-38      ggstatsplot_0.4.0    ez_4.4-0            
+## [25] EnvStats_2.3.1       eeptools_1.2.2       ggplot2_3.3.0       
+## [28] dplyr_0.8.5          cowplot_1.0.0        table1_1.2          
+## [31] miceadds_3.9-14      mice_3.9.0           XLConnectJars_0.2-15
+## [34] XLConnect_1.0.1      kableExtra_1.1.0    
+## 
+## loaded via a namespace (and not attached):
+##   [1] estimability_1.3          coda_0.19-3              
+##   [3] acepack_1.4.1             knitr_1.28               
+##   [5] multcomp_1.4-13           data.table_1.12.8        
+##   [7] rpart_4.1-15              inline_0.3.15            
+##   [9] generics_0.0.2            callr_3.4.3              
+##  [11] TH.data_1.0-10            correlation_0.2.0        
+##  [13] lubridate_1.7.8           webshot_0.5.2            
+##  [15] xml2_1.3.1                httpuv_1.5.2             
+##  [17] StanHeaders_2.21.0-1      assertthat_0.2.1         
+##  [19] WRS2_1.0-0                xfun_0.13                
+##  [21] hms_0.5.3                 rJava_0.9-12             
+##  [23] evaluate_0.14             promises_1.1.0           
+##  [25] tidyBF_0.2.0              fansi_0.4.1              
+##  [27] dbplyr_1.4.3              readxl_1.3.1             
+##  [29] DBI_1.1.0                 htmlwidgets_1.5.1        
+##  [31] reshape_0.8.8             stats4_3.6.2             
+##  [33] paletteer_1.1.0           ellipsis_0.3.0           
+##  [35] rcompanion_2.3.25         backports_1.1.6          
+##  [37] insight_0.8.3             ggcorrplot_0.1.3         
+##  [39] libcoin_1.0-5             jmvcore_1.2.5            
+##  [41] vctrs_0.2.4               abind_1.4-5              
+##  [43] withr_2.2.0               metaBMA_0.6.2            
+##  [45] bdsmatrix_1.3-4           checkmate_2.0.0          
+##  [47] emmeans_1.4.6             vcd_1.4-7                
+##  [49] prettyunits_1.1.1         mnormt_1.5-6             
+##  [51] fastGHQuad_1.0            cluster_2.1.0            
+##  [53] crayon_1.3.4              pkgconfig_2.0.3          
+##  [55] nlme_3.1-147              statsExpressions_0.4.1   
+##  [57] palr_0.2.0                nnet_7.3-12              
+##  [59] pals_1.6                  rlang_0.4.5              
+##  [61] lifecycle_0.2.0           miniUI_0.1.1.1           
+##  [63] groupedstats_0.2.2        skimr_2.1.1              
+##  [65] LaplacesDemon_16.1.4      MatrixModels_0.4-1       
+##  [67] sandwich_2.5-1            EMT_1.1                  
+##  [69] modelr_0.1.6              dichromat_2.0-0          
+##  [71] cellranger_1.1.0          matrixStats_0.56.0       
+##  [73] broomExtra_4.0.0          lmtest_0.9-37            
+##  [75] loo_2.2.0                 mc2d_0.1-18              
+##  [77] carData_3.0-3             boot_1.3-23              
+##  [79] zoo_1.8-7                 reprex_0.3.0             
+##  [81] base64enc_0.1-3           processx_3.4.2           
+##  [83] png_0.1-7                 viridisLite_0.3.0        
+##  [85] rjson_0.2.20              oompaBase_3.2.9          
+##  [87] parameters_0.6.1          ggExtra_0.9              
+##  [89] multcompView_0.1-8        maptools_0.9-9           
+##  [91] coin_1.3-1                arm_1.10-1               
+##  [93] jpeg_0.1-8.1              ggeffects_0.14.3         
+##  [95] ggsignif_0.6.0            scales_1.1.0             
+##  [97] magrittr_1.5              compiler_3.6.2           
+##  [99] rstantools_2.0.0          bbmle_1.0.23.1           
+## [101] RColorBrewer_1.1-2        cli_2.0.2                
+## [103] pbapply_1.4-2             ps_1.3.2                 
+## [105] TMB_1.7.16                Brobdingnag_1.2-6        
+## [107] htmlTable_1.13.3          mgcv_1.8-31              
+## [109] tidyselect_1.0.0          stringi_1.4.6            
+## [111] highr_0.8                 mitools_2.4              
+## [113] yaml_2.2.1                latticeExtra_0.6-29      
+## [115] ggrepel_0.8.2             bridgesampling_1.0-0     
+## [117] grid_3.6.2                tools_3.6.2              
+## [119] parallel_3.6.2            rio_0.5.16               
+## [121] rstudioapi_0.11           foreign_0.8-72           
+## [123] gridExtra_2.3             ipmisc_2.0.0             
+## [125] pairwiseComparisons_0.3.0 farver_2.0.3             
+## [127] digest_0.6.23             shiny_1.4.0.2            
+## [129] nortest_1.0-4             jmv_1.2.5                
+## [131] Rcpp_1.0.3                car_3.0-7                
+## [133] broom_0.5.6               metafor_2.4-0            
+## [135] BayesFactor_0.9.12-4.2    performance_0.4.5        
+## [137] metaplus_0.7-11           later_1.0.0              
+## [139] httr_1.4.1                effectsize_0.3.0         
+## [141] sjstats_0.17.9            colorspace_1.4-1         
+## [143] fs_1.4.1                  rvest_0.3.5              
+## [145] splines_3.6.2             statmod_1.4.34           
+## [147] rematch2_2.1.1            expm_0.999-4             
+## [149] sp_1.4-1                  mapproj_1.2.7            
+## [151] jcolors_0.0.4             xtable_1.8-4             
+## [153] jsonlite_1.6.1            nloptr_1.2.2.1           
+## [155] rstan_2.19.3              zeallot_0.1.0            
+## [157] modeltools_0.2-23         scico_1.1.0              
+## [159] R6_2.4.1                  broom.mixed_0.2.5        
+## [161] pillar_1.4.3              htmltools_0.4.0          
+## [163] mime_0.9                  glue_1.4.0               
+## [165] fastmap_1.0.1             minqa_1.2.4              
+## [167] codetools_0.2-16          maps_3.3.0               
+## [169] pkgbuild_1.0.6            mvtnorm_1.1-0            
+## [171] numDeriv_2016.8-1.1       curl_4.3                 
+## [173] DescTools_0.99.34         gtools_3.8.2             
+## [175] logspline_2.1.15          zip_2.0.4                
+## [177] openxlsx_4.1.4            rmarkdown_2.1            
+## [179] repr_1.1.0                munsell_0.5.0            
+## [181] haven_2.2.0               gtable_0.3.0             
+## [183] bayestestR_0.6.0</code></pre>
 </div>
 
 

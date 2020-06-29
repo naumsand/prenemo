@@ -1,0 +1,107 @@
+---
+title: "Participant characteristics"
+output: 
+  html_document:
+    css: styles.css
+    code_folding: hide
+    toc: true
+    toc_float: true 
+    toc_depth: 3 
+    df_print: paged
+---
+
+<!-- Set up workspace -->
+
+```{r setup, include = FALSE, message = FALSE, warning = FALSE}
+
+# Set general settings for Markdown file 
+  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
+
+# Swipe environment
+  rm(list=ls())
+  
+# Load packages
+  library(miceadds)
+  library(table1)
+
+# Round to 2 digits   
+  options(digits=2)
+  
+```
+
+<!-- How to calculate Winkler index -->
+
+```{r include = FALSE, eval = FALSE}
+
+# Calculate Winkler index 
+
+    # To calculate the Winkler index, we awarded points for income, occupation and education level of each
+    # parent. Scores range from 1-5. We then combined scores for income, occupation and education level. 
+    # For double-earner families, the highest socioeconomic score was used. The maximum score is 15 points:
+  
+    for (h in 1:length(qn_data$ID)){
+      qn_data$wink_ind[h] = sum(qn_data$income[h],
+                            max(qn_data$occ_dad[h],qn_data$occ_mum[h]),
+                            max(qn_data$mum_ed[h],qn_data$dad_ed[h]))
+    }
+```
+
+### Demographics
+
+<!-- Load data -->
+
+```{r load_data, include = FALSE}
+
+# Load questionnaire data
+  load.Rdata(filename="./data/qn_data.Rdata", "qn_data")
+  
+```
+
+<!-- Create demographic table -->
+
+```{r table_descr, results = TRUE}
+    
+# Based on: https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html 
+      
+# Create labels for headings of the table 
+  labels = list(
+  variables=list(age = "Child age in years",
+                 sex = "Child sex",
+                 PPVT_Perc="PPVT (%ile rank)",
+                 CMM_Perc="CMM (%ile rank)",
+                 SRS = "SRS raw value",
+                 SCQ = "SCQ raw value",
+                 wink_ind = "Winkler Index"))
+    
+# Creates list in which order we want to display columns
+  strata <- c(list(Total=qn_data))
+    
+# Customize the contents using custom renderers
+  my.render.cont = function(x) {
+      with(stats.apply.rounding(stats.default(x), digits=3),
+           c("", "mean (SD)"=sprintf("%s (%s)", MEAN, SD)))
+    }
+    
+  my.render.cat = function(x) {
+      c("", sapply(stats.default(x),
+                   function(y) with(y, sprintf("%d (%0.0f %%)", FREQ, PCT))))
+    }
+    
+# Create table
+  table1(strata, labels, render.continuous=my.render.cont, render.categorical=my.render.cat)
+
+```
+
+<br>
+
+### Session info
+
+<!-- Provide session info  -->
+
+```{r session_info, results = TRUE}
+
+# Get session info 
+  sessionInfo()
+
+```
+
