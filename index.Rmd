@@ -70,7 +70,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>% 
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
   
@@ -90,7 +90,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -110,7 +110,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -129,7 +129,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -149,7 +149,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -169,7 +169,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -183,13 +183,13 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_Topo_Face2",
+                               sheet = "ERP_Traj_Face2",
                                startCol = 1,
                                endCol = 0)
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 
@@ -208,7 +208,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Create table
   kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 12,fixed_thead = T)
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
 

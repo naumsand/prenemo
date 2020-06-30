@@ -29,7 +29,8 @@ output:
                  message=FALSE,
                  warning=FALSE,
                  results = FALSE,
-  	             fig.align="center")
+  	             fig.align="center",
+  	             fig.width=6, fig.height=4)
   knitr::opts_knit$set(width=75)
   
 # Swipe environment
@@ -86,7 +87,7 @@ output:
   
 # Set figure color palettes
   emotion_col = c("#829dac","#1d4f6a","#032f47")
-  nov_col = c("#6b9c30","#2b3e13")
+  nov_col = c("#547460","#0A381C")
   
 ```
 
@@ -119,7 +120,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 
 <br>
 
-##### **Descriptive statistics** 
+#### **Descriptive statistics** 
 
 <!-- Draw EEG task accuracy plots -->
 
@@ -208,13 +209,13 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 
 ```
 
-##### **Model specification** {.tabset .tabset-pills}
+#### **Model specification** {.tabset .tabset-pills}
 
 <!-- GLMM model specifications -->
 
 <br>
 
-###### GLMM 1: Random effect structure 
+##### GLMM 1: Random effect structure 
 
 ```{r EEG_Acc_GLMM_res_1}
 
@@ -294,7 +295,7 @@ According to our hypothesis, the main fixed effects of interest was novelty of F
 
 ---
 
-###### GLMM 1: Overdispersion
+##### GLMM 1: Overdispersion
 
 If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, overdispersion is not a problem.
 
@@ -307,7 +308,7 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 
 ---
 
-###### GLMM 2: Random effect structure 
+##### GLMM 2: Random effect structure 
 
 ```{r EEG_Acc_GLMM_res_2}
 
@@ -408,7 +409,7 @@ According to our hypothesis, the main fixed effects of interest was emotion of F
 
 ---
 
-###### GLMM 2: Overdispersion
+##### GLMM 2: Overdispersion
 
 If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, overdispersion is not a problem.
 
@@ -420,13 +421,15 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 ```
 ---
 
-##### **Results**
+#### **Results**
 
 <!-- Print GLMM results -->
 
 Model results indicated that participants were equally accurate in trials with repeated in comparison to a novel emotion at Face 2. Descriptively, participants showed the highest accuracy when happy faces were presented as Face 2. This difference, however, was not significant in comparison to neutral faces. Similarly, there was no significant difference between angry and neutral facial expressions. 
 
-```{r EEG_Acc_GLMM_results, results = TRUE}
+<div align="center">
+
+```{r EEG_Acc_GLMM_results, results = 'asis'}
 
 # Create labels
   labels = c("Novel vs Repeated","Age","Working memory", "Neutral vs Happy", "Neutral vs Angry")
@@ -442,6 +445,8 @@ Model results indicated that participants were equally accurate in trials with r
     
 ```
 
+</div>
+
 <br>
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
@@ -456,7 +461,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 
 <!-- Draw EEG task RT plots -->
 
-```{r EEG_RT_plots, results = TRUE,  fig.width = 12, fig.height = 7}
+```{r EEG_RT_plots, results = TRUE}
 
 ## Plot separated by novel vs repeated trials 
 
@@ -480,10 +485,10 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
     geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha = 1, color="black") +
     geom_point(aes(y = RTs, color = Cong), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
     geom_point(data = sumld, aes(x = Cong, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
+    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22), width = 0)+
     scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,7000,2000), limits=c(250,7000))+
     scale_x_discrete(name="")+
-    expand_limits(x = 5, y = 3) +
+    expand_limits(x =1, y = 1) +
     guides(fill = FALSE, color = FALSE) +
     coord_flip() + # flip or not?
     scale_fill_manual(values=nov_col) +
@@ -521,10 +526,10 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
     geom_point(aes(y = RTs, color = Target), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
     geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha= 1, color="black") +
     geom_point(data = sumld, aes(x = Target, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
-    scale_y_continuous(name="Reaction time [ms]",breaks=seq(0,7000,2000), limits=c(250,7000))+
+    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22), width = 0)+
+    scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,7000,2000), limits=c(250,7000))+
     xlab("")+
-    expand_limits(x = 5.00, y = 1) +
+    expand_limits(x = 1.00, y = 1) +
     guides(fill = FALSE, color = FALSE) +
     coord_flip() + # flip or not?
     scale_fill_manual(values=emotion_col) +
@@ -538,6 +543,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
   fig_EEG_RT
 
 ```
+<br>
 
 #### **Model specification** {.tabset .tabset-pills}
 
@@ -820,6 +826,8 @@ Based on the figure, we assume homoscedasticity.
 
 Contrary to our hypothesis, we did not find a significant main effect of novelty. Children seemed to be equally fast in detecting novel and repeated facial expression. Trials in which the emotion happy was presented as Face 2 were detected significantly faster compared to neutral faces. No difference between angry and neutral as Face 2 could be found. 
 
+<div align="center">
+
 ```{r EEG_RT_LMM_results, results = TRUE}
 
 # Create table
@@ -833,6 +841,8 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
           show.re.var = TRUE, show.obs = TRUE,
           emph.p = TRUE, dv.labels=c("Face 2 Novelty","Face 2 Emotion") , show.icc = TRUE)
 ```
+
+</div>
 
 <br>
 

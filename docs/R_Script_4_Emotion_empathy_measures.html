@@ -267,7 +267,7 @@ $(document).ready(function () {
 <span class="st">    </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> RT_in_ms, <span class="dt">color =</span> emotion), <span class="dt">shape =</span> <span class="dv">19</span>, <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> .<span class="dv">1</span>), <span class="dt">size =</span> .<span class="dv">7</span>, <span class="dt">alpha =</span> <span class="dv">1</span>)  <span class="op">+</span>
 <span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">x =</span> emotion, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">2</span>), <span class="dt">size =</span> <span class="fl">2.5</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">2</span>, <span class="dt">y =</span> <span class="dv">0</span>), <span class="dt">width =</span> <span class="dv">0</span>)<span class="op">+</span>
-<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">name=</span><span class="st">&quot;Reaction time [ms]&quot;</span>, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">6500</span>,<span class="dv">1000</span>), <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">6500</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">name=</span><span class="st">&quot;Reaction time [ms]&quot;</span>, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">6500</span>,<span class="dv">2000</span>), <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">6500</span>))<span class="op">+</span>
 <span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)<span class="op">+</span>
 <span class="st">    </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="fl">2.00</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
@@ -283,7 +283,7 @@ $(document).ready(function () {
   <span class="kw">combine_plots</span>(EMT_Acc_bar, EMT_RT_rain,
                 <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>,
                 <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>))</code></pre></div>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_RT_plot-1.png" width="1056" style="display: block; margin: auto;" /></p>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_RT_plot-1.png" width="768" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <hr />
 </div>
@@ -501,6 +501,9 @@ $(document).ready(function () {
 <h4><strong>Results</strong></h4>
 <!-- Print GLMM / LMM results -->
 <p>With regard to accuracy, we did not find a significant effect for happy vs neutral faces or angry vs neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.</p>
+<div align="center">
+
+
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Define labels      </span>
   labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Intercept&quot;</span>,<span class="st">&quot;Happy vs Neutral&quot;</span>, <span class="st">&quot;Angry vs Neutral&quot;</span>, <span class="st">&quot;Age&quot;</span>,<span class="st">&quot;Working memory&quot;</span>)
 
@@ -801,6 +804,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
 </tr>
 </table>
+</div>
 <p><br></p>
 <p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
 </div>
@@ -879,10 +883,11 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat2, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat3, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="op">+</span>
 <span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat4, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) </code></pre></div>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="576" style="display: block; margin: auto;" /></p>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <p>None of the correlations between ERP amplitude differences and emotion- and empathy-related measures reached significance.</p>
 <!-- Display correlation table -->
+<div align="center">
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create correlation table</span>
   ERP_corr_table  =<span class="st"> </span><span class="kw">apaCorr</span>(<span class="kw">as.matrix</span>(ERPs_corr), <span class="dt">corrtype =</span> <span class="st">&quot;spearman&quot;</span>)
   <span class="kw">kable</span>(ERP_corr_table , <span class="dt">format =</span> <span class="st">&quot;markdown&quot;</span>)</code></pre></div>
@@ -927,6 +932,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </tr>
 </tbody>
 </table>
+</div>
 <p><em>Note:</em> Correlation coefficients were computed with Spearman’s rank correlations. * p&lt; .05; ** p&lt; .01; *** p&lt; .001.</p>
 </div>
 <div id="session-info" class="section level1">
@@ -950,20 +956,21 @@ attached base packages:
 [8] base     
 
 other attached packages:
- [1] knitr_1.28           gridGraphics_0.5-0   corrplot_0.84       
- [4] gvlma_1.0.0.3        eegUtils_0.5.0       akima_0.6-2         
- [7] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
-[10] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
-[13] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
-[16] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
-[19] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
-[22] lmerTest_3.1-2       lme4_1.1-23          Matrix_1.2-18       
-[25] Hmisc_4.4-0          Formula_1.2-3        survival_3.1-8      
-[28] lattice_0.20-38      ggstatsplot_0.4.0    ez_4.4-0            
-[31] EnvStats_2.3.1       eeptools_1.2.2       ggplot2_3.3.0       
-[34] dplyr_0.8.5          cowplot_1.0.0        table1_1.2          
-[37] miceadds_3.9-14      mice_3.9.0           rmdformats_0.3.7    
-[40] XLConnectJars_0.2-15 XLConnect_1.0.1      kableExtra_1.1.0    
+ [1] table1_1.2           knitr_1.28           gridGraphics_0.5-0  
+ [4] corrplot_0.84        gvlma_1.0.0.3        eegUtils_0.5.0      
+ [7] akima_0.6-2          forcats_0.5.0        stringr_1.4.0       
+[10] purrr_0.3.4          readr_1.3.1          tidyr_1.0.2         
+[13] tibble_3.0.1         tidyverse_1.3.0      sjlabelled_1.1.3    
+[16] sjmisc_2.8.4         sjPlot_2.8.3         Rmisc_1.5           
+[19] plyr_1.8.6           reshape2_1.4.4       psych_1.9.12.31     
+[22] MASS_7.3-51.5        lmerTest_3.1-2       lme4_1.1-23         
+[25] Matrix_1.2-18        Hmisc_4.4-0          Formula_1.2-3       
+[28] survival_3.1-8       lattice_0.20-38      ggstatsplot_0.4.0   
+[31] ez_4.4-0             EnvStats_2.3.1       eeptools_1.2.2      
+[34] ggplot2_3.3.0        dplyr_0.8.5          cowplot_1.0.0       
+[37] summarytools_0.9.6   miceadds_3.9-14      mice_3.9.0          
+[40] rmdformats_0.3.7     XLConnectJars_0.2-15 XLConnect_1.0.1     
+[43] kableExtra_1.1.0    
 
 loaded via a namespace (and not attached):
  [1] vcd_1.4-7            ps_1.3.2             lmtest_0.9-37       
@@ -973,25 +980,25 @@ loaded via a namespace (and not attached):
 [13] performance_0.4.5    nloptr_1.2.2.1       callr_3.4.3         
 [16] rjson_0.2.20         glue_1.4.0           loo_2.2.0           
 [19] rstan_2.19.3         parallel_3.6.2       processx_3.4.2      
-[22] shinydashboard_0.7.1 haven_2.2.0          tidyselect_1.0.0    
-[25] rio_0.5.16           zoo_1.8-7            mc2d_0.1-18         
-[28] xtable_1.8-4         MatrixModels_0.4-1   magrittr_1.5        
-[31] evaluate_0.14        cli_2.0.2            rstudioapi_0.11     
-[34] miniUI_0.1.1.1       sp_1.4-1             rpart_4.1-15        
-[37] maps_3.3.0           shiny_1.4.0.2        xfun_0.13           
-[40] parameters_0.6.1     groupedstats_0.2.2   inline_0.3.15       
-[43] pkgbuild_1.0.6       cluster_2.1.0        bridgesampling_1.0-0
-[46] WRS2_1.0-0           expm_0.999-4         Brobdingnag_1.2-6   
-[49] ggrepel_0.8.2        listenv_0.8.0        png_0.1-7           
-[52] reshape_0.8.8        future_1.17.0        zeallot_0.1.0       
-[55] withr_2.2.0          rcompanion_2.3.25    cellranger_1.1.0    
-[58] pracma_2.2.9         coda_0.19-3          pillar_1.4.3        
-[61] multcomp_1.4-13      fs_1.4.1             paletteer_1.1.0     
-[64] vctrs_0.2.4          ellipsis_0.3.0       generics_0.0.2      
-[67] nortest_1.0-4        tools_3.6.2          foreign_0.8-72      
-[70] munsell_0.5.0        emmeans_1.4.6        fastmap_1.0.1       
-[73] compiler_3.6.2       abind_1.4-5          httpuv_1.5.2        
- [ reached getOption(&quot;max.print&quot;) -- omitted 124 entries ]</code></pre>
+[22] shinydashboard_0.7.1 tcltk_3.6.2          haven_2.2.0         
+[25] tidyselect_1.0.0     rio_0.5.16           zoo_1.8-7           
+[28] mc2d_0.1-18          xtable_1.8-4         MatrixModels_0.4-1  
+[31] magrittr_1.5         evaluate_0.14        cli_2.0.2           
+[34] rstudioapi_0.11      miniUI_0.1.1.1       sp_1.4-1            
+[37] rpart_4.1-15         maps_3.3.0           shiny_1.4.0.2       
+[40] xfun_0.13            parameters_0.6.1     groupedstats_0.2.2  
+[43] inline_0.3.15        pkgbuild_1.0.6       cluster_2.1.0       
+[46] bridgesampling_1.0-0 WRS2_1.0-0           expm_0.999-4        
+[49] Brobdingnag_1.2-6    ggrepel_0.8.2        listenv_0.8.0       
+[52] png_0.1-7            reshape_0.8.8        future_1.17.0       
+[55] zeallot_0.1.0        withr_2.2.0          rcompanion_2.3.25   
+[58] cellranger_1.1.0     pracma_2.2.9         coda_0.19-3         
+[61] pillar_1.4.3         multcomp_1.4-13      fs_1.4.1            
+[64] paletteer_1.1.0      vctrs_0.2.4          ellipsis_0.3.0      
+[67] generics_0.0.2       nortest_1.0-4        tools_3.6.2         
+[70] foreign_0.8-72       munsell_0.5.0        emmeans_1.4.6       
+[73] fastmap_1.0.1        compiler_3.6.2       abind_1.4-5         
+ [ reached getOption(&quot;max.print&quot;) -- omitted 129 entries ]</code></pre>
 </div>
 
     </div>

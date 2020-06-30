@@ -29,7 +29,8 @@ output:
                  message=FALSE,
                  warning=FALSE,
                  results = FALSE,
-  	             fig.align="center")
+  	             fig.align="center",
+  	             fig.width = 7, fig.height = 5)
   knitr::opts_knit$set(width=75)
 
 # Swipe environment
@@ -162,7 +163,7 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
 
 <!-- Plot EMT accuracy & reaction time -->
 
-```{r EMT_acc_RT_plot, fig.width = 11, fig.height = 6}
+```{r EMT_acc_RT_plot, fig.width = 8, fig.height = 4}
 
 # Select RT inspected criteria
   EMT_Acc_Plot = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE) 
@@ -217,7 +218,7 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
     geom_point(aes(y = RT_in_ms, color = emotion), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1)  +
     geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = .2), size = 2.5) +
     geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .2, y = 0), width = 0)+
-    scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,6500,1000), limits=c(0,6500))+
+    scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,6500,2000), limits=c(0,6500))+
     xlab("")+
     expand_limits(x = 2.00) +
     guides(fill = FALSE) +
@@ -482,6 +483,8 @@ RTs were log-transformed (determined using the Box-Cox procedure) to meet the as
 
 With regard to accuracy, we did not find a significant effect for happy vs neutral faces or angry vs neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.
 
+<div align="center">
+
 ```{r EMT_result_table, results = TRUE}
  
 # Define labels      
@@ -497,6 +500,8 @@ With regard to accuracy, we did not find a significant effect for happy vs neutr
   
   
 ```
+
+</div>
 
 <br>
 
@@ -589,6 +594,8 @@ None of the correlations between ERP amplitude differences and emotion- and empa
 
 <!-- Display correlation table -->
 
+<div align="center">
+
 ```{r EMK_ERP_prep_corr, results = 'asis'}
 
 # Create correlation table
@@ -596,6 +603,8 @@ None of the correlations between ERP amplitude differences and emotion- and empa
   kable(ERP_corr_table , format = "markdown")
   
 ```
+
+</div>
 
 *Note:* Correlation coefficients were computed with Spearman's rank correlations. * p< .05; ** p< .01; *** p< .001.
 
