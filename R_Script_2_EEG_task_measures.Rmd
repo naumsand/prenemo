@@ -1,11 +1,17 @@
 ---
-title: "EEG task measures"
+title: "Matching task"
 output: 
-  html_document:
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: true
+    self_contained: no
+    number_sections: no
     code_folding: hide
-    toc: true
-    toc_float: true 
-    toc_depth: 4 
+    fig_caption: yes
 ---
 
 <!-- Set up workspace -->
@@ -13,7 +19,18 @@ output:
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 
 # Set general settings for Markdown file 
-  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
+  options(max.print="75")
+
+  knitr::opts_chunk$set(echo=TRUE,
+  	             #cache=TRUE,
+                 prompt=FALSE,
+                 tidy=TRUE,
+                 comment=NA,
+                 message=FALSE,
+                 warning=FALSE,
+                 results = FALSE,
+  	             fig.align="center")
+  knitr::opts_knit$set(width=75)
   
 # Swipe environment
   rm(list=ls())
@@ -82,9 +99,9 @@ output:
   
 ```
 
-<br>
+# Task description
 
-Our paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (`repeated`) or a different emotional facial expression (`novel`). We measured participants' accuracy rates and reaction times. 
+Our EEG paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (`repeated`) or a different emotional facial expression (`novel`). We measured participants' accuracy rates and reaction times. 
 
 We excluded: 
 
@@ -96,9 +113,7 @@ We calculated general linear mixed models (GLMM) for accuracy rates and linear m
 
 The random effects structure included random intercepts for participants `(1|ID)` and stimulus `(1|Stim_Type)`. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.
 
-<br>
-
-### Accuracy
+# Accuracy
 
 We predicted that children would be less accurate when Face 1 and Face 2 were repeated (`GLMM 1`). We also expected the highest accuracy rates for pairings where happy faces were involved (`GLMM 2`). 
 
@@ -414,10 +429,11 @@ Model results indicated that participants were equally accurate in trials with r
 ```{r EEG_Acc_GLMM_results, results = TRUE}
 
 # Create labels
-  labels = c("Intercept","Novel vs Repeated","Age","Working memory", "Neutral vs Happy", "Neutral vs Angry")
+  labels = c("Novel vs Repeated","Age","Working memory", "Neutral vs Happy", "Neutral vs Angry")
 
 # Create table
   tab_model(mod_Acc_EEG.glmm4, mod_Acc_targ.glmm5,
+          show.intercept = FALSE,
           pred.labels=labels, show.ci = FALSE,
           show.se = TRUE, string.se = "SE",
           show.stat = TRUE, string.stat = "t",
@@ -430,9 +446,7 @@ Model results indicated that participants were equally accurate in trials with r
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-<br>
-
-### Reaction time
+# Reaction time
 
 We expected children to be slower when Face 1 and Face 2 showed the same emotion (`LMM1`). Additionally, we expected the lowest reaction times for pairings where happy faces were involved (`LMM2`). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity). 
 
@@ -810,6 +824,7 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
 
 # Create table
   tab_model(mod_RT_EEG.lmer5, mod_RT_targ.lmer3,
+          show.intercept = FALSE,
           pred.labels=labels,
           string.est = "b",
           show.se=TRUE, string.se = "SE",
@@ -823,9 +838,7 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-<br>
-
-### Session info
+# Session info
 
 <!-- Provide session info  -->
 

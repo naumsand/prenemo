@@ -1,342 +1,130 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-
 
 
 
 <title>Emotion and empathy measures</title>
-
+<!-- Material Design fonts -->
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
-<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+<script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+<link href="site_libs/bootstrap_material-0.1/bootstrap-material-design.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap_material-0.1/ripples.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap_material-0.1/material.min.js"></script>
+<script src="site_libs/bootstrap_material-0.1/ripples.min.js"></script>
+<link href="site_libs/material-0.1/material.css" rel="stylesheet" />
+<script src="site_libs/material-0.1/material.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
-
-
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #ffffff; color: #1f1c1b; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #ffffff; color: #a0a0a0; border-right: 1px solid #a0a0a0; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #1f1c1b; background-color: #ffffff; }
+code > span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code > span.dt { color: #0057ae; } /* DataType */
+code > span.dv { color: #b08000; } /* DecVal */
+code > span.bn { color: #b08000; } /* BaseN */
+code > span.fl { color: #b08000; } /* Float */
+code > span.cn { color: #aa5500; } /* Constant */
+code > span.ch { color: #924c9d; } /* Char */
+code > span.sc { color: #3daee9; } /* SpecialChar */
+code > span.st { color: #bf0303; } /* String */
+code > span.vs { color: #bf0303; } /* VerbatimString */
+code > span.ss { color: #ff5500; } /* SpecialString */
+code > span.im { color: #ff5500; } /* Import */
+code > span.co { color: #898887; } /* Comment */
+code > span.do { color: #607880; } /* Documentation */
+code > span.an { color: #ca60ca; } /* Annotation */
+code > span.cv { color: #0095ff; } /* CommentVar */
+code > span.ot { color: #006e28; } /* Other */
+code > span.fu { color: #644a9b; } /* Function */
+code > span.va { color: #0057ae; } /* Variable */
+code > span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #1f1c1b; } /* Operator */
+code > span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code > span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code > span.pp { color: #006e28; } /* Preprocessor */
+code > span.at { color: #0057ae; } /* Attribute */
+code > span.re { color: #0057ae; } /* RegionMarker */
+code > span.in { color: #b08000; } /* Information */
+code > span.wa { color: #bf0303; } /* Warning */
+code > span.al { color: #bf0303; font-weight: bold; } /* Alert */
+code > span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code > span. { color: #1f1c1b; } /* Normal */
 </style>
 
+<link rel="stylesheet" href="web_style.css" type="text/css" />
 
-
-
-<style type = "text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
-img {
-  max-width:100%;
-}
-.tabbed-pane {
-  padding-top: 12px;
-}
-.html-widget {
-  margin-bottom: 20px;
-}
-button.code-folding-btn:focus {
-  outline: none;
-}
-summary {
-  display: list-item;
-}
-</style>
-
-
-<style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.dropdown-submenu {
-  position: relative;
-}
-.dropdown-submenu>.dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: -6px;
-  margin-left: -1px;
-  border-radius: 0 6px 6px 6px;
-}
-.dropdown-submenu:hover>.dropdown-menu {
-  display: block;
-}
-.dropdown-submenu>a:after {
-  display: block;
-  content: " ";
-  float: right;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 5px 0 5px 5px;
-  border-left-color: #cccccc;
-  margin-top: 5px;
-  margin-right: -10px;
-}
-.dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
-}
-.dropdown-submenu.pull-left {
-  float: none;
-}
-.dropdown-submenu.pull-left>.dropdown-menu {
-  left: -100%;
-  margin-left: 10px;
-  border-radius: 6px 0 6px 6px;
-}
-</style>
-
+<!-- tabsets -->
 <script>
-// manage active state of menu based on current page
 $(document).ready(function () {
-  // active menu anchor
-  href = window.location.pathname
-  href = href.substr(href.lastIndexOf('/') + 1)
-  if (href === "")
-    href = "index.html";
-  var menuAnchor = $('a[href="' + href + '"]');
-
-  // mark it active
-  menuAnchor.parent().addClass('active');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  window.buildTabsets("toc");
 });
 </script>
 
-<!-- tabsets -->
-
-<style type="text/css">
-.tabset-dropdown > .nav-tabs {
-  display: inline-table;
-  max-height: 500px;
-  min-height: 44px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs > li.active {
-  display: block;
-}
-
-.tabset-dropdown > .nav-tabs > li > a,
-.tabset-dropdown > .nav-tabs > li > a:focus,
-.tabset-dropdown > .nav-tabs > li > a:hover {
-  border: none;
-  display: inline-block;
-  border-radius: 4px;
-  background-color: transparent;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-  display: block;
-  float: none;
-}
-
-.tabset-dropdown > .nav-tabs > li {
-  display: none;
-}
-</style>
-
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
-
-
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 </head>
 
 <body>
 
+<div class="header-panel shadow z-2">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-3">
+        <div id="header">
+    <h1 class="title">Emotion and empathy measures</h1>
+                </div>
+    </div>
+</div>
+</div>
+</div>
+
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
+    <div class="row">
+      <nav class="col-xs-3 menu">
+        <div id="toc">
+        <ul>
+        <li><a href="#emotion-matching-task">Emotion matching task</a></li>
+        <li><a href="#emotion--and-empathy-related-measures-and-erp">Emotion- and empathy related measures and ERP</a></li>
+        <li><a href="#session-info">Session info</a></li>
+        </ul>
+        </div>
+        
+        
+        
+      </nav>
+     <div class="pages col-xs-9">
+     <div class="row">
+       <div class="col-xs-10">
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -355,12 +143,12 @@ div.tocify {
   <a href="index.html">
     <span class="glyphicon glyphicon-info-sign"></span>
      
-    Introduction
+    Data description
   </a>
 </li>
 <li>
   <a href="R_Script_1_Sample_descr.html">
-    <span class="glyphicon glyphicon-wrench"></span>
+    <span class="glyphicon glyphicon-user"></span>
      
     Sample description
   </a>
@@ -369,12 +157,12 @@ div.tocify {
   <a href="R_Script_2_EEG_task_measures.html">
     <span class="glyphicon glyphicon-hand-up"></span>
      
-    EEG task measures
+    Same-different matching task
   </a>
 </li>
 <li>
   <a href="R_Script_3_ERP_measures.html">
-    <span class="glyphicon glyphicon-user"></span>
+    <span class="glyphicon glyphicon-flash"></span>
      
     ERP measures
   </a>
@@ -388,34 +176,29 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://osf.io/nas48/">
+    <span class="ai ai ai ai-osf ai-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="mailto:sandra.naumann@hu-berlin.de">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
-
-<div class="fluid-row" id="header">
-
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
-
-
-
-<h1 class="title toc-ignore">Emotion and empathy measures</h1>
-
-</div>
+<link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
 
 
 <!-- Set up workspace -->
 <!-- Load and prepare data sets -->
-<p><br></p>
-<div id="emotion-matching-task" class="section level3">
-<h3>Emotion matching task</h3>
+<div id="emotion-matching-task" class="section level1">
+<h1>Emotion matching task</h1>
 <p>We employed an emotion matching task (EMT; adapted from Watling &amp; Damaskinou, 2018) to assess children’s emotion knowledge. Children saw two faces with the same identity but different facial expression. Both faces were presented at the same time. While the faces were on screen, the children heard an audio lay-over of one of the emotion words (happy, angry or neutral). The children had to indicate with a button press which face matched the audio lay-over. We measured reaction times and accuracy.</p>
 <p>We excluded:</p>
 <ul>
@@ -431,76 +214,76 @@ div.tocify {
 <h4><strong>Descriptives</strong></h4>
 <p><br></p>
 <!-- Plot EMT accuracy & reaction time -->
-<pre class="r"><code># Select RT inspected criteria
-  EMT_Acc_Plot = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE) 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select RT inspected criteria</span>
+  EMT_Acc_Plot =<span class="st"> </span><span class="kw">subset</span>(EMT,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>) 
 
-# Select correct trials
-  EMT_Acc_Plot = subset(EMT_Acc_Plot, Answer == 1)
+<span class="co"># Select correct trials</span>
+  EMT_Acc_Plot =<span class="st"> </span><span class="kw">subset</span>(EMT_Acc_Plot, Answer <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Create factor, define neutral as baseline
-  EMT_Acc_Plot$emotion = factor(EMT_Acc_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+<span class="co"># Create factor, define neutral as baseline</span>
+  EMT_Acc_Plot<span class="op">$</span>emotion =<span class="st"> </span><span class="kw">factor</span>(EMT_Acc_Plot<span class="op">$</span>emotion, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
 
-# Get accuracy for novel and repeated condition 
-  acc_all = data.frame(xtabs(~ID+emotion, EMT_Acc_Plot)) 
+<span class="co"># Get accuracy for novel and repeated condition </span>
+  acc_all =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">xtabs</span>(<span class="op">~</span>ID<span class="op">+</span>emotion, EMT_Acc_Plot)) 
 
-# Recode to accuracy in percent
-  acc_all$Freq = (acc_all$Freq/24)*100
+<span class="co"># Recode to accuracy in percent</span>
+  acc_all<span class="op">$</span>Freq =<span class="st"> </span>(acc_all<span class="op">$</span>Freq<span class="op">/</span><span class="dv">24</span>)<span class="op">*</span><span class="dv">100</span>
 
-# Calculate descriptives on accuracy
-  stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;emotion&quot;))
+<span class="co"># Calculate descriptives on accuracy</span>
+  stats_acc_all =<span class="st"> </span><span class="kw">summarySE</span>(acc_all, <span class="dt">measurevar=</span><span class="st">&quot;Freq&quot;</span>, <span class="dt">groupvars=</span><span class="kw">c</span>(<span class="st">&quot;emotion&quot;</span>))
 
-# Plot accuracy
-  EMT_Acc_bar = ggplot(stats_acc_all, aes(x=emotion, y=Freq, fill = emotion)) + 
-    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
-    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-    labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-    coord_cartesian(ylim = c(0, 60)) +
-    scale_y_continuous(breaks=seq(0,60,20))+
-    scale_fill_manual(values=emotion_col)+
-    theme_bw()+
-    theme_SN
+<span class="co"># Plot accuracy</span>
+  EMT_Acc_bar =<span class="st"> </span><span class="kw">ggplot</span>(stats_acc_all, <span class="kw">aes</span>(<span class="dt">x=</span>emotion, <span class="dt">y=</span>Freq, <span class="dt">fill =</span> emotion)) <span class="op">+</span><span class="st"> </span>
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="kw">position_dodge</span>(), <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>,<span class="dt">colour=</span><span class="st">&quot;black&quot;</span>, <span class="dt">size=</span><span class="fl">0.7</span>,<span class="dt">width=</span><span class="fl">0.9</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>Freq<span class="op">-</span>se, <span class="dt">ymax=</span>Freq<span class="op">+</span>se), <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="fl">0.2</span>, <span class="dt">position=</span><span class="kw">position_dodge</span>(.<span class="dv">9</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span> (<span class="dt">x=</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Accuracy [%]&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">60</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">60</span>,<span class="dv">20</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>emotion_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()<span class="op">+</span>
+<span class="st">    </span>theme_SN
 
-# Raincloud plot EMT RT
+<span class="co"># Raincloud plot EMT RT</span>
 
-# Only examine clean data
-  EMT_RT_Plot = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+<span class="co"># Only examine clean data</span>
+  EMT_RT_Plot =<span class="st"> </span><span class="kw">subset</span>(EMT,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
 
-# Select correct responses
-  EMT_RT_Plot = subset(EMT_RT_Plot, Answer == 1)
+<span class="co"># Select correct responses</span>
+  EMT_RT_Plot =<span class="st"> </span><span class="kw">subset</span>(EMT_RT_Plot, Answer <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Create factor, define neutral as baseline
-  EMT_RT_Plot$emotion = factor(EMT_RT_Plot$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+<span class="co"># Create factor, define neutral as baseline</span>
+  EMT_RT_Plot<span class="op">$</span>emotion =<span class="st"> </span><span class="kw">factor</span>(EMT_RT_Plot<span class="op">$</span>emotion, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
 
-# Calculate summary
-  lb = function(x) mean(x) - sd(x)
-  ub = function(x) mean(x) + sd(x)
+<span class="co"># Calculate summary</span>
+  lb =<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="kw">sd</span>(x)
+  ub =<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="kw">sd</span>(x)
   
-  sumld = ddply(EMT_RT_Plot , ~ emotion, summarise,
-                mean = mean(RT_in_ms), median = median(RT_in_ms), lower = lb(RT_in_ms), upper = ub(RT_in_ms))
+  sumld =<span class="st"> </span><span class="kw">ddply</span>(EMT_RT_Plot , <span class="op">~</span><span class="st"> </span>emotion, summarise,
+                <span class="dt">mean =</span> <span class="kw">mean</span>(RT_in_ms), <span class="dt">median =</span> <span class="kw">median</span>(RT_in_ms), <span class="dt">lower =</span> <span class="kw">lb</span>(RT_in_ms), <span class="dt">upper =</span> <span class="kw">ub</span>(RT_in_ms))
   
-# Plot rainclouds
-  EMT_RT_rain =  ggplot(data = EMT_RT_Plot, aes(y = RT_in_ms, x = emotion, fill = emotion))  +
-    geom_flat_violin(position = position_nudge(x = .12, y = 0), alpha = 1, color=&quot;black&quot;) +
-    geom_point(aes(y = RT_in_ms, color = emotion), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1)  +
-    geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = .2), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .2, y = 0), width = 0)+
-    scale_y_continuous(name=&quot;Reaction time [ms]&quot;, breaks=seq(0,6500,1000), limits=c(0,6500))+
-    xlab(&quot;&quot;)+
-    expand_limits(x = 2.00) +
-    guides(fill = FALSE) +
-    guides(color = FALSE) +
-    coord_flip() + # flip or not?
-    scale_fill_manual(values=emotion_col) +
-    scale_color_manual(values=emotion_col)+
-    theme_bw() +
-    theme_SN+
-    theme(panel.grid.major.y = element_blank())
+<span class="co"># Plot rainclouds</span>
+  EMT_RT_rain =<span class="st">  </span><span class="kw">ggplot</span>(<span class="dt">data =</span> EMT_RT_Plot, <span class="kw">aes</span>(<span class="dt">y =</span> RT_in_ms, <span class="dt">x =</span> emotion, <span class="dt">fill =</span> emotion))  <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_flat_violin</span>(<span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">12</span>, <span class="dt">y =</span> <span class="dv">0</span>), <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> RT_in_ms, <span class="dt">color =</span> emotion), <span class="dt">shape =</span> <span class="dv">19</span>, <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> .<span class="dv">1</span>), <span class="dt">size =</span> .<span class="dv">7</span>, <span class="dt">alpha =</span> <span class="dv">1</span>)  <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">x =</span> emotion, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">2</span>), <span class="dt">size =</span> <span class="fl">2.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">2</span>, <span class="dt">y =</span> <span class="dv">0</span>), <span class="dt">width =</span> <span class="dv">0</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">name=</span><span class="st">&quot;Reaction time [ms]&quot;</span>, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">6500</span>,<span class="dv">1000</span>), <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">6500</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="fl">2.00</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">color =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="co"># flip or not?</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>emotion_col) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values=</span>emotion_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span>
+<span class="st">    </span>theme_SN<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_blank</span>())
   
-# Combine plots
-  combine_plots(EMT_Acc_bar, EMT_RT_rain,
-                ncol = 2, nrow = 1,
-                labels = c(&quot;A&quot;, &quot;B&quot;))</code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_RT_plot-1.png" width="1056" /></p>
+<span class="co"># Combine plots</span>
+  <span class="kw">combine_plots</span>(EMT_Acc_bar, EMT_RT_rain,
+                <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">1</span>,
+                <span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;A&quot;</span>, <span class="st">&quot;B&quot;</span>))</code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_acc_RT_plot-1.png" width="1056" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <hr />
 </div>
@@ -509,68 +292,68 @@ div.tocify {
 <!-- GLMM / LMM assumption checks -->
 <div id="glmm-random-effect-structure" class="section level5">
 <h5>GLMM: Random effect structure</h5>
-<pre class="r"><code># RT cleaning criteria
-  EMT_Acc = subset(EMT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># RT cleaning criteria</span>
+  EMT_Acc =<span class="st"> </span><span class="kw">subset</span>(EMT,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
-# Factor random effects 
-  EMT_Acc$ID = as.factor(EMT_Acc$ID)
-  EMT_Acc$Stim_Type = as.factor(EMT_Acc$Stim_Type)
+<span class="co"># Factor random effects </span>
+  EMT_Acc<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EMT_Acc<span class="op">$</span>ID)
+  EMT_Acc<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EMT_Acc<span class="op">$</span>Stim_Type)
 
-# Create factor, define neutral as baseline
-  EMT_Acc$emotion = factor(EMT_Acc$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+<span class="co"># Create factor, define neutral as baseline</span>
+  EMT_Acc<span class="op">$</span>emotion =<span class="st"> </span><span class="kw">factor</span>(EMT_Acc<span class="op">$</span>emotion, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
 
-# Set treatment contrast
-  contrasts(EMT_Acc$emotion) = contr.treatment(3)
+<span class="co"># Set treatment contrast</span>
+  <span class="kw">contrasts</span>(EMT_Acc<span class="op">$</span>emotion) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>)
 
-# Add contrast columns
-  mm_mod_EMT_Acc =  model.matrix( ~ emotion, EMT_Acc) 
+<span class="co"># Add contrast columns</span>
+  mm_mod_EMT_Acc =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>emotion, EMT_Acc) 
 
-# Attach to dataframe
-  EMT_Acc[,(ncol(EMT_Acc)+1):(ncol(EMT_Acc)+3)] = mm_mod_EMT_Acc
-  names(EMT_Acc)[(ncol(EMT_Acc)-2):ncol(EMT_Acc)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
+<span class="co"># Attach to dataframe</span>
+  EMT_Acc[,(<span class="kw">ncol</span>(EMT_Acc)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EMT_Acc)<span class="op">+</span><span class="dv">3</span>)] =<span class="st"> </span>mm_mod_EMT_Acc
+  <span class="kw">names</span>(EMT_Acc)[(<span class="kw">ncol</span>(EMT_Acc)<span class="op">-</span><span class="dv">2</span>)<span class="op">:</span><span class="kw">ncol</span>(EMT_Acc)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;Hap_Neu&quot;</span>, <span class="st">&quot;Ang_Neu&quot;</span>) 
 
-# Construct model             
-  mod_EMT_Acc.glmm1 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                            (1 + Hap_Neu + Ang_Neu ||ID) + 
-                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
-                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)         
-
-
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_EMT_Acc.glmm1))
-
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_EMT_Acc.glmm1),comp = &quot;Variance&quot;)
-
-# Likelihood ratio testing 
-
-# ID
-  mod_EMT_Acc.glmm2 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                            (1 |ID) + 
-                            (1 + Hap_Neu + Ang_Neu ||Stim_Type),                   
-                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)    
-
-# Calculate ANOVA
-  anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm2)
+<span class="co"># Construct model             </span>
+  mod_EMT_Acc.glmm1 =<span class="st"> </span><span class="kw">glmer</span>(Answer<span class="op">~</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">||</span>Stim_Type),                   
+                          <span class="dt">data =</span> EMT_Acc,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)         
 
 
-# Stimulus type 
-  mod_EMT_Acc.glmm3 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + 
-                            (1  + Hap_Neu + Ang_Neu ||ID) + 
-                            (1 |Stim_Type),                   
-                          data = EMT_Acc,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)    
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_EMT_Acc.glmm1))
+
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_EMT_Acc.glmm1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
+
+<span class="co"># Likelihood ratio testing </span>
+
+<span class="co"># ID</span>
+  mod_EMT_Acc.glmm2 =<span class="st"> </span><span class="kw">glmer</span>(Answer<span class="op">~</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">||</span>Stim_Type),                   
+                          <span class="dt">data =</span> EMT_Acc,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)    
+
+<span class="co"># Calculate ANOVA</span>
+  <span class="kw">anova</span>(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm2)
 
 
-# Calculate ANOVAs
-  anova(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm3)
+<span class="co"># Stimulus type </span>
+  mod_EMT_Acc.glmm3 =<span class="st"> </span><span class="kw">glmer</span>(Answer<span class="op">~</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span>  <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),                   
+                          <span class="dt">data =</span> EMT_Acc,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)    
 
 
-# Final model
-  mod_EMT_Acc.glmm4 = glmer(Answer~ Hap_Neu + Ang_Neu  + scale(Age) + scale(WM) + (1|ID)+(1 + Hap_Neu + Ang_Neu || Stim_Type),                   
-                            data = EMT_Acc,control=glmerControl(calc.derivs = FALSE), family = binomial)  </code></pre>
+<span class="co"># Calculate ANOVAs</span>
+  <span class="kw">anova</span>(mod_EMT_Acc.glmm1,mod_EMT_Acc.glmm3)
+
+
+<span class="co"># Final model</span>
+  mod_EMT_Acc.glmm4 =<span class="st"> </span><span class="kw">glmer</span>(Answer<span class="op">~</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>ID)<span class="op">+</span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">||</span><span class="st"> </span>Stim_Type),                   
+                            <span class="dt">data =</span> EMT_Acc,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">family =</span> binomial)  </code></pre></div>
 <p>We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Hap_Neu</code>, <code>Ang_Neu</code>). Accordingly, we fitted single-trial data to the following model:</p>
 <p><code>Answer ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | ID) + ,     (1 + Hap_Neu + Ang_Neu || Stim_Type)</code></p>
 <hr />
@@ -578,97 +361,97 @@ div.tocify {
 <div id="glmm-overdispersion" class="section level5">
 <h5>GLMM: Overdispersion</h5>
 <p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
-<pre class="r"><code># Assumption check: Appropriate estimation of variance
-  overdisp_fun(mod_EMT_Acc.glmm4)</code></pre>
-<pre><code>##   chisq   ratio     rdf       p 
-## 1036.50    0.72 1448.00    1.00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assumption check: Appropriate estimation of variance</span>
+  <span class="kw">overdisp_fun</span>(mod_EMT_Acc.glmm4)</code></pre></div>
+<pre><code>  chisq   ratio     rdf       p 
+1036.50    0.72 1448.00    1.00 </code></pre>
 <hr />
 </div>
 <div id="lmm-random-effect-structure" class="section level5">
 <h5>LMM: Random effect structure</h5>
-<pre class="r"><code># Correct responses
-  EMT_RT = subset(EMT, Answer == 1)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Correct responses</span>
+  EMT_RT =<span class="st"> </span><span class="kw">subset</span>(EMT, Answer <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# RT cleaning criteria
-  EMT_RT = subset(EMT_RT,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+<span class="co"># RT cleaning criteria</span>
+  EMT_RT =<span class="st"> </span><span class="kw">subset</span>(EMT_RT,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
-# Factor random effects 
-  EMT_RT$ID = as.factor(EMT_RT$ID)
-  EMT_RT$Stim_Type = as.factor(EMT_RT$Stim_Type)
+<span class="co"># Factor random effects </span>
+  EMT_RT<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EMT_RT<span class="op">$</span>ID)
+  EMT_RT<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EMT_RT<span class="op">$</span>Stim_Type)
 
-# Create factor, define neutral as baseline
-  EMT_RT$emotion = factor(EMT_RT$emotion, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+<span class="co"># Create factor, define neutral as baseline</span>
+  EMT_RT<span class="op">$</span>emotion =<span class="st"> </span><span class="kw">factor</span>(EMT_RT<span class="op">$</span>emotion, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
 
-# Set treatment contrast
-  contrasts(EMT_RT$emotion) = contr.treatment(3)
+<span class="co"># Set treatment contrast</span>
+  <span class="kw">contrasts</span>(EMT_RT<span class="op">$</span>emotion) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>)
 
-# Add contrast columns
-  mm_c =  model.matrix( ~ emotion, EMT_RT) 
+<span class="co"># Add contrast columns</span>
+  mm_c =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>emotion, EMT_RT) 
 
-# Attach to dataframe
-  EMT_RT[,(ncol(EMT_RT)+1):(ncol(EMT_RT)+3)] = mm_c
-  names(EMT_RT)[(ncol(EMT_RT)-2):ncol(EMT_RT)] =  c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;) 
+<span class="co"># Attach to dataframe</span>
+  EMT_RT[,(<span class="kw">ncol</span>(EMT_RT)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EMT_RT)<span class="op">+</span><span class="dv">3</span>)] =<span class="st"> </span>mm_c
+  <span class="kw">names</span>(EMT_RT)[(<span class="kw">ncol</span>(EMT_RT)<span class="op">-</span><span class="dv">2</span>)<span class="op">:</span><span class="kw">ncol</span>(EMT_RT)] =<span class="st">  </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;Hap_Neu&quot;</span>, <span class="st">&quot;Ang_Neu&quot;</span>) 
 
-# Build model 
-  mod_EMT_RT.lmer1 = lmer(log(RT_in_ms) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Hap_Neu + Ang_Neu||ID) +
-                            (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                          data = EMT_RT,
-                          control=lmerControl(calc.derivs = FALSE))
+<span class="co"># Build model </span>
+  mod_EMT_RT.lmer1 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>
+<span class="st">                            </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>Stim_Type),
+                          <span class="dt">data =</span> EMT_RT,
+                          <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
 
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_EMT_RT.lmer1))
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_EMT_RT.lmer1))
 
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_EMT_RT.lmer1),comp = &quot;Variance&quot;)
-
-
-# Improved model
-  mod_EMT_RT.lmer2 = lmer(log(RT_in_ms) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Ang_Neu||ID) +
-                            (0 + Ang_Neu||Stim_Type),
-                          data = EMT_RT,
-                          control=lmerControl(calc.derivs = FALSE))
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_EMT_RT.lmer1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 
-# Re-check the model
-  summary(rePCA(mod_EMT_RT.lmer2))
-  print(VarCorr(mod_EMT_RT.lmer2 ),comp = &quot;Variance&quot;)
+<span class="co"># Improved model</span>
+  mod_EMT_RT.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>
+<span class="st">                            </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>Stim_Type),
+                          <span class="dt">data =</span> EMT_RT,
+                          <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
+
+
+<span class="co"># Re-check the model</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_EMT_RT.lmer2))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_EMT_RT.lmer2 ),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 ## Likelihood ratio testing
 
-# ID
-  mod_EMT_RT.lmer3 = lmer(log(RT_in_ms) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 |ID) +
-                            (0 + Ang_Neu||Stim_Type),
-                          data = EMT_RT,
-                          control=lmerControl(calc.derivs = FALSE))
+<span class="co"># ID</span>
+  mod_EMT_RT.lmer3 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>
+<span class="st">                            </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>Stim_Type),
+                          <span class="dt">data =</span> EMT_RT,
+                          <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
 
-# Calculate ANOVA
-  anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer3)
+<span class="co"># Calculate ANOVA</span>
+  <span class="kw">anova</span>(mod_EMT_RT.lmer2,mod_EMT_RT.lmer3)
 
-# Stim_Type 
-  mod_EMT_RT.lmer4 = lmer(log(RT_in_ms) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Ang_Neu|ID) +
-                            (1|Stim_Type),
-                          data = EMT_RT,
-                          control=lmerControl(calc.derivs = FALSE))
+<span class="co"># Stim_Type </span>
+  mod_EMT_RT.lmer4 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>
+<span class="st">                            </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span><span class="op">|</span>Stim_Type),
+                          <span class="dt">data =</span> EMT_RT,
+                          <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
 
-# Calculate ANOVA
-  anova(mod_EMT_RT.lmer2,mod_EMT_RT.lmer4)
+<span class="co"># Calculate ANOVA</span>
+  <span class="kw">anova</span>(mod_EMT_RT.lmer2,mod_EMT_RT.lmer4)
 
 
-# Final model
-  mod_EMT_RT.lmer5 = lmer(log(RT_in_ms) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 | ID)+
-                            (1 | Stim_Type),
-                          data = EMT_RT,
-                          control=lmerControl(calc.derivs = FALSE))</code></pre>
+<span class="co"># Final model</span>
+  mod_EMT_RT.lmer5 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>
+<span class="st">                            </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID)<span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>Stim_Type),
+                          <span class="dt">data =</span> EMT_RT,
+                          <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))</code></pre></div>
 <p>We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). Accordingly, we fitted single-trial data to the following model:</p>
 <p><code>log(RT_in_ms) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + ,     (1 | ID) + (1 | Stim_Type)</code></p>
 <hr />
@@ -676,41 +459,41 @@ div.tocify {
 <div id="lmm-normality-of-residuals" class="section level5">
 <h5>LMM: Normality of residuals</h5>
 <p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
-<pre class="r"><code># Visualize normality assumption of residuals (without log transform)
-  mod_RT_lmm_no_log = lm(RT_in_ms ~ emotion, data=EMT_RT)
-  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Visualize normality assumption of residuals (without log transform)</span>
+  mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">lm</span>(RT_in_ms <span class="op">~</span><span class="st"> </span>emotion, <span class="dt">data=</span>EMT_RT)
+  res.mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_no_log)
   
-  par(mfrow=c(1,2))
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
   
   
-  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-1.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))
+  qqpl_RT_lmm_no_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_no_log, <span class="dt">main=</span><span class="st">&quot;QQplot before transformation&quot;</span>)    
+  norm_RT_lmm_no_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_no_log), <span class="dt">main=</span><span class="st">&quot;Density plot before transformation&quot;</span>)  </code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-1.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))
 
-# Check which transformation of DV is suitable
+<span class="co"># Check which transformation of DV is suitable</span>
 
-# Calculate box-cox plot
-  mod_RT_targ = lm(RT_in_ms ~ emotion, data=EMT_RT)
-  boxcox(mod_RT_targ)   </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-2.png" width="576" /></p>
-<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
-  mod_RT_lmm_log = lm(log(RT_in_ms) ~ emotion, data=EMT_RT)
-  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+<span class="co"># Calculate box-cox plot</span>
+  mod_RT_targ =<span class="st"> </span><span class="kw">lm</span>(RT_in_ms <span class="op">~</span><span class="st"> </span>emotion, <span class="dt">data=</span>EMT_RT)
+  <span class="kw">boxcox</span>(mod_RT_targ)   </code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-2.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Visualize normality assumption of residuals (with log transform)</span>
+  mod_RT_lmm_log =<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(RT_in_ms) <span class="op">~</span><span class="st"> </span>emotion, <span class="dt">data=</span>EMT_RT)
+  res.mod_RT_lmm_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_log)
   
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
-  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-3.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))            </code></pre>
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  qqpl_RT_lmm_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_log, <span class="dt">main=</span><span class="st">&quot;QQplot after transformation&quot;</span>)    
+  norm_RT_lmm_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_log), <span class="dt">main=</span><span class="st">&quot;Density plot after transformation&quot;</span>)  </code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_res-3.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))            </code></pre></div>
 <hr />
 </div>
 <div id="lmm-homoscedasticity" class="section level5">
 <h5>LMM: Homoscedasticity</h5>
-<pre class="r"><code># Check homoscedasticity  
-  plot(fitted(mod_EMT_RT.lmer5), residuals(mod_EMT_RT.lmer5))
-  abline(0, 0)         </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_homosk-1.png" width="480" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check homoscedasticity  </span>
+  <span class="kw">plot</span>(<span class="kw">fitted</span>(mod_EMT_RT.lmer5), <span class="kw">residuals</span>(mod_EMT_RT.lmer5))
+  <span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)         </code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMT_RT_LMM_homosk-1.png" width="480" style="display: block; margin: auto;" /></p>
 <hr />
 </div>
 </div>
@@ -718,16 +501,16 @@ div.tocify {
 <h4><strong>Results</strong></h4>
 <!-- Print GLMM / LMM results -->
 <p>With regard to accuracy, we did not find a significant effect for happy vs neutral faces or angry vs neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.</p>
-<pre class="r"><code># Define labels      
-  labels = c(&quot;Intercept&quot;,&quot;Happy vs Neutral&quot;, &quot;Angry vs Neutral&quot;, &quot;Age&quot;,&quot;Working memory&quot;)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Define labels      </span>
+  labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Intercept&quot;</span>,<span class="st">&quot;Happy vs Neutral&quot;</span>, <span class="st">&quot;Angry vs Neutral&quot;</span>, <span class="st">&quot;Age&quot;</span>,<span class="st">&quot;Working memory&quot;</span>)
 
-# Show results
-  tab_model(mod_EMT_Acc.glmm4, mod_EMT_RT.lmer5,
-          pred.labels=labels, show.ci = FALSE,
-          show.se = TRUE, string.se = &quot;SE&quot;,
-          show.stat = TRUE, string.stat = &quot;t&quot;,
-          show.re.var = TRUE, show.obs = TRUE,
-          emph.p = TRUE, dv.labels=c(&quot;Accuracy&quot;,&quot;Reaction time&quot;) , show.icc = TRUE)</code></pre>
+<span class="co"># Show results</span>
+  <span class="kw">tab_model</span>(mod_EMT_Acc.glmm4, mod_EMT_RT.lmer5,
+          <span class="dt">pred.labels=</span>labels, <span class="dt">show.ci =</span> <span class="ot">FALSE</span>,
+          <span class="dt">show.se =</span> <span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
+          <span class="dt">show.stat =</span> <span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;Accuracy&quot;</span>,<span class="st">&quot;Reaction time&quot;</span>) , <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
@@ -1020,90 +803,89 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </table>
 <p><br></p>
 <p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
-<p><br></p>
 </div>
 </div>
-<div id="emotion--and-empathy-related-measures-and-erp" class="section level3">
-<h3>Emotion- and empathy related measures and ERP</h3>
+<div id="emotion--and-empathy-related-measures-and-erp" class="section level1">
+<h1>Emotion- and empathy related measures and ERP</h1>
 <p>We also investigated the link between ERP amplitudes and emotion- and empathy-related measures. We calculated correlations between the amplitude differences of angry and neutral faces with composite scores parents’ and experimenter’s rating of children’s empathy and emotion knowledge.</p>
 <!-- Display correlation plots -->
-<pre class="r"><code>## Separate data set for neutral and angry and dalculate participant&#39;s P1/P3 mean
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Separate data set for neutral and angry and dalculate participant&#39;s P1/P3 mean
 
-# angry
-  ERPs_ang = subset(ERPs, Condition == 3)
-  ERPs_mean = data.frame(tapply(ERPs_ang$mean_ROI_P1,ERPs_ang$ID, mean))
-  names(ERPs_mean)[1] = &quot;P1_ang&quot;
-  ERPs_mean$P3_ang = tapply(ERPs_ang$mean_ROI_P3,ERPs_ang$ID, mean)
+<span class="co"># angry</span>
+  ERPs_ang =<span class="st"> </span><span class="kw">subset</span>(ERPs, Condition <span class="op">==</span><span class="st"> </span><span class="dv">3</span>)
+  ERPs_mean =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">tapply</span>(ERPs_ang<span class="op">$</span>mean_ROI_P1,ERPs_ang<span class="op">$</span>ID, mean))
+  <span class="kw">names</span>(ERPs_mean)[<span class="dv">1</span>] =<span class="st"> &quot;P1_ang&quot;</span>
+  ERPs_mean<span class="op">$</span>P3_ang =<span class="st"> </span><span class="kw">tapply</span>(ERPs_ang<span class="op">$</span>mean_ROI_P3,ERPs_ang<span class="op">$</span>ID, mean)
 
-# neutral  
-  ERPs_neu = subset(ERPs, Condition == 2)
-  ERPs_mean$P1_neu = tapply(ERPs_neu$mean_ROI_P1,ERPs_neu$ID, mean)
-  ERPs_mean$P3_neu = tapply(ERPs_neu$mean_ROI_P3,ERPs_neu$ID, mean)
+<span class="co"># neutral  </span>
+  ERPs_neu =<span class="st"> </span><span class="kw">subset</span>(ERPs, Condition <span class="op">==</span><span class="st"> </span><span class="dv">2</span>)
+  ERPs_mean<span class="op">$</span>P1_neu =<span class="st"> </span><span class="kw">tapply</span>(ERPs_neu<span class="op">$</span>mean_ROI_P1,ERPs_neu<span class="op">$</span>ID, mean)
+  ERPs_mean<span class="op">$</span>P3_neu =<span class="st"> </span><span class="kw">tapply</span>(ERPs_neu<span class="op">$</span>mean_ROI_P3,ERPs_neu<span class="op">$</span>ID, mean)
 
-# Calculate difference score for angry-neutral
-  ERPs_mean$P1_Diff_Ang_Neu = ERPs_mean$P1_ang-ERPs_mean$P1_neu
-  ERPs_mean$P3_Diff_Ang_Neu = ERPs_mean$P3_ang-ERPs_mean$P3_neu
+<span class="co"># Calculate difference score for angry-neutral</span>
+  ERPs_mean<span class="op">$</span>P1_Diff_Ang_Neu =<span class="st"> </span>ERPs_mean<span class="op">$</span>P1_ang<span class="op">-</span>ERPs_mean<span class="op">$</span>P1_neu
+  ERPs_mean<span class="op">$</span>P3_Diff_Ang_Neu =<span class="st"> </span>ERPs_mean<span class="op">$</span>P3_ang<span class="op">-</span>ERPs_mean<span class="op">$</span>P3_neu
 
-# Remove rows of de-selected participants 
-  ERPs_mean = ERPs_mean[-c(4),]  
+<span class="co"># Remove rows of de-selected participants </span>
+  ERPs_mean =<span class="st"> </span>ERPs_mean[<span class="op">-</span><span class="kw">c</span>(<span class="dv">4</span>),]  
 
-# Integrate questionnare data   
-  ERPs_mean$EMK_EK_P = qn_data$EMK_EK_P
-  ERPs_mean$EMK_EM_P = qn_data$EMK_EM_P
-  ERPs_mean$EMK_EK_Ch = qn_data$EMK_EK_Ch
-  ERPs_mean$EMK_EM_Ch = qn_data$EMK_EM_Ch
+<span class="co"># Integrate questionnare data   </span>
+  ERPs_mean<span class="op">$</span>EMK_EK_P =<span class="st"> </span>qn_data<span class="op">$</span>EMK_EK_P
+  ERPs_mean<span class="op">$</span>EMK_EM_P =<span class="st"> </span>qn_data<span class="op">$</span>EMK_EM_P
+  ERPs_mean<span class="op">$</span>EMK_EK_Ch =<span class="st"> </span>qn_data<span class="op">$</span>EMK_EK_Ch
+  ERPs_mean<span class="op">$</span>EMK_EM_Ch =<span class="st"> </span>qn_data<span class="op">$</span>EMK_EM_Ch
 
-# Compute composite scores for parental/children measures of EMK
-  ERPs_mean$EMK_EK = ERPs_mean$EMK_EK_P + ERPs_mean$EMK_EK_Ch
-  ERPs_mean$EMK_EM = ERPs_mean$EMK_EM_Ch + ERPs_mean$EMK_EM_Ch
+<span class="co"># Compute composite scores for parental/children measures of EMK</span>
+  ERPs_mean<span class="op">$</span>EMK_EK =<span class="st"> </span>ERPs_mean<span class="op">$</span>EMK_EK_P <span class="op">+</span><span class="st"> </span>ERPs_mean<span class="op">$</span>EMK_EK_Ch
+  ERPs_mean<span class="op">$</span>EMK_EM =<span class="st"> </span>ERPs_mean<span class="op">$</span>EMK_EM_Ch <span class="op">+</span><span class="st"> </span>ERPs_mean<span class="op">$</span>EMK_EM_Ch
 
-# Select variables
-  ERPs_corr = subset(ERPs_mean,select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM,EMK_EK))
+<span class="co"># Select variables</span>
+  ERPs_corr =<span class="st"> </span><span class="kw">subset</span>(ERPs_mean,<span class="dt">select =</span> <span class="kw">c</span>(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM,EMK_EK))
 
 ## Plot correlations
 
-# Empathy and P1 difference  
-  EMT_ERP_scat1 = ggplot(ERPs_mean,aes(x = EMK_EM, y = P1_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color =&quot;gray0&quot;, fill = &quot;gray0&quot;)+
-    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-    labs(x = &quot;Empathy Score&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
-    theme_bw()
+<span class="co"># Empathy and P1 difference  </span>
+  EMT_ERP_scat1 =<span class="st"> </span><span class="kw">ggplot</span>(ERPs_mean,<span class="kw">aes</span>(<span class="dt">x =</span> EMK_EM, <span class="dt">y =</span> P1_Diff_Ang_Neu))<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span><span class="st">&quot;gray0&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;gray0&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span>lm, <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Empathy Score&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;P1 difference angry vs neutral&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()
 
-# Empathy and P3 difference  
-  EMT_ERP_scat2 = ggplot(ERPs_mean,aes(x= EMK_EM, y = P3_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color =&quot;gray27&quot;, fill =&quot;gray27&quot;)+
-    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-    labs(x = &quot;Empathy Score&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
-    theme_bw()
+<span class="co"># Empathy and P3 difference  </span>
+  EMT_ERP_scat2 =<span class="st"> </span><span class="kw">ggplot</span>(ERPs_mean,<span class="kw">aes</span>(<span class="dt">x=</span> EMK_EM, <span class="dt">y =</span> P3_Diff_Ang_Neu))<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span><span class="st">&quot;gray27&quot;</span>, <span class="dt">fill =</span><span class="st">&quot;gray27&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span>lm, <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Empathy Score&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;P3 difference angry vs neutral&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()
 
-# EK and P1 difference  
-  EMT_ERP_scat3 = ggplot(ERPs_mean,aes(x = EMK_EK, y = P1_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color =&quot;gray35&quot;, fill = &quot;gray35&quot;)+
-    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-    labs(x = &quot;Emotion knowledge&quot;, y = &quot;P1 difference angry vs neutral&quot;)+
-    theme_bw()
+<span class="co"># EK and P1 difference  </span>
+  EMT_ERP_scat3 =<span class="st"> </span><span class="kw">ggplot</span>(ERPs_mean,<span class="kw">aes</span>(<span class="dt">x =</span> EMK_EK, <span class="dt">y =</span> P1_Diff_Ang_Neu))<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span><span class="st">&quot;gray35&quot;</span>, <span class="dt">fill =</span> <span class="st">&quot;gray35&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span>lm, <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Emotion knowledge&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;P1 difference angry vs neutral&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()
 
-# EK and P3 difference  
-  EMT_ERP_scat4 = ggplot(ERPs_mean,aes(x= EMK_EK, y = P3_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color =&quot;gray52&quot;, fill =&quot;gray52&quot;)+
-    geom_smooth(method=lm, color = &quot;black&quot;, size = 1)+
-    labs(x = &quot;Emotion knowledge&quot;, y = &quot;P3 difference angry vs neutral&quot;)+
-    theme_bw()
+<span class="co"># EK and P3 difference  </span>
+  EMT_ERP_scat4 =<span class="st"> </span><span class="kw">ggplot</span>(ERPs_mean,<span class="kw">aes</span>(<span class="dt">x=</span> EMK_EK, <span class="dt">y =</span> P3_Diff_Ang_Neu))<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">shape =</span> <span class="dv">21</span>, <span class="dt">size =</span> <span class="dv">2</span>, <span class="dt">color =</span><span class="st">&quot;gray52&quot;</span>, <span class="dt">fill =</span><span class="st">&quot;gray52&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_smooth</span>(<span class="dt">method=</span>lm, <span class="dt">color =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="dv">1</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Emotion knowledge&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;P3 difference angry vs neutral&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()
 
-# Combine plots
-  # Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
-  ggdraw(xlim = c(0, 1), ylim = c(0,1)) +
-    draw_plot(EMT_ERP_scat1, 0, 0.5, 0.5, 0.5) +
-    draw_plot(EMT_ERP_scat2, 0.5, 0.5, 0.5, 0.5) +
-    draw_plot(EMT_ERP_scat3, 0, 0, 0.5, 0.5) +
-    draw_plot(EMT_ERP_scat4, 0.5, 0, 0.5, 0.5) </code></pre>
-<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="672" /></p>
+<span class="co"># Combine plots</span>
+  <span class="co"># Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)</span>
+  <span class="kw">ggdraw</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat1, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat2, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat3, <span class="dv">0</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">draw_plot</span>(EMT_ERP_scat4, <span class="fl">0.5</span>, <span class="dv">0</span>, <span class="fl">0.5</span>, <span class="fl">0.5</span>) </code></pre></div>
+<p><img src="R_Script_4_Emotion_empathy_measures_files/figure-html/EMK_ERP_scat_plots-1.png" width="576" style="display: block; margin: auto;" /></p>
 <p><br></p>
 <p>None of the correlations between ERP amplitude differences and emotion- and empathy-related measures reached significance.</p>
 <!-- Display correlation table -->
-<pre class="r"><code># Create correlation table
-  ERP_corr_table  = apaCorr(as.matrix(ERPs_corr), corrtype = &quot;spearman&quot;)
-  kable(ERP_corr_table , format = &quot;markdown&quot;)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create correlation table</span>
+  ERP_corr_table  =<span class="st"> </span><span class="kw">apaCorr</span>(<span class="kw">as.matrix</span>(ERPs_corr), <span class="dt">corrtype =</span> <span class="st">&quot;spearman&quot;</span>)
+  <span class="kw">kable</span>(ERP_corr_table , <span class="dt">format =</span> <span class="st">&quot;markdown&quot;</span>)</code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -1147,81 +929,200 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </table>
 <p><em>Note:</em> Correlation coefficients were computed with Spearman’s rank correlations. * p&lt; .05; ** p&lt; .01; *** p&lt; .001.</p>
 </div>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
+<!-- Provide session info  -->
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get session info </span>
+  <span class="kw">sessionInfo</span>()</code></pre></div>
+<pre><code>R version 3.6.2 (2019-12-12)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 16299)
 
+Matrix products: default
 
+locale:
+[1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
+[3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
+[5] LC_TIME=German_Germany.1252    
 
+attached base packages:
+[1] grid      stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] knitr_1.28           gridGraphics_0.5-0   corrplot_0.84       
+ [4] gvlma_1.0.0.3        eegUtils_0.5.0       akima_0.6-2         
+ [7] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
+[10] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
+[13] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
+[16] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
+[19] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
+[22] lmerTest_3.1-2       lme4_1.1-23          Matrix_1.2-18       
+[25] Hmisc_4.4-0          Formula_1.2-3        survival_3.1-8      
+[28] lattice_0.20-38      ggstatsplot_0.4.0    ez_4.4-0            
+[31] EnvStats_2.3.1       eeptools_1.2.2       ggplot2_3.3.0       
+[34] dplyr_0.8.5          cowplot_1.0.0        table1_1.2          
+[37] miceadds_3.9-14      mice_3.9.0           rmdformats_0.3.7    
+[40] XLConnectJars_0.2-15 XLConnect_1.0.1      kableExtra_1.1.0    
+
+loaded via a namespace (and not attached):
+ [1] vcd_1.4-7            ps_1.3.2             lmtest_0.9-37       
+ [4] crayon_1.3.4         jcolors_0.0.4        nlme_3.1-147        
+ [7] backports_1.1.6      metafor_2.4-0        reprex_0.3.0        
+[10] ggcorrplot_0.1.3     rlang_0.4.5          readxl_1.3.1        
+[13] performance_0.4.5    nloptr_1.2.2.1       callr_3.4.3         
+[16] rjson_0.2.20         glue_1.4.0           loo_2.2.0           
+[19] rstan_2.19.3         parallel_3.6.2       processx_3.4.2      
+[22] shinydashboard_0.7.1 haven_2.2.0          tidyselect_1.0.0    
+[25] rio_0.5.16           zoo_1.8-7            mc2d_0.1-18         
+[28] xtable_1.8-4         MatrixModels_0.4-1   magrittr_1.5        
+[31] evaluate_0.14        cli_2.0.2            rstudioapi_0.11     
+[34] miniUI_0.1.1.1       sp_1.4-1             rpart_4.1-15        
+[37] maps_3.3.0           shiny_1.4.0.2        xfun_0.13           
+[40] parameters_0.6.1     groupedstats_0.2.2   inline_0.3.15       
+[43] pkgbuild_1.0.6       cluster_2.1.0        bridgesampling_1.0-0
+[46] WRS2_1.0-0           expm_0.999-4         Brobdingnag_1.2-6   
+[49] ggrepel_0.8.2        listenv_0.8.0        png_0.1-7           
+[52] reshape_0.8.8        future_1.17.0        zeallot_0.1.0       
+[55] withr_2.2.0          rcompanion_2.3.25    cellranger_1.1.0    
+[58] pracma_2.2.9         coda_0.19-3          pillar_1.4.3        
+[61] multcomp_1.4-13      fs_1.4.1             paletteer_1.1.0     
+[64] vctrs_0.2.4          ellipsis_0.3.0       generics_0.0.2      
+[67] nortest_1.0-4        tools_3.6.2          foreign_0.8-72      
+[70] munsell_0.5.0        emmeans_1.4.6        fastmap_1.0.1       
+[73] compiler_3.6.2       abind_1.4-5          httpuv_1.5.2        
+ [ reached getOption(&quot;max.print&quot;) -- omitted 124 entries ]</code></pre>
 </div>
-</div>
 
-</div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-<!-- tabsets -->
-
-<script>
-$(document).ready(function () {
-  window.buildTabsets("TOC");
-});
-
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
-});
-</script>
-
-<!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
+    </div>
+    <div class="col-xs-2">
+        <div class="btn-toolbar">
+    <div class="btn-group">
+    <a href="#" class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="text-muted">Code</span> <span class="text-muted caret"></span></a>
+    <ul class="dropdown-menu" style="min-width: 50px;">
+    <li><a id="rmd-show-all-code" href="#">Show All</a></li>
+    <li><a id="rmd-hide-all-code" href="#">Hide All</a></li>
+    </ul>
+    </div>
+    </div>
+        </div>
+  </div>
+  </div>
+  </div>
+  <div class="row">
+    </div>
+  </div>
 
 <script>
-$(document).ready(function ()  {
+$(document).ready(function () {
+  // add bootstrap table styles to pandoc tables
+  $('tr.header').parent('thead').parent('table').addClass('table table-striped table-hover');
 
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+  
+    $('.pages img')
+ 	  .addClass("image-lb");
+  $('.pages').magnificPopup({
+	      type:'image',
+	      closeOnContentClick: false,
+	      closeBtnInside: false,
+        delegate: 'img',
+	      gallery: {enabled: true },
+          removalDelay: 500,
+          callbacks: {
+              beforeOpen: function() {
+                // just a hack that adds mfp-anim class to markup
+                this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+              }
+          },
+          mainClass: 'mfp-move-from-top',
+	      image: {
+	        verticalFit: true,
+            titleSrc: 'alt'
+	      }
+ 	    });
+ 	
+    
+    $('#toc ul li').first().addClass("active");
+    $('#toc ul li').attr("data-target", function() {
+        return($(this).children("a").attr("href"));
+    })
+    $('body .section.level1').first().addClass("active");
+    $('body .section.level1').not('.active').hide();
+    
+    $('#toc a[href*="#"]').click(function() {
 
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
+      var id = $(this).attr("href");
+      if (id === "#") return;
+      if (id.substring(0, 8) === "#dyntab-") return;
+      toggle_page(id);
 
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
+      // Menu
+      var menu_entry = $(".menu li[data-target='"+id+"']");
+      menu_entry.addClass("active");
+      $(".menu li").not(menu_entry).removeClass("active"); 
+      
+
+    });
+
+    function toggle_page(id) {
+      $(".page").not(page).removeClass("active").hide();
+      window.page = id;
+      var page = $(window.page);
+      window.location.hash = window.page;
+      //$(this).addClass("active");
+
+      page.show();
+
+      var totop = setInterval(function () {
+        $(".pages").animate({scrollTop: 0}, 0);
+      }, 10);
+
+      setTimeout(function () {
+        page.addClass("active");
+        setTimeout(function () {
+          clearInterval(totop);
+        }, 1000);
+      }, 100);
+
+      window.dispatchEvent(new Event('resize'));
+
+    }
+
+
+    $(".menu li").click(function () {
+
+      toggle_page($(this).data("target"));
+
+      // Menu
+      if (!$(this).data("target")) return;
+      if ($(this).is(".active")) return;
+      $(".menu li").not($(this)).removeClass("active");
+      $(this).addClass("active");
+
+    });
+  
+    
+
+
+    window.page = window.location.hash;
+    if (window.page != "") {
+      $(".menu").find("li[data-target=" + window.page + "]").trigger("click");
+    }
+
+    /* init material bootstrap js */
+    $.material.init();
 });
 </script>
+
+
+
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

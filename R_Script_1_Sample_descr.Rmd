@@ -1,13 +1,17 @@
 ---
-title: "Participant characteristics"
+title: "Sample description"
 output: 
-  html_document:
-    css: styles.css
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: true
+    self_contained: no
+    number_sections: no
     code_folding: hide
-    toc: true
-    toc_float: true 
-    toc_depth: 3 
-    df_print: paged
+    fig_caption: yes
 ---
 
 <!-- Set up workspace -->
@@ -15,13 +19,25 @@ output:
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 
 # Set general settings for Markdown file 
-  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
+  options(max.print="75")
+
+  knitr::opts_chunk$set(echo=TRUE,
+  	             #cache=TRUE,
+                 prompt=FALSE,
+                 tidy=TRUE,
+                 comment=NA,
+                 message=FALSE,
+                 warning=FALSE,
+                 results = FALSE,
+  	             fig.align="center")
+  knitr::opts_knit$set(width=75)
 
 # Swipe environment
   rm(list=ls())
   
 # Load packages
   library(miceadds)
+  library(rmdformats)
   library(table1)
 
 # Round to 2 digits   
@@ -46,7 +62,7 @@ output:
     }
 ```
 
-### Demographics
+# Demographics
 
 <!-- Load data -->
 
@@ -92,9 +108,7 @@ output:
 
 ```
 
-<br>
-
-### Session info
+# Session info
 
 <!-- Provide session info  -->
 

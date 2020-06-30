@@ -4,22 +4,32 @@ navbar:
   title: "Naumann et al."
   #type: inverse 
   left:
-    - text: "Introduction"
+    - text: "Data description"
       icon: glyphicon-info-sign
       href: index.html
     - text: "Sample description"
-      icon: glyphicon-wrench
+      icon: glyphicon-user
       href: R_Script_1_Sample_descr.html
-    - text: "EEG task measures"
+    - text: "Same-different matching task"
       icon: glyphicon-hand-up
       href: R_Script_2_EEG_task_measures.html
     - text: "ERP measures"
-      icon: glyphicon-user
+      icon: glyphicon-flash
       href: R_Script_3_ERP_measures.html
     - text: "Emotion & Empathy measures"
       icon: glyphicon-link
       href: R_Script_4_Emotion_empathy_measures.html
+  right:
+    - icon: ai ai-osf ai-lg
+      href: https://osf.io/nas48/ 
+    - icon: fa-envelope fa-lg
+      href: mailto:sandra.naumann@hu-berlin.de
+      
 output:
-  html_document
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    include:
+      before_body: header.html
       
 # for icons use homepage: https://getbootstrap.com/docs/3.3/components/

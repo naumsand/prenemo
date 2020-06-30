@@ -1,11 +1,17 @@
 ---
 title: "ERP measures"
 output: 
-  html_document:
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: true
+    self_contained: no
+    number_sections: no
     code_folding: hide
-    toc: true
-    toc_float: true 
-    toc_depth: 3  
+    fig_caption: yes
 ---
 
 <!-- Set up workspace -->
@@ -13,7 +19,18 @@ output:
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 
 # Set general settings for Markdown file 
-  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
+  options(max.print="75")
+
+  knitr::opts_chunk$set(echo=TRUE,
+  	             #cache=TRUE,
+                 prompt=FALSE,
+                 tidy=TRUE,
+                 comment=NA,
+                 message=FALSE,
+                 warning=FALSE,
+                 results = FALSE,
+  	              fig.align="center")
+  knitr::opts_knit$set(width=75)
 
 # Swipe environment
   rm(list=ls())
@@ -73,7 +90,7 @@ output:
   
 ```
 
-<br>
+# Task description 
 
 We developed a novel paradigm to examine ERP responses to novel and repeated emotional faces. In particular, EEG was recorded while preschoolers observed pairs of faces presented sequentially. In some trials, the two sequential facial stimuli (hereafter: ‘Face 1’ and ‘Face 2’) were identical, while in other trials they differed with regards to the emotional expression displayed (happy, fearful or neutral). 
 
@@ -81,11 +98,7 @@ We calculated linear mixed models (LMM) separately for each ERP component. Fixed
 
 The random effects structure included random intercepts for participants `(1|ID)` and stimulus `(1|Stim_Type)`. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.
 
-<br>
-
-### Valence effects
-
-<br>
+# Valence effects
 
 We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) components would be larger for emotional compared to neutral facial expressions. We examined this hypothesis in response to Face 1.
 
@@ -508,11 +521,11 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 
 # Remove intercepts/slopes based on variance check 
   mod_P1_val.lmer2 = lmer(mean_ROI_P1 ~ 
-                          Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                          (1 + Hap_Neu + Ang_Neu||ID) +
-                          (0 + Hap_Neu||Stim_Type),
-                        data = P1_Val,
-                        control=lmerControl(calc.derivs = FALSE))
+                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
+                            (1 + Ang_Neu||ID) +
+                            (0 + Hap_Neu + Ang_Neu||Stim_Type),
+                          data = P1_Val,
+                          control=lmerControl(calc.derivs = FALSE))
 
 # Re-check the model
   summary(rePCA(mod_P1_val.lmer2))
@@ -535,7 +548,7 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
   mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
                             Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
                             (1 + Ang_Neu||ID) +
-                            (1 |Stim_Type),
+                            (0 |Stim_Type),
                           data = P1_Val,
                           control=lmerControl(calc.derivs = FALSE))
 
@@ -546,10 +559,10 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 # Final model
   mod_P1_val.lmer4 = lmer(mean_ROI_P1 ~ 
                             Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 |ID) +
-                            (1 |Stim_Type),
+                            (1 |ID),
                           data = P1_Val,
                           control=lmerControl(calc.derivs = FALSE))
+  
 ```
 
 According to our hypothesis, the main fixed effects of interest was emotion of Face 1. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (` Neutral vs Happy`, `Neutral vs Angry`). The final model was comprised of: 
@@ -858,13 +871,14 @@ Based on visual inspection, we assumed homoscedasticity.
 
 P1 Amplitudes at Face 1 were significantly larger for angry in comparison to neutral facial expressions. No difference was found for the contrast of happy vs neutral faces. In contrast to our hypothesis, no differences N170 amplitde difference between happy or angry faces compared to neutral faces were detected. None of the interactions of hemisphere with the emotion contrasts reached significance. In line with our hypothesis, angry faces elicited larger amplitudes compared to neutral faces. No difference, however, was found between happy and neutral faces. 
 
-```{r ERP_val_results_table, results = TRUE}
+```{r ERP_val_results_table, results = 'asis'}
 
 # Define labels 
-labels = c("Intercept","Happy vs Neutral", "Angry vs Neutral", "Age", "Working Memory","HvsN X ROI", "AvsN X ROI")
+labels = c("Happy vs Neutral", "Angry vs Neutral", "Age", "Working Memory","HvsN X ROI", "AvsN X ROI")
 
 # Create table
-  tab_model(mod_P1_val.lmer4, mod_N170_val.lmer2, mod_P3_val.lmer4, 
+  tab_model(mod_P1_val.lmer4, mod_N170_val.lmer2, mod_P3_val.lmer4,
+          show.intercept = FALSE,
           pred.labels=labels,
           string.est = "b",
           show.se=TRUE, string.se = "SE",
@@ -880,11 +894,7 @@ labels = c("Intercept","Happy vs Neutral", "Angry vs Neutral", "Age", "Working M
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-<br>
-
-### Categorization effects
-
-<br>
+# Categorization effects
 
 We hypothesized that ERP amplitudes for Face 2 would decrease in response to an identical Face 1.
 
@@ -1243,37 +1253,32 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
 # 2nd: check which random terms explain the least variance
   print(VarCorr(mod_P1_cat.lmer1),comp = "Variance")
-
-## Likelihood-ratio testing
-
-# ID
+  
   mod_P1_cat.lmer2 = lmer(mean_ROI_P1 ~ 
                             Nov_Rep + scale(Age) + scale(WM) + 
                             (1 | ID) +
-                            (1 + Nov_Rep||Stim_Type),
+                            (0 + Nov_Rep||Stim_Type),
                           data = P1_Cat,
                           control=lmerControl(calc.derivs = FALSE))
 
-# Calculate ANOVA
-  anova(mod_P1_cat.lmer1, mod_P1_cat.lmer2)
+## Likelihood-ratio testing
 
 # Stim_Type
   mod_P1_cat.lmer3 = lmer(mean_ROI_P1 ~ 
                             Nov_Rep + scale(Age) + scale(WM) + 
-                            (1 + Nov_Rep|| ID) +
+                            (1 |ID) +
                             (1 |Stim_Type),
                           data = P1_Cat,
                           control=lmerControl(calc.derivs = FALSE))
 
 # Calculate ANOVA
-  anova(mod_P1_cat.lmer1, mod_P1_cat.lmer3)
+  anova(mod_P1_cat.lmer2, mod_P1_cat.lmer3)
 
 
 # Final model
   mod_P1_cat.lmer4 = lmer(mean_ROI_P1 ~ 
                             Nov_Rep + scale(Age) + scale(WM) + 
-                            (1|ID) +
-                            (1|Stim_Type),
+                            (1|ID),
                           data = P1_Cat,
                           control=lmerControl(calc.derivs = FALSE))
 ```
@@ -1611,13 +1616,14 @@ Based on visual inspection, we assumed homoscedasticity.
 
 In contrast to our hypothesis, we did not find P1 amplitude difference between trials with novel in contrast to repeated emotions. We also failed to find a significant effect of novelty for N170 amplitudes. Neither the main effect of hemisphere nor the interaction of hemisphere with novelty was significant. P3 amplitudes did not differ for novelty either. 
 
-```{r ERP_cat_results_table, results = TRUE}
+```{r ERP_cat_results_table, results = 'asis'}
 
 # Define labels
-  labels = c("Intercept","Novel vs Repeated", "Age", "Working Memory","NvsR X ROI", "ROI")
+  labels = c("Novel vs Repeated", "Age", "Working Memory","NvsR X ROI", "ROI")
 
 # Create table
   tab_model(mod_P1_cat.lmer4, mod_N170_cat.lmer4, mod_P3_cat.lmer4, 
+            show.intercept = FALSE,
             pred.labels=labels,
             string.est = "b",
             show.se=TRUE, string.se = "SE",
@@ -1633,9 +1639,7 @@ In contrast to our hypothesis, we did not find P1 amplitude difference between t
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-<br>
-
-### Session info
+# Session info
 
 <!-- Provide session info  -->
 
