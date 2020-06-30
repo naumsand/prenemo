@@ -22,14 +22,14 @@ output:
   options(max.print="75")
 
   knitr::opts_chunk$set(echo=TRUE,
-  	             #cache=TRUE,
                  prompt=FALSE,
                  tidy=TRUE,
                  comment=NA,
                  message=FALSE,
                  warning=FALSE,
                  results = FALSE,
-  	              fig.align="center")
+  	             fig.align="center",
+                 fig.width=6, fig.height=4)
   knitr::opts_knit$set(width=75)
 
 # Swipe environment
@@ -77,7 +77,7 @@ output:
   
 # Set figure color palettes
   emotion_col = c("#829dac","#1d4f6a","#032f47")
-  nov_col = c("#6b9c30","#2b3e13")
+  nov_col = c("#547460","#0A381C")
   
 ```
 
@@ -108,7 +108,7 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 
 <!-- Plot ERP morphology and topography -->
 
-```{r ERPs_val_traj_topos}
+```{r ERP_val_plot}
 
 ## P1/P3 trajectories
 
@@ -341,11 +341,8 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
+                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
 
-```
-
-```{r ERP_val_plot}
 
 # Get legend for trajectories
   traj_emo = ggplot(Face1_N170,aes(Time,ROI_Average))+
@@ -871,6 +868,8 @@ Based on visual inspection, we assumed homoscedasticity.
 
 P1 Amplitudes at Face 1 were significantly larger for angry in comparison to neutral facial expressions. No difference was found for the contrast of happy vs neutral faces. In contrast to our hypothesis, no differences N170 amplitde difference between happy or angry faces compared to neutral faces were detected. None of the interactions of hemisphere with the emotion contrasts reached significance. In line with our hypothesis, angry faces elicited larger amplitudes compared to neutral faces. No difference, however, was found between happy and neutral faces. 
 
+<div align="center">
+
 ```{r ERP_val_results_table, results = 'asis'}
 
 # Define labels 
@@ -890,11 +889,13 @@ labels = c("Happy vs Neutral", "Angry vs Neutral", "Age", "Working Memory","HvsN
 
 ```
 
+</div>
+
 <br>
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-# Categorization effects
+# Repetition effects
 
 We hypothesized that ERP amplitudes for Face 2 would decrease in response to an identical Face 1.
 
@@ -904,7 +905,7 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
 <!-- Plot ERP morphology and topography -->
 
-```{r ERP_cat_traj_topos}
+```{r ERP_cat_plot, fig.width=8, fig.height=4}
 
 ## P1 and P3
 
@@ -1093,9 +1094,6 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
                     theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
 
-```
-
-```{r ERP_cat_plot}
 
 # Get legend for trajectories
   traj_leg_cat =ggplot(Face2_data_icc,aes(Time,ROI_Average))+
@@ -1616,6 +1614,8 @@ Based on visual inspection, we assumed homoscedasticity.
 
 In contrast to our hypothesis, we did not find P1 amplitude difference between trials with novel in contrast to repeated emotions. We also failed to find a significant effect of novelty for N170 amplitudes. Neither the main effect of hemisphere nor the interaction of hemisphere with novelty was significant. P3 amplitudes did not differ for novelty either. 
 
+<div align="center">
+
 ```{r ERP_cat_results_table, results = 'asis'}
 
 # Define labels
@@ -1634,6 +1634,8 @@ In contrast to our hypothesis, we did not find P1 amplitude difference between t
             show.icc = TRUE)
 
 ```
+
+</div>
 
 <br>
 

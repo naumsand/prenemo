@@ -38,7 +38,7 @@ output:
 # Load packages
   library(miceadds)
   library(rmdformats)
-  library(table1)
+  library(summarytools)
 
 # Round to 2 digits   
   options(digits=2)
@@ -47,7 +47,7 @@ output:
 
 <!-- How to calculate Winkler index -->
 
-```{r include = FALSE, eval = FALSE}
+```{r wink_ind, include = FALSE, eval = FALSE}
 
 # Calculate Winkler index 
 
@@ -75,7 +75,9 @@ output:
 
 <!-- Create demographic table -->
 
-```{r table_descr, results = TRUE}
+```{r table_descr_old, include = FALSE, eval = FALSE}
+
+  library(table1)
     
 # Based on: https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html 
       
@@ -107,6 +109,15 @@ output:
   table1(strata, labels, render.continuous=my.render.cont, render.categorical=my.render.cat)
 
 ```
+
+```{r rable_descr, results = 'asis'}
+
+# descriptive statistics
+dfSummary(qn_data[c('sex', 'age', 'PPVT_Perc', 'CMM_Perc', 'SRS', 'SCQ','wink_ind')], 
+                varnumbers=FALSE, valid.col=FALSE, na.col=FALSE, graph.col=FALSE, display.labels=FALSE,
+                labels.col=FALSE, headings=FALSE, graph.magnif=0.75)
+```
+
 
 # Session info
 
