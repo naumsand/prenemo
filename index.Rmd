@@ -1,31 +1,49 @@
 ---
 title: "Data description"
 output: 
-  html_document:
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: true
+    self_contained: no
+    number_sections: no
     code_folding: hide
-    df_print: paged
+    fig_caption: yes
 ---
 
 <!-- Set up workspace -->
 
-```{r setup, include=FALSE, message = FALSE, warning = FALSE}
+```{r setup, include = FALSE, message = FALSE, warning = FALSE, echo=FALSE}
 
 # Set general settings for Markdown file 
-  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
-
-# Swipe environment
-  rm(list=ls())
+  options(max.print="75")
+  knitr::opts_chunk$set(echo=TRUE,
+  	             #cache=TRUE,
+                 prompt=FALSE,
+                 tidy=TRUE,
+                 comment=NA,
+                 message=FALSE,
+                 warning=FALSE,
+                 results = FALSE)
+  knitr::opts_knit$set(width=75)
   
 # Load packages
   library(kableExtra)
   library(XLConnect)
   library(XLConnectJars)
-  
+  library(rmdformats)
+
+# Swipe environment
+  rm(list=ls())
+
 ```
 
-<br>
+# Introduction 
 
-We created a tab for every data set used within this paper which displays variables' meaning und their value codes:
+In 'Overview of data sets', we created a tab for every data set used within this paper which displays variables' meaning and their value codes:
 
   + qn_data
   + EEG_task_data
@@ -36,13 +54,13 @@ We created a tab for every data set used within this paper which displays variab
   + ERP_Traj_Face_2 (ROI_P1_P3_Face2, left_ROI_N170_Face2, right_ROI_N170_Face2)
   + EMT
   
-### Overview of data sets  {.tabset .tabset-pills}
+# Overview of data sets {.tabset .tabset-pills}
 
-#### qn_data
+## qn_data
 
 <!-- Display qn_data descriptions -->  
   
-```{r table_qn_data}
+```{r table_qn_data, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx", 
@@ -58,11 +76,11 @@ We created a tab for every data set used within this paper which displays variab
   
 
 
-#### EEG task data
+## EEG task data
 
 <!-- Display EEG task descriptions -->  
 
-```{r table_eeg_task_data}
+```{r table_eeg_task_data, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -77,12 +95,12 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-#### ERP_data
+## ERP_data
 
 <!-- Display ERP data descriptions -->  
 
 
-```{r table_ERPs}
+```{r table_ERPs, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -97,12 +115,11 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-
-#### ERP_Topo_Face1
+## ERP_Topo_Face1
 
 <!-- Display ERP data descriptions -->  
 
-```{r table_ERP_topo_f1}
+```{r table_ERP_topo_f1, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -117,13 +134,12 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-
-#### ERP_Topo_Face2
+## ERP_Topo_Face2
 
 <!-- Display ERP data descriptions -->  
 
 
-```{r table_ERP_topo_f2}
+```{r table_ERP_topo_f2, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -138,13 +154,12 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-
-#### ERP_Traj_Face1
+## ERP_Traj_Face1
 
 <!-- Display ERP data descriptions -->  
 
 
-```{r table_ERP_traj_f1}
+```{r table_ERP_traj_f1, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -159,14 +174,12 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-
-
-#### ERP_Traj_Face2
+## ERP_Traj_Face2
 
 <!-- Display ERP data descriptions -->  
 
 
-```{r table_ERP_traj_f2}
+```{r table_ERP_traj_f2, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -181,14 +194,11 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-
-
-
-#### EMT
+## EMT
 
 <!-- Display EMT task data descriptions -->  
 
-```{r table_EMT}
+```{r table_EMT, results = 'asis'}
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
@@ -203,7 +213,7 @@ We created a tab for every data set used within this paper which displays variab
 ```
 
 
-### Session info
+# Session info
 
 <!-- Provide session info  -->
 

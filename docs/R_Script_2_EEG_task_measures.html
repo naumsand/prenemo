@@ -1,342 +1,131 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
-<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
 
-
-<title>EEG task measures</title>
-
+<title>Matching task</title>
+<!-- Material Design fonts -->
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
-<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
 <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
-<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
-<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
-<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+<script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+<link href="site_libs/bootstrap_material-0.1/bootstrap-material-design.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap_material-0.1/ripples.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap_material-0.1/material.min.js"></script>
+<script src="site_libs/bootstrap_material-0.1/ripples.min.js"></script>
+<link href="site_libs/material-0.1/material.css" rel="stylesheet" />
+<script src="site_libs/material-0.1/material.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
-<script type="text/javascript">
-if (window.hljs) {
-  hljs.configure({languages: []});
-  hljs.initHighlightingOnLoad();
-  if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
-  }
-}
-</script>
-
-
-
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #ffffff; color: #1f1c1b; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; background-color: #ffffff; color: #a0a0a0; border-right: 1px solid #a0a0a0; }
+td.sourceCode { padding-left: 5px; }
+pre, code { color: #1f1c1b; background-color: #ffffff; }
+code > span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+code > span.dt { color: #0057ae; } /* DataType */
+code > span.dv { color: #b08000; } /* DecVal */
+code > span.bn { color: #b08000; } /* BaseN */
+code > span.fl { color: #b08000; } /* Float */
+code > span.cn { color: #aa5500; } /* Constant */
+code > span.ch { color: #924c9d; } /* Char */
+code > span.sc { color: #3daee9; } /* SpecialChar */
+code > span.st { color: #bf0303; } /* String */
+code > span.vs { color: #bf0303; } /* VerbatimString */
+code > span.ss { color: #ff5500; } /* SpecialString */
+code > span.im { color: #ff5500; } /* Import */
+code > span.co { color: #898887; } /* Comment */
+code > span.do { color: #607880; } /* Documentation */
+code > span.an { color: #ca60ca; } /* Annotation */
+code > span.cv { color: #0095ff; } /* CommentVar */
+code > span.ot { color: #006e28; } /* Other */
+code > span.fu { color: #644a9b; } /* Function */
+code > span.va { color: #0057ae; } /* Variable */
+code > span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #1f1c1b; } /* Operator */
+code > span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+code > span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+code > span.pp { color: #006e28; } /* Preprocessor */
+code > span.at { color: #0057ae; } /* Attribute */
+code > span.re { color: #0057ae; } /* RegionMarker */
+code > span.in { color: #b08000; } /* Information */
+code > span.wa { color: #bf0303; } /* Warning */
+code > span.al { color: #bf0303; font-weight: bold; } /* Alert */
+code > span.er { color: #bf0303; text-decoration: underline; } /* Error */
+code > span. { color: #1f1c1b; } /* Normal */
 </style>
 
+<link rel="stylesheet" href="web_style.css" type="text/css" />
 
-
-
-<style type = "text/css">
-.main-container {
-  max-width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
-}
-img {
-  max-width:100%;
-}
-.tabbed-pane {
-  padding-top: 12px;
-}
-.html-widget {
-  margin-bottom: 20px;
-}
-button.code-folding-btn:focus {
-  outline: none;
-}
-summary {
-  display: list-item;
-}
-</style>
-
-
-<style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.dropdown-submenu {
-  position: relative;
-}
-.dropdown-submenu>.dropdown-menu {
-  top: 0;
-  left: 100%;
-  margin-top: -6px;
-  margin-left: -1px;
-  border-radius: 0 6px 6px 6px;
-}
-.dropdown-submenu:hover>.dropdown-menu {
-  display: block;
-}
-.dropdown-submenu>a:after {
-  display: block;
-  content: " ";
-  float: right;
-  width: 0;
-  height: 0;
-  border-color: transparent;
-  border-style: solid;
-  border-width: 5px 0 5px 5px;
-  border-left-color: #cccccc;
-  margin-top: 5px;
-  margin-right: -10px;
-}
-.dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
-}
-.dropdown-submenu.pull-left {
-  float: none;
-}
-.dropdown-submenu.pull-left>.dropdown-menu {
-  left: -100%;
-  margin-left: 10px;
-  border-radius: 6px 0 6px 6px;
-}
-</style>
-
+<!-- tabsets -->
 <script>
-// manage active state of menu based on current page
 $(document).ready(function () {
-  // active menu anchor
-  href = window.location.pathname
-  href = href.substr(href.lastIndexOf('/') + 1)
-  if (href === "")
-    href = "index.html";
-  var menuAnchor = $('a[href="' + href + '"]');
-
-  // mark it active
-  menuAnchor.parent().addClass('active');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  window.buildTabsets("toc");
 });
 </script>
 
-<!-- tabsets -->
-
-<style type="text/css">
-.tabset-dropdown > .nav-tabs {
-  display: inline-table;
-  max-height: 500px;
-  min-height: 44px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
-  font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
-}
-
-.tabset-dropdown > .nav-tabs > li.active {
-  display: block;
-}
-
-.tabset-dropdown > .nav-tabs > li > a,
-.tabset-dropdown > .nav-tabs > li > a:focus,
-.tabset-dropdown > .nav-tabs > li > a:hover {
-  border: none;
-  display: inline-block;
-  border-radius: 4px;
-  background-color: transparent;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-  display: block;
-  float: none;
-}
-
-.tabset-dropdown > .nav-tabs > li {
-  display: none;
-}
-</style>
-
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
-
-
-
-<style type="text/css">
-
-#TOC {
-  margin: 25px 0px 20px 0px;
-}
-@media (max-width: 768px) {
-#TOC {
-  position: relative;
-  width: 100%;
-}
-}
-
-@media print {
-.toc-content {
-  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
-  float: right;
-}
-}
-
-.toc-content {
-  padding-left: 30px;
-  padding-right: 40px;
-}
-
-div.main-container {
-  max-width: 1200px;
-}
-
-div.tocify {
-  width: 20%;
-  max-width: 260px;
-  max-height: 85%;
-}
-
-@media (min-width: 768px) and (max-width: 991px) {
-  div.tocify {
-    width: 25%;
-  }
-}
-
-@media (max-width: 767px) {
-  div.tocify {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-.tocify ul, .tocify li {
-  line-height: 20px;
-}
-
-.tocify-subheader .tocify-item {
-  font-size: 0.90em;
-}
-
-.tocify .list-group-item {
-  border-radius: 0px;
-}
-
-
-</style>
-
-
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 </head>
 
 <body>
 
+<div class="header-panel shadow z-2">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-3">
+        <div id="header">
+    <h1 class="title">Matching task</h1>
+                </div>
+    </div>
+</div>
+</div>
+</div>
+
 
 <div class="container-fluid main-container">
-
-
-<!-- setup 3col/9col grid for toc_float and main content  -->
-<div class="row-fluid">
-<div class="col-xs-12 col-sm-4 col-md-3">
-<div id="TOC" class="tocify">
-</div>
-</div>
-
-<div class="toc-content col-xs-12 col-sm-8 col-md-9">
-
-
+    <div class="row">
+      <nav class="col-xs-3 menu">
+        <div id="toc">
+        <ul>
+        <li><a href="#task-description">Task description</a></li>
+        <li><a href="#accuracy">Accuracy</a></li>
+        <li><a href="#reaction-time">Reaction time</a></li>
+        <li><a href="#session-info">Session info</a></li>
+        </ul>
+        </div>
+        
+        
+        
+      </nav>
+     <div class="pages col-xs-9">
+     <div class="row">
+       <div class="col-xs-10">
 
 
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
@@ -355,12 +144,12 @@ div.tocify {
   <a href="index.html">
     <span class="glyphicon glyphicon-info-sign"></span>
      
-    Introduction
+    Data description
   </a>
 </li>
 <li>
   <a href="R_Script_1_Sample_descr.html">
-    <span class="glyphicon glyphicon-wrench"></span>
+    <span class="glyphicon glyphicon-user"></span>
      
     Sample description
   </a>
@@ -369,12 +158,12 @@ div.tocify {
   <a href="R_Script_2_EEG_task_measures.html">
     <span class="glyphicon glyphicon-hand-up"></span>
      
-    EEG task measures
+    Same-different matching task
   </a>
 </li>
 <li>
   <a href="R_Script_3_ERP_measures.html">
-    <span class="glyphicon glyphicon-user"></span>
+    <span class="glyphicon glyphicon-flash"></span>
      
     ERP measures
   </a>
@@ -388,33 +177,30 @@ div.tocify {
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        
+        <li>
+  <a href="https://osf.io/nas48/">
+    <span class="ai ai ai ai-osf ai-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="mailto:sandra.naumann@hu-berlin.de">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
       </ul>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
-
-<div class="fluid-row" id="header">
-
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
-
-
-
-<h1 class="title toc-ignore">EEG task measures</h1>
-
-</div>
+<link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
 
 
 <!-- Set up workspace -->
 <!-- Load data set-->
-<p><br></p>
-<p>Our paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). We measured participants’ accuracy rates and reaction times.</p>
+<div id="task-description" class="section level1">
+<h1>Task description</h1>
+<p>Our EEG paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). We measured participants’ accuracy rates and reaction times.</p>
 <p>We excluded:</p>
 <ul>
 <li>Reaction times &lt; 250 ms or &gt; 7s</li>
@@ -423,95 +209,95 @@ div.tocify {
 </ul>
 <p>We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all (general) linear mixed model analyses to control for cognitive abilities of the children as well as potential differences in age.</p>
 <p>The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.</p>
-<p><br></p>
-<div id="accuracy" class="section level3">
-<h3>Accuracy</h3>
+</div>
+<div id="accuracy" class="section level1">
+<h1>Accuracy</h1>
 <p>We predicted that children would be less accurate when Face 1 and Face 2 were repeated (<code>GLMM 1</code>). We also expected the highest accuracy rates for pairings where happy faces were involved (<code>GLMM 2</code>).</p>
 <p><br></p>
 <div id="descriptive-statistics" class="section level5">
 <h5><strong>Descriptive statistics</strong></h5>
 <!-- Draw EEG task accuracy plots -->
-<pre class="r"><code># Select outlier-free data and correct trials
-  EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
-  EEG_task_Acc_plot = subset(EEG_task_Acc_plot, Response == 1)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select outlier-free data and correct trials</span>
+  EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_Acc_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 ## Plot separated by novel vs repeated trials  
   
-# Recode variable
-  EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 1] = &quot;repeated&quot;
-  EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 2] = &quot;novel&quot;
+<span class="co"># Recode variable</span>
+  EEG_task_Acc_plot<span class="op">$</span>Cong[EEG_task_Acc_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span>
+  EEG_task_Acc_plot<span class="op">$</span>Cong[EEG_task_Acc_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span>
 
-# Get accuracy for novel and repeated condition
-  acc_all = data.frame(xtabs(~ID+Cong, EEG_task_Acc_plot))
+<span class="co"># Get accuracy for novel and repeated condition</span>
+  acc_all =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">xtabs</span>(<span class="op">~</span>ID<span class="op">+</span>Cong, EEG_task_Acc_plot))
 
-# Recode to accuracy in percent (72 novel trials, 72 repeated trials)
-  acc_all$Freq = (acc_all$Freq/72)*100
+<span class="co"># Recode to accuracy in percent (72 novel trials, 72 repeated trials)</span>
+  acc_all<span class="op">$</span>Freq =<span class="st"> </span>(acc_all<span class="op">$</span>Freq<span class="op">/</span><span class="dv">72</span>)<span class="op">*</span><span class="dv">100</span>
 
-# Factor condition
-  acc_all$Cong = as.factor(acc_all$Cong)
+<span class="co"># Factor condition</span>
+  acc_all<span class="op">$</span>Cong =<span class="st"> </span><span class="kw">as.factor</span>(acc_all<span class="op">$</span>Cong)
 
-# Calculate descriptives on accuracy
-  stats_acc_all = summarySE(acc_all, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Cong&quot;))
+<span class="co"># Calculate descriptives on accuracy</span>
+  stats_acc_all =<span class="st"> </span><span class="kw">summarySE</span>(acc_all, <span class="dt">measurevar=</span><span class="st">&quot;Freq&quot;</span>, <span class="dt">groupvars=</span><span class="kw">c</span>(<span class="st">&quot;Cong&quot;</span>))
 
-# Plot accuracy
-  EEG_acc_plot=ggplot(stats_acc_all, aes(x=Cong, y=Freq, fill = Cong)) +
-    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
-    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-    labs (x= &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-    scale_fill_manual(values=nov_col)+
-    coord_cartesian(ylim = c(0, 65)) +
-    scale_y_continuous(breaks=seq(0,60,20))+
-    theme_bw()+
-    theme_SN
+<span class="co"># Plot accuracy</span>
+  EEG_acc_plot=<span class="kw">ggplot</span>(stats_acc_all, <span class="kw">aes</span>(<span class="dt">x=</span>Cong, <span class="dt">y=</span>Freq, <span class="dt">fill =</span> Cong)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="kw">position_dodge</span>(), <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>,<span class="dt">colour=</span><span class="st">&quot;black&quot;</span>, <span class="dt">size=</span><span class="fl">0.7</span>,<span class="dt">width=</span><span class="fl">0.9</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>Freq<span class="op">-</span>se, <span class="dt">ymax=</span>Freq<span class="op">+</span>se), <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="fl">0.2</span>, <span class="dt">position=</span><span class="kw">position_dodge</span>(.<span class="dv">9</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span> (<span class="dt">x=</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Accuracy [%]&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>nov_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">65</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">60</span>,<span class="dv">20</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()<span class="op">+</span>
+<span class="st">    </span>theme_SN
 
 ## Plot separated by emotions
 
-# Select outlier-free data and correct trials
-  EEG_task_Acc_targ_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
-  EEG_task_Acc_targ_plot = subset(EEG_task_Acc_targ_plot,Response == 1)
+<span class="co"># Select outlier-free data and correct trials</span>
+  EEG_task_Acc_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_Acc_targ_plot,Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
   
-# Recode variable
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==4] = &quot;happy&quot;
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==5] = &quot;neutral&quot;
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==6] = &quot;angry&quot;
+<span class="co"># Recode variable</span>
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;happy&quot;</span>
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">5</span>] =<span class="st"> &quot;neutral&quot;</span>
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">6</span>] =<span class="st"> &quot;angry&quot;</span>
   
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==7] = &quot;happy&quot;
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==8] = &quot;neutral&quot;
-  EEG_task_Acc_targ_plot$Target[EEG_task_Acc_targ_plot$Target==9] = &quot;angry&quot;
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">7</span>] =<span class="st"> &quot;happy&quot;</span>
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">8</span>] =<span class="st"> &quot;neutral&quot;</span>
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target[EEG_task_Acc_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">9</span>] =<span class="st"> &quot;angry&quot;</span>
   
-  EEG_task_Acc_targ_plot$Target = factor(EEG_task_Acc_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+  EEG_task_Acc_targ_plot<span class="op">$</span>Target =<span class="st"> </span><span class="kw">factor</span>(EEG_task_Acc_targ_plot<span class="op">$</span>Target, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
   
-# Get accuracy for novel and repeated condition
-  acc_emo = data.frame(xtabs(~ID+Target, EEG_task_Acc_targ_plot))
+<span class="co"># Get accuracy for novel and repeated condition</span>
+  acc_emo =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">xtabs</span>(<span class="op">~</span>ID<span class="op">+</span>Target, EEG_task_Acc_targ_plot))
   
-# Recode to accuracy in percent (48 happy trials, 49 neutral trials, 47 angry trials)
-  acc_emo$Freq[acc_emo$Target== &quot;happy&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;happy&quot;]/48)*100
-  acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;neutral&quot;]/49)*100
-  acc_emo$Freq[acc_emo$Target== &quot;angry&quot;] = (acc_emo$Freq[acc_emo$Target== &quot;angry&quot;]/47)*100
+<span class="co"># Recode to accuracy in percent (48 happy trials, 49 neutral trials, 47 angry trials)</span>
+  acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;happy&quot;</span>] =<span class="st"> </span>(acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;happy&quot;</span>]<span class="op">/</span><span class="dv">48</span>)<span class="op">*</span><span class="dv">100</span>
+  acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;neutral&quot;</span>] =<span class="st"> </span>(acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;neutral&quot;</span>]<span class="op">/</span><span class="dv">49</span>)<span class="op">*</span><span class="dv">100</span>
+  acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;angry&quot;</span>] =<span class="st"> </span>(acc_emo<span class="op">$</span>Freq[acc_emo<span class="op">$</span>Target<span class="op">==</span><span class="st"> &quot;angry&quot;</span>]<span class="op">/</span><span class="dv">47</span>)<span class="op">*</span><span class="dv">100</span>
   
-# Factor condition
-  acc_emo$Target = as.factor(acc_emo$Target)
+<span class="co"># Factor condition</span>
+  acc_emo<span class="op">$</span>Target =<span class="st"> </span><span class="kw">as.factor</span>(acc_emo<span class="op">$</span>Target)
   
-# Calculate descriptives on accuracy
-  stats_acc_emo = summarySE(acc_emo, measurevar=&quot;Freq&quot;, groupvars=c(&quot;Target&quot;))
+<span class="co"># Calculate descriptives on accuracy</span>
+  stats_acc_emo =<span class="st"> </span><span class="kw">summarySE</span>(acc_emo, <span class="dt">measurevar=</span><span class="st">&quot;Freq&quot;</span>, <span class="dt">groupvars=</span><span class="kw">c</span>(<span class="st">&quot;Target&quot;</span>))
   
-# Plot accuracy
-  EEG_acc_emo_plot=ggplot(stats_acc_emo, aes(x=Target, y=Freq, fill = Target)) +
-    geom_bar(position=position_dodge(), stat=&quot;identity&quot;,colour=&quot;black&quot;, size=0.7,width=0.9) +
-    geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=1, width=0.2, position=position_dodge(.9)) +
-    labs (x = &quot;&quot;, y = &quot;Accuracy [%]&quot;) +
-    coord_cartesian(ylim = c(0, 65)) +
-    scale_y_continuous(breaks=seq(0,60,20))+
-    scale_fill_manual(values=emotion_col)+
-    theme_bw()+
-    theme_SN+
-    theme(axis.title.y=element_blank(),
-          axis.text.y=element_blank())
+<span class="co"># Plot accuracy</span>
+  EEG_acc_emo_plot=<span class="kw">ggplot</span>(stats_acc_emo, <span class="kw">aes</span>(<span class="dt">x=</span>Target, <span class="dt">y=</span>Freq, <span class="dt">fill =</span> Target)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_bar</span>(<span class="dt">position=</span><span class="kw">position_dodge</span>(), <span class="dt">stat=</span><span class="st">&quot;identity&quot;</span>,<span class="dt">colour=</span><span class="st">&quot;black&quot;</span>, <span class="dt">size=</span><span class="fl">0.7</span>,<span class="dt">width=</span><span class="fl">0.9</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin=</span>Freq<span class="op">-</span>se, <span class="dt">ymax=</span>Freq<span class="op">+</span>se), <span class="dt">size=</span><span class="dv">1</span>, <span class="dt">width=</span><span class="fl">0.2</span>, <span class="dt">position=</span><span class="kw">position_dodge</span>(.<span class="dv">9</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">labs</span> (<span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Accuracy [%]&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">65</span>)) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">60</span>,<span class="dv">20</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>emotion_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()<span class="op">+</span>
+<span class="st">    </span>theme_SN<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">axis.title.y=</span><span class="kw">element_blank</span>(),
+          <span class="dt">axis.text.y=</span><span class="kw">element_blank</span>())
 
-# Display plots
-  fig_EEG_acc = cowplot::plot_grid(EEG_acc_plot, EEG_acc_emo_plot, ncol=2, rel_widths=c(1, 1))
-  fig_EEG_acc  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_Acc_plots-1.png" width="672" /></p>
+<span class="co"># Display plots</span>
+  fig_EEG_acc =<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(EEG_acc_plot, EEG_acc_emo_plot, <span class="dt">ncol=</span><span class="dv">2</span>, <span class="dt">rel_widths=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))
+  fig_EEG_acc  </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_Acc_plots-1.png" width="576" style="display: block; margin: auto;" /></p>
 </div>
 <div id="model-specification" class="section level5 tabset tabset-pills">
 <h5><strong>Model specification</strong></h5>
@@ -519,73 +305,73 @@ div.tocify {
 <p><br></p>
 <div id="glmm-1-random-effect-structure" class="section level6">
 <h6>GLMM 1: Random effect structure</h6>
-<pre class="r"><code># Select outlier-free data
-  EEG_task_Acc_glmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select outlier-free data</span>
+  EEG_task_Acc_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
 
-# Factor random effects
-  EEG_task_Acc_glmm$ID = as.factor(EEG_task_Acc_glmm$ID)
-  EEG_task_Acc_glmm$Stim_Type = as.factor(EEG_task_Acc_glmm$Stim_Type)
+<span class="co"># Factor random effects</span>
+  EEG_task_Acc_glmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_glmm<span class="op">$</span>ID)
+  EEG_task_Acc_glmm<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_glmm<span class="op">$</span>Stim_Type)
 
-# Factor fixed factor congruency
-  EEG_task_Acc_glmm$Cong[EEG_task_Acc_glmm$Cong==1] = &quot;repeated&quot;
-  EEG_task_Acc_glmm$Cong[EEG_task_Acc_glmm$Cong==2] = &quot;novel&quot;
-  EEG_task_Acc_glmm$Cong = factor(EEG_task_Acc_glmm$Cong)
+<span class="co"># Factor fixed factor congruency</span>
+  EEG_task_Acc_glmm<span class="op">$</span>Cong[EEG_task_Acc_glmm<span class="op">$</span>Cong<span class="op">==</span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span>
+  EEG_task_Acc_glmm<span class="op">$</span>Cong[EEG_task_Acc_glmm<span class="op">$</span>Cong<span class="op">==</span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span>
+  EEG_task_Acc_glmm<span class="op">$</span>Cong =<span class="st"> </span><span class="kw">factor</span>(EEG_task_Acc_glmm<span class="op">$</span>Cong)
 
-# Set effect coding contrast
-  contrasts(EEG_task_Acc_glmm$Cong) = contr.sum(2)/2
+<span class="co"># Set effect coding contrast</span>
+  <span class="kw">contrasts</span>(EEG_task_Acc_glmm<span class="op">$</span>Cong) =<span class="st"> </span><span class="kw">contr.sum</span>(<span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>
 
 ## Construct full model
 
-# Create contrast matrix
-  mm_EEG_task_Acc =  model.matrix( ~ Cong, EEG_task_Acc_glmm)
+<span class="co"># Create contrast matrix</span>
+  mm_EEG_task_Acc =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Cong, EEG_task_Acc_glmm)
 
-# Attach to dataframe
-  EEG_task_Acc_glmm = EEG_task_Acc_glmm
-  EEG_task_Acc_glmm[,(ncol(EEG_task_Acc_glmm)+1):(ncol(EEG_task_Acc_glmm)+2)] = mm_EEG_task_Acc
-  names(EEG_task_Acc_glmm)[(ncol(EEG_task_Acc_glmm)-1):ncol(EEG_task_Acc_glmm)] = c(&quot;Grand Mean&quot;, &quot;Nov_Rep&quot;)
+<span class="co"># Attach to dataframe</span>
+  EEG_task_Acc_glmm =<span class="st"> </span>EEG_task_Acc_glmm
+  EEG_task_Acc_glmm[,(<span class="kw">ncol</span>(EEG_task_Acc_glmm)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EEG_task_Acc_glmm)<span class="op">+</span><span class="dv">2</span>)] =<span class="st"> </span>mm_EEG_task_Acc
+  <span class="kw">names</span>(EEG_task_Acc_glmm)[(<span class="kw">ncol</span>(EEG_task_Acc_glmm)<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="kw">ncol</span>(EEG_task_Acc_glmm)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Grand Mean&quot;</span>, <span class="st">&quot;Nov_Rep&quot;</span>)
 
-# Build full model
-  mod_Acc_EEG.glmm1 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                              (1 + Nov_Rep||ID) +
-                              (1 + Nov_Rep||Stim_Type),
-                              data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                              family = binomial)
+<span class="co"># Build full model</span>
+  mod_Acc_EEG.glmm1 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),
+                              <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                              <span class="dt">family =</span> binomial)
 
 ## Check random effect structure (cut-off: 0.005 - 0.001)
 
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_Acc_EEG.glmm1))
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_Acc_EEG.glmm1))
 
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_Acc_EEG.glmm1),comp = &quot;Variance&quot;)
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_Acc_EEG.glmm1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 ## Likelihood-ratio-testing
   
-# ID   
-  mod_Acc_EEG.glmm2 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                            (1 | ID) +
-                            (1 + Nov_Rep||Stim_Type),
-                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)
+<span class="co"># ID   </span>
+  mod_Acc_EEG.glmm2 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),
+                          <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)
 
-# Stim Type
-  mod_Acc_EEG.glmm3 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                            (1 + Nov_Rep||ID)  +
-                            (1 |Stim_Type),
-                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)
+<span class="co"># Stim Type</span>
+  mod_Acc_EEG.glmm3 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID)  <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),
+                          <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)
 
-# Calculate ANOVAs
-  anov_glmm1_glmm2 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
-  anov_glmm1_glmm3 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
+<span class="co"># Calculate ANOVAs</span>
+  anov_glmm1_glmm2 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
+  anov_glmm1_glmm3 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
 
 
-# Final model
-  mod_Acc_EEG.glmm4 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                            (1 + Nov_Rep||ID) +
-                            (1 | Stim_Type),
-                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)</code></pre>
+<span class="co"># Final model</span>
+  mod_Acc_EEG.glmm4 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>Stim_Type),
+                          <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                          <span class="dt">family =</span> binomial)</code></pre></div>
 <p>According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotions (<code>Novel vs Repeated</code>). Consequently, we fitted single-trial data to the following model:</p>
 <p><code>Response ~ Nov_Rep + scale(Age) + scale(WM) + (1 + Nov_Rep || ,     ID) + (1 | Stim_Type)</code></p>
 <hr />
@@ -593,103 +379,103 @@ div.tocify {
 <div id="glmm-1-overdispersion" class="section level6">
 <h6>GLMM 1: Overdispersion</h6>
 <p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
-<pre class="r"><code># Assumption check: Appropriate estimation of variance - check for overdispersion
-  overdisp_fun(mod_Acc_EEG.glmm4)</code></pre>
-<pre><code>##   chisq   ratio     rdf       p 
-## 2725.06    0.87 3139.00    1.00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span>
+  <span class="kw">overdisp_fun</span>(mod_Acc_EEG.glmm4)</code></pre></div>
+<pre><code>  chisq   ratio     rdf       p 
+2725.06    0.87 3139.00    1.00 </code></pre>
 <hr />
 </div>
 <div id="glmm-2-random-effect-structure" class="section level6">
 <h6>GLMM 2: Random effect structure</h6>
-<pre class="r"><code># Get outlier-free data
-  EEG_task_Acc_targ_glmm = subset(EEG_task_data, Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get outlier-free data</span>
+  EEG_task_Acc_targ_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
 
-# Rename variables
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==4] = &quot;hap&quot;
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==5] = &quot;neu&quot;
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==6] = &quot;ang&quot;
+<span class="co"># Rename variables</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;hap&quot;</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">5</span>] =<span class="st"> &quot;neu&quot;</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">6</span>] =<span class="st"> &quot;ang&quot;</span>
   
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==7] = &quot;hap&quot;
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==8] = &quot;neu&quot;
-  EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==9] = &quot;ang&quot;
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">7</span>] =<span class="st"> &quot;hap&quot;</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">8</span>] =<span class="st"> &quot;neu&quot;</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">9</span>] =<span class="st"> &quot;ang&quot;</span>
 
-# Create factor, get neutral as baseline
-  EEG_task_Acc_targ_glmm$Target = factor(EEG_task_Acc_targ_glmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
-  EEG_task_Acc_targ_glmm$ID = as.factor(EEG_task_Acc_targ_glmm$ID)
-  EEG_task_Acc_targ_glmm$Stim_Type = as.factor(EEG_task_Acc_targ_glmm$Stim_Type)
+<span class="co"># Create factor, get neutral as baseline</span>
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Target =<span class="st"> </span><span class="kw">factor</span>(EEG_task_Acc_targ_glmm<span class="op">$</span>Target, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neu&quot;</span>,<span class="st">&quot;hap&quot;</span>,<span class="st">&quot;ang&quot;</span>))
+  EEG_task_Acc_targ_glmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_targ_glmm<span class="op">$</span>ID)
+  EEG_task_Acc_targ_glmm<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_targ_glmm<span class="op">$</span>Stim_Type)
 
-# Set treatment contrast
-  contrasts(EEG_task_Acc_targ_glmm$Target) = contr.treatment(3)
+<span class="co"># Set treatment contrast</span>
+  <span class="kw">contrasts</span>(EEG_task_Acc_targ_glmm<span class="op">$</span>Target) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>)
 
 ## Construct full model
 
-# Add contrast columns
-  mm_EEG_task_Acc_targ =  model.matrix( ~ Target, EEG_task_Acc_targ_glmm)
+<span class="co"># Add contrast columns</span>
+  mm_EEG_task_Acc_targ =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Target, EEG_task_Acc_targ_glmm)
 
-# Attach to dataframe
-  EEG_task_Acc_targ_glmm[,(ncol(EEG_task_Acc_targ_glmm)+1):(ncol(EEG_task_Acc_targ_glmm)+3)] = mm_EEG_task_Acc_targ
-  names(EEG_task_Acc_targ_glmm)[(ncol(EEG_task_Acc_targ_glmm)-2):ncol(EEG_task_Acc_targ_glmm)] = c(&quot;Mean&quot;,&quot;Neu_Hap&quot;, &quot;Neu_Ang&quot;)
+<span class="co"># Attach to dataframe</span>
+  EEG_task_Acc_targ_glmm[,(<span class="kw">ncol</span>(EEG_task_Acc_targ_glmm)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EEG_task_Acc_targ_glmm)<span class="op">+</span><span class="dv">3</span>)] =<span class="st"> </span>mm_EEG_task_Acc_targ
+  <span class="kw">names</span>(EEG_task_Acc_targ_glmm)[(<span class="kw">ncol</span>(EEG_task_Acc_targ_glmm)<span class="op">-</span><span class="dv">2</span>)<span class="op">:</span><span class="kw">ncol</span>(EEG_task_Acc_targ_glmm)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;Neu_Hap&quot;</span>, <span class="st">&quot;Neu_Ang&quot;</span>)
 
-# Build full model
-  mod_Acc_targ.glmm1 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                             + (1 + Neu_Hap + Neu_Ang||ID)
-                             + (1 + Neu_Hap + Neu_Ang||Stim_Type),
-                             data = EEG_task_Acc_targ_glmm,
-                             control=glmerControl(calc.derivs = FALSE),
-                             family = binomial)
+<span class="co"># Build full model</span>
+  mod_Acc_targ.glmm1 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>ID)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>Stim_Type),
+                             <span class="dt">data =</span> EEG_task_Acc_targ_glmm,
+                             <span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                             <span class="dt">family =</span> binomial)
 
 ## Check random effect structure (cut-off: 0.005 - 0.001)
 
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_Acc_targ.glmm1))
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_Acc_targ.glmm1))
 
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_Acc_targ.glmm1),comp = &quot;Variance&quot;)
-
-
-# Re-build model
-  mod_Acc_targ.glmm2 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                           + (1 + Neu_Ang||ID)
-                           + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                           data = EEG_task_Acc_targ_glmm,
-                           control=glmerControl(calc.derivs = FALSE),
-                           family = binomial)
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_Acc_targ.glmm1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 
-# Re-check random structure
-  summary(rePCA(mod_Acc_targ.glmm2))
-  print(VarCorr(mod_Acc_targ.glmm2),comp = &quot;Variance&quot;)
+<span class="co"># Re-build model</span>
+  mod_Acc_targ.glmm2 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM)
+                           <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>ID)
+                           <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>Stim_Type),
+                           <span class="dt">data =</span> EEG_task_Acc_targ_glmm,
+                           <span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                           <span class="dt">family =</span> binomial)
+
+
+<span class="co"># Re-check random structure</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_Acc_targ.glmm2))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_Acc_targ.glmm2),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 
 ## Likelihood-ratio testing
 
-# ID
-  mod_Acc_targ.glmm3 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                             + (1 |ID)
-                             + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                             data = EEG_task_Acc_targ_glmm,
-                             control=glmerControl(calc.derivs = FALSE),
-                             family = binomial)
-# Stimulus type  
-  mod_Acc_targ.glmm4 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                             + (1 + Neu_Ang||ID)
-                             + (1|Stim_Type),
-                             data = EEG_task_Acc_targ_glmm,
-                             control=glmerControl(calc.derivs = FALSE),
-                             family = binomial)
+<span class="co"># ID</span>
+  mod_Acc_targ.glmm3 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span>ID)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>Stim_Type),
+                             <span class="dt">data =</span> EEG_task_Acc_targ_glmm,
+                             <span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                             <span class="dt">family =</span> binomial)
+<span class="co"># Stimulus type  </span>
+  mod_Acc_targ.glmm4 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>ID)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span><span class="op">|</span>Stim_Type),
+                             <span class="dt">data =</span> EEG_task_Acc_targ_glmm,
+                             <span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                             <span class="dt">family =</span> binomial)
 
-# Calculate ANOVAs
-  anov_glmm2_glmm3 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm3)
-  anov_glmm2_glmm4 = anova(mod_Acc_targ.glmm2,mod_Acc_targ.glmm4)
+<span class="co"># Calculate ANOVAs</span>
+  anov_glmm2_glmm3 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_targ.glmm2,mod_Acc_targ.glmm3)
+  anov_glmm2_glmm4 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_targ.glmm2,mod_Acc_targ.glmm4)
 
 
-# Final model
-  mod_Acc_targ.glmm5 = glmer(Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM)
-                             + (1 |ID)
-                             + (0 + Neu_Hap + Neu_Ang||Stim_Type),
-                             data = EEG_task_Acc_targ_glmm,
-                             control=glmerControl(calc.derivs = FALSE),
-                             family = binomial)</code></pre>
+<span class="co"># Final model</span>
+  mod_Acc_targ.glmm5 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span>ID)
+                             <span class="op">+</span><span class="st"> </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Neu_Hap <span class="op">+</span><span class="st"> </span>Neu_Ang<span class="op">||</span>Stim_Type),
+                             <span class="dt">data =</span> EEG_task_Acc_targ_glmm,
+                             <span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                             <span class="dt">family =</span> binomial)</code></pre></div>
 <p>According to our hypothesis, the main fixed effects of interest was emotion of Face 2. We applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). The final model was comprised of:</p>
 <p><code>Response ~ Neu_Hap + Neu_Ang + scale(Age) + scale(WM) + (1 | ,     ID) + (0 + Neu_Hap + Neu_Ang || Stim_Type)</code></p>
 <hr />
@@ -697,10 +483,10 @@ div.tocify {
 <div id="glmm-2-overdispersion" class="section level6">
 <h6>GLMM 2: Overdispersion</h6>
 <p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
-<pre class="r"><code># Assumption check: Appropriate estimation of variance - check for overdispersion
-  overdisp_fun(mod_Acc_targ.glmm5)</code></pre>
-<pre><code>##  chisq  ratio    rdf      p 
-## 2813.2    0.9 3138.0    1.0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span>
+  <span class="kw">overdisp_fun</span>(mod_Acc_targ.glmm5)</code></pre></div>
+<pre><code> chisq  ratio    rdf      p 
+2813.2    0.9 3138.0    1.0 </code></pre>
 <hr />
 </div>
 </div>
@@ -708,16 +494,17 @@ div.tocify {
 <h5><strong>Results</strong></h5>
 <!-- Print GLMM results -->
 <p>Model results indicated that participants were equally accurate in trials with repeated in comparison to a novel emotion at Face 2. Descriptively, participants showed the highest accuracy when happy faces were presented as Face 2. This difference, however, was not significant in comparison to neutral faces. Similarly, there was no significant difference between angry and neutral facial expressions.</p>
-<pre class="r"><code># Create labels
-  labels = c(&quot;Intercept&quot;,&quot;Novel vs Repeated&quot;,&quot;Age&quot;,&quot;Working memory&quot;, &quot;Neutral vs Happy&quot;, &quot;Neutral vs Angry&quot;)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create labels</span>
+  labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Novel vs Repeated&quot;</span>,<span class="st">&quot;Age&quot;</span>,<span class="st">&quot;Working memory&quot;</span>, <span class="st">&quot;Neutral vs Happy&quot;</span>, <span class="st">&quot;Neutral vs Angry&quot;</span>)
 
-# Create table
-  tab_model(mod_Acc_EEG.glmm4, mod_Acc_targ.glmm5,
-          pred.labels=labels, show.ci = FALSE,
-          show.se = TRUE, string.se = &quot;SE&quot;,
-          show.stat = TRUE, string.stat = &quot;t&quot;,
-          show.re.var = TRUE, show.obs = TRUE,
-          emph.p = TRUE, dv.labels=c(&quot;Face 2 Novelty&quot;,&quot;Face 2 Emotion&quot;) , show.icc = TRUE)</code></pre>
+<span class="co"># Create table</span>
+  <span class="kw">tab_model</span>(mod_Acc_EEG.glmm4, mod_Acc_targ.glmm5,
+          <span class="dt">show.intercept =</span> <span class="ot">FALSE</span>,
+          <span class="dt">pred.labels=</span>labels, <span class="dt">show.ci =</span> <span class="ot">FALSE</span>,
+          <span class="dt">show.se =</span> <span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
+          <span class="dt">show.stat =</span> <span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;Face 2 Novelty&quot;</span>,<span class="st">&quot;Face 2 Emotion&quot;</span>) , <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
@@ -757,35 +544,6 @@ t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
 p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-Intercept
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-4.37
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.21
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-6.88
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>&lt;0.001
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-3.80
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.22
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-6.18
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001
 </td>
 </tr>
 <tr>
@@ -1018,295 +776,294 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </table>
 <p><br></p>
 <p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
-<p><br></p>
 </div>
 </div>
-<div id="reaction-time" class="section level3">
-<h3>Reaction time</h3>
+<div id="reaction-time" class="section level1">
+<h1>Reaction time</h1>
 <p>We expected children to be slower when Face 1 and Face 2 showed the same emotion (<code>LMM1</code>). Additionally, we expected the lowest reaction times for pairings where happy faces were involved (<code>LMM2</code>). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).</p>
 <p><br></p>
 <div id="descriptives" class="section level4">
 <h4><strong>Descriptives</strong></h4>
 <!-- Draw EEG task RT plots -->
-<pre class="r"><code>## Plot separated by novel vs repeated trials 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Plot separated by novel vs repeated trials 
 
-# Choose outlier-free and correct trial data
-  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-  EEG_task_RT_plot = subset(EEG_task_RT_plot, Response == 1)
+<span class="co"># Choose outlier-free and correct trial data</span>
+  EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
+  EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Rename values for repeated and novel trials 
-  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==1] = &quot;repeated&quot;
-  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==2] = &quot;novel&quot;
+<span class="co"># Rename values for repeated and novel trials </span>
+  EEG_task_RT_plot<span class="op">$</span>Cong[EEG_task_RT_plot<span class="op">$</span>Cong<span class="op">==</span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span>
+  EEG_task_RT_plot<span class="op">$</span>Cong[EEG_task_RT_plot<span class="op">$</span>Cong<span class="op">==</span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span>
   
-# Calculate summary
-  lb = function(x) mean(x) - sd(x)
-  ub = function(x) mean(x) + sd(x)
+<span class="co"># Calculate summary</span>
+  lb =<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="kw">sd</span>(x)
+  ub =<span class="st"> </span><span class="cf">function</span>(x) <span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="kw">sd</span>(x)
   
-  sumld = ddply(EEG_task_RT_plot , ~ Cong, summarise,
-                mean = mean(RTs), median = median(RTs), lower = lb(RTs), upper = ub(RTs))
+  sumld =<span class="st"> </span><span class="kw">ddply</span>(EEG_task_RT_plot , <span class="op">~</span><span class="st"> </span>Cong, summarise,
+                <span class="dt">mean =</span> <span class="kw">mean</span>(RTs), <span class="dt">median =</span> <span class="kw">median</span>(RTs), <span class="dt">lower =</span> <span class="kw">lb</span>(RTs), <span class="dt">upper =</span> <span class="kw">ub</span>(RTs))
 
-# Plot rainclouds
-  EEG_task_RT_rain = ggplot(data = EEG_task_RT_plot, aes(y = RTs, x = Cong, fill = Cong))  +
-    geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha = 1, color=&quot;black&quot;) +
-    geom_point(aes(y = RTs, color = Cong), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
-    geom_point(data = sumld, aes(x = Cong, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
-    scale_y_continuous(name=&quot;Reaction time [ms]&quot;, breaks=seq(0,7000,2000), limits=c(250,7000))+
-    scale_x_discrete(name=&quot;&quot;)+
-    expand_limits(x = 5, y = 3) +
-    guides(fill = FALSE, color = FALSE) +
-    coord_flip() + # flip or not?
-    scale_fill_manual(values=nov_col) +
-    scale_color_manual(values=nov_col)+
-    theme_bw()+
-    theme_SN +
-    theme(panel.grid.major.y = element_blank())
+<span class="co"># Plot rainclouds</span>
+  EEG_task_RT_rain =<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> EEG_task_RT_plot, <span class="kw">aes</span>(<span class="dt">y =</span> RTs, <span class="dt">x =</span> Cong, <span class="dt">fill =</span> Cong))  <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_flat_violin</span>(<span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">18</span>, <span class="dt">y =</span> <span class="dv">0</span>),  <span class="dt">adjust=</span><span class="fl">1.5</span>, <span class="dt">trim=</span><span class="ot">TRUE</span>, <span class="dt">alpha =</span> <span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> RTs, <span class="dt">color =</span> Cong), <span class="dt">shape =</span> <span class="dv">19</span>, <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> .<span class="dv">1</span>), <span class="dt">size =</span> .<span class="dv">7</span>, <span class="dt">alpha =</span> <span class="dv">1</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">x =</span> Cong, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">22</span>), <span class="dt">size =</span> <span class="fl">2.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">22</span>, <span class="dt">y =</span> <span class="dv">0</span>), <span class="dt">width =</span> <span class="dv">0</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">name=</span><span class="st">&quot;Reaction time [ms]&quot;</span>, <span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">7000</span>,<span class="dv">2000</span>), <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">250</span>,<span class="dv">7000</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_x_discrete</span>(<span class="dt">name=</span><span class="st">&quot;&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="dv">5</span>, <span class="dt">y =</span> <span class="dv">3</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">color =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="co"># flip or not?</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>nov_col) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values=</span>nov_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()<span class="op">+</span>
+<span class="st">    </span>theme_SN <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_blank</span>())
 
 ## Plot separated by emotions
 
-# Choose outlier-free and correct trial data
-  EEG_task_RT_targ_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)
-  EEG_task_RT_targ_plot = subset(EEG_task_RT_targ_plot, Response == 1)
+<span class="co"># Choose outlier-free and correct trial data</span>
+  EEG_task_RT_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_RT_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_targ_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Choose EEG task data with correct trials
-  EEG_task_RT_targ_plot = subset(EEG_task_RT_targ_plot, Response == 1)
+<span class="co"># Choose EEG task data with correct trials</span>
+  EEG_task_RT_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_targ_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Rename variables
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==4] = &quot;happy&quot;
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==5] = &quot;neutral&quot;
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==6] = &quot;angry&quot;
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==7] = &quot;happy&quot;
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==8] = &quot;neutral&quot;
-  EEG_task_RT_targ_plot$Target[EEG_task_RT_targ_plot$Target==9] = &quot;angry&quot;
+<span class="co"># Rename variables</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;happy&quot;</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">5</span>] =<span class="st"> &quot;neutral&quot;</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">6</span>] =<span class="st"> &quot;angry&quot;</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">7</span>] =<span class="st"> &quot;happy&quot;</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">8</span>] =<span class="st"> &quot;neutral&quot;</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target[EEG_task_RT_targ_plot<span class="op">$</span>Target<span class="op">==</span><span class="dv">9</span>] =<span class="st"> &quot;angry&quot;</span>
 
-# Set target as factor / Recode target
-  EEG_task_RT_targ_plot$Target = factor(EEG_task_RT_targ_plot$Target, levels=c(&quot;neutral&quot;,&quot;happy&quot;,&quot;angry&quot;))
+<span class="co"># Set target as factor / Recode target</span>
+  EEG_task_RT_targ_plot<span class="op">$</span>Target =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_targ_plot<span class="op">$</span>Target, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neutral&quot;</span>,<span class="st">&quot;happy&quot;</span>,<span class="st">&quot;angry&quot;</span>))
 
-# Create summary  
-  sumld = ddply(EEG_task_RT_targ_plot , ~ Target, summarise,
-                mean = mean(RTs), median = median(RTs), lower = lb(RTs), upper = ub(RTs))
+<span class="co"># Create summary  </span>
+  sumld =<span class="st"> </span><span class="kw">ddply</span>(EEG_task_RT_targ_plot , <span class="op">~</span><span class="st"> </span>Target, summarise,
+                <span class="dt">mean =</span> <span class="kw">mean</span>(RTs), <span class="dt">median =</span> <span class="kw">median</span>(RTs), <span class="dt">lower =</span> <span class="kw">lb</span>(RTs), <span class="dt">upper =</span> <span class="kw">ub</span>(RTs))
 
-# Plot rainclouds
-  EEG_RT_emo_rain = ggplot(data = EEG_task_RT_targ_plot, aes(y = RTs, x = Target, fill = Target))  +
-    geom_point(aes(y = RTs, color = Target), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
-    geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha= 1, color=&quot;black&quot;) +
-    geom_point(data = sumld, aes(x = Target, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22, y = 0), width = 0)+
-    scale_y_continuous(name=&quot;Reaction time [ms]&quot;,breaks=seq(0,7000,2000), limits=c(250,7000))+
-    xlab(&quot;&quot;)+
-    expand_limits(x = 5.00, y = 1) +
-    guides(fill = FALSE, color = FALSE) +
-    coord_flip() + # flip or not?
-    scale_fill_manual(values=emotion_col) +
-    scale_color_manual(values=emotion_col)+
-    theme_bw()+
-    theme_SN +
-    theme(panel.grid.major.y = element_blank())
+<span class="co"># Plot rainclouds</span>
+  EEG_RT_emo_rain =<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> EEG_task_RT_targ_plot, <span class="kw">aes</span>(<span class="dt">y =</span> RTs, <span class="dt">x =</span> Target, <span class="dt">fill =</span> Target))  <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="kw">aes</span>(<span class="dt">y =</span> RTs, <span class="dt">color =</span> Target), <span class="dt">shape =</span> <span class="dv">19</span>, <span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> .<span class="dv">1</span>), <span class="dt">size =</span> .<span class="dv">7</span>, <span class="dt">alpha =</span> <span class="dv">1</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_flat_violin</span>(<span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">18</span>, <span class="dt">y =</span> <span class="dv">0</span>),  <span class="dt">adjust=</span><span class="fl">1.5</span>, <span class="dt">trim=</span><span class="ot">TRUE</span>, <span class="dt">alpha=</span> <span class="dv">1</span>, <span class="dt">color=</span><span class="st">&quot;black&quot;</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_point</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">x =</span> Target, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">22</span>), <span class="dt">size =</span> <span class="fl">2.5</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> sumld, <span class="kw">aes</span>(<span class="dt">ymin =</span> lower, <span class="dt">ymax =</span> upper, <span class="dt">y =</span> mean), <span class="dt">position =</span> <span class="kw">position_nudge</span>(<span class="dt">x =</span> .<span class="dv">22</span>, <span class="dt">y =</span> <span class="dv">0</span>), <span class="dt">width =</span> <span class="dv">0</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_y_continuous</span>(<span class="dt">name=</span><span class="st">&quot;Reaction time [ms]&quot;</span>,<span class="dt">breaks=</span><span class="kw">seq</span>(<span class="dv">0</span>,<span class="dv">7000</span>,<span class="dv">2000</span>), <span class="dt">limits=</span><span class="kw">c</span>(<span class="dv">250</span>,<span class="dv">7000</span>))<span class="op">+</span>
+<span class="st">    </span><span class="kw">xlab</span>(<span class="st">&quot;&quot;</span>)<span class="op">+</span>
+<span class="st">    </span><span class="kw">expand_limits</span>(<span class="dt">x =</span> <span class="fl">5.00</span>, <span class="dt">y =</span> <span class="dv">1</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">color =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">coord_flip</span>() <span class="op">+</span><span class="st"> </span><span class="co"># flip or not?</span>
+<span class="st">    </span><span class="kw">scale_fill_manual</span>(<span class="dt">values=</span>emotion_col) <span class="op">+</span>
+<span class="st">    </span><span class="kw">scale_color_manual</span>(<span class="dt">values=</span>emotion_col)<span class="op">+</span>
+<span class="st">    </span><span class="kw">theme_bw</span>()<span class="op">+</span>
+<span class="st">    </span>theme_SN <span class="op">+</span>
+<span class="st">    </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_blank</span>())
   
-# Display plots
-  fig_EEG_RT = cowplot::plot_grid(EEG_task_RT_rain, EEG_RT_emo_rain, ncol=2, rel_widths=c(1, 1))
-  fig_EEG_RT</code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_plots-1.png" width="1152" /></p>
+<span class="co"># Display plots</span>
+  fig_EEG_RT =<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(EEG_task_RT_rain, EEG_RT_emo_rain, <span class="dt">ncol=</span><span class="dv">2</span>, <span class="dt">rel_widths=</span><span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))
+  fig_EEG_RT</code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_plots-1.png" width="1152" style="display: block; margin: auto;" /></p>
 </div>
 <div id="model-specification-1" class="section level4 tabset tabset-pills">
 <h4><strong>Model specification</strong></h4>
 <!-- LMM assumption checks -->
 <div id="lmm1-random-effect-structure" class="section level5">
 <h5>LMM1: Random effect structure</h5>
-<pre class="r"><code># Choose outlier-free data and correct answers    
-  EEG_task_RT_lmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
-  EEG_task_RT_lmm = subset(EEG_task_RT_lmm, Response == 1)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Choose outlier-free data and correct answers    </span>
+  EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
+  EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_lmm, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
-# Recode for repeated and novel trials
-  EEG_task_RT_lmm$Cong[EEG_task_RT_lmm$Cong==1] = &quot;repeated&quot;
-  EEG_task_RT_lmm$Cong[EEG_task_RT_lmm$Cong==2] = &quot;novel&quot;
+<span class="co"># Recode for repeated and novel trials</span>
+  EEG_task_RT_lmm<span class="op">$</span>Cong[EEG_task_RT_lmm<span class="op">$</span>Cong<span class="op">==</span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span>
+  EEG_task_RT_lmm<span class="op">$</span>Cong[EEG_task_RT_lmm<span class="op">$</span>Cong<span class="op">==</span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span>
 
-# Prepare fixed factors 
-  EEG_task_RT_lmm$Cong = factor(EEG_task_RT_lmm$Cong)
+<span class="co"># Prepare fixed factors </span>
+  EEG_task_RT_lmm<span class="op">$</span>Cong =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_lmm<span class="op">$</span>Cong)
 
-# Factor ID and stimulus type 
-  EEG_task_RT_lmm$Stim_Type = factor(EEG_task_RT_lmm$Stim_Type)
-  EEG_task_RT_lmm$ID = factor(EEG_task_RT_lmm$ID)
+<span class="co"># Factor ID and stimulus type </span>
+  EEG_task_RT_lmm<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_lmm<span class="op">$</span>Stim_Type)
+  EEG_task_RT_lmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_lmm<span class="op">$</span>ID)
 
-# Define effect coding contrast for novelty 
-  contrasts(EEG_task_RT_lmm$Cong) = contr.sum(2)/2
+<span class="co"># Define effect coding contrast for novelty </span>
+  <span class="kw">contrasts</span>(EEG_task_RT_lmm<span class="op">$</span>Cong) =<span class="st"> </span><span class="kw">contr.sum</span>(<span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>
 
-# Create contrast matrix 
-  mm_EEG_task_RT =  model.matrix( ~ Cong, EEG_task_RT_lmm) 
+<span class="co"># Create contrast matrix </span>
+  mm_EEG_task_RT =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Cong, EEG_task_RT_lmm) 
 
-# Attach to dataframe
-  EEG_task_RT_lmm[,(ncol(EEG_task_RT_lmm)+1):(ncol(EEG_task_RT_lmm)+2)] = mm_EEG_task_RT
-  names(EEG_task_RT_lmm)[(ncol(EEG_task_RT_lmm)-1):ncol(EEG_task_RT_lmm)] = c(&quot;Grand Mean&quot;, &quot;Nov_Rep&quot;)            
+<span class="co"># Attach to dataframe</span>
+  EEG_task_RT_lmm[,(<span class="kw">ncol</span>(EEG_task_RT_lmm)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EEG_task_RT_lmm)<span class="op">+</span><span class="dv">2</span>)] =<span class="st"> </span>mm_EEG_task_RT
+  <span class="kw">names</span>(EEG_task_RT_lmm)[(<span class="kw">ncol</span>(EEG_task_RT_lmm)<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="kw">ncol</span>(EEG_task_RT_lmm)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Grand Mean&quot;</span>, <span class="st">&quot;Nov_Rep&quot;</span>)            
 
-# Build full model with new names                
-  mod_RT_EEG.lmer1 = lmer(log(RTs) ~ Nov_Rep + scale(Age) + scale(WM) + 
-                            (1 + Nov_Rep ||ID) + 
-                            (1 + Nov_Rep ||Stim_Type),                   
-                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># Build full model with new names                </span>
+  mod_RT_EEG.lmer1 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">||</span>Stim_Type),                   
+                          <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
 ## PCA to check random effect structure (Cut-off: 0.005 - 0.001)
 
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_RT_EEG.lmer1))
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_EEG.lmer1))
 
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_RT_EEG.lmer1),comp = &quot;Variance&quot;)
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_EEG.lmer1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
-# 3rd: remove all terms with zero variance --&gt; comprises final model 
-  mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
-                          (1 + Nov_Rep||ID) + 
-                          (1 + Nov_Rep||Stim_Type),                   
-                        data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># 3rd: remove all terms with zero variance --&gt; comprises final model </span>
+  mod_RT_EEG.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),                   
+                        <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# 4th: re-check the model PCA / variance of random factors
-  summary(rePCA(mod_RT_EEG.lmer2))
-  print(VarCorr(mod_RT_EEG.lmer2),comp = &quot;Variance&quot;)
+<span class="co"># 4th: re-check the model PCA / variance of random factors</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_EEG.lmer2))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_EEG.lmer2),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
-# 5th: Do Likelihood Ratio Test (LRT) - to check whether all random slopes improve the model
+<span class="co"># 5th: Do Likelihood Ratio Test (LRT) - to check whether all random slopes improve the model</span>
 
-# LRT without random slope Nov_Rep for ID
-  mod_RT_EEG.lmer3 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
-                          (1 |ID) + 
-                          (1 + Nov_Rep||Stim_Type),                   
-                        data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># LRT without random slope Nov_Rep for ID</span>
+  mod_RT_EEG.lmer3 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),                   
+                        <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# Calculate ANOVA
-  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)
+<span class="co"># Calculate ANOVA</span>
+  <span class="kw">anova</span>(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)
 
-# LRT without random slope Nov_Rep for Stim_Type
-  mod_RT_EEG.lmer4 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
-                            (1 + Nov_Rep||ID) + 
-                            (1 |Stim_Type),                   
-                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># LRT without random slope Nov_Rep for Stim_Type</span>
+  mod_RT_EEG.lmer4 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),                   
+                          <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
   
-# Calculate ANOVA
-  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer4)
+<span class="co"># Calculate ANOVA</span>
+  <span class="kw">anova</span>(mod_RT_EEG.lmer2,mod_RT_EEG.lmer4)
 
 
-# 6th: remove random slopes which did not improve the model 
-  mod_RT_EEG.lmer5 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
-                            (1 + Nov_Rep||ID) + 
-                            (1 |Stim_Type),                   
-                          data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># 6th: remove random slopes which did not improve the model </span>
+  mod_RT_EEG.lmer5 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
+<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),                   
+                          <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# 7th: re-check the model PCA / variance of random factors
-  summary(rePCA(mod_RT_EEG.lmer5))
-  print(VarCorr(mod_RT_EEG.lmer5),comp = &quot;Variance&quot;)</code></pre>
+<span class="co"># 7th: re-check the model PCA / variance of random factors</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_EEG.lmer5))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_EEG.lmer5),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)</code></pre></div>
 <p>We applied a scaled sum contrast to compare reaction times for novel vs repeated facial expressions. The final model was built as:</p>
 <p><code>log(RTs) ~ Nov_Rep + scale(Age) + scale(WM) + ((1 | ID) + (0 + ,     Nov_Rep | ID)) + (1 | Stim_Type)</code></p>
 </div>
 <div id="lmm1-normality-of-residuals" class="section level5">
 <h5>LMM1: Normality of residuals</h5>
 <p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
-<pre class="r"><code>## Check properties of DV / residuals 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Check properties of DV / residuals 
 
-# Visualize normality assumption of residuals (without log transform)
-  mod_RT_lmm_no_log = lm(RTs ~ Cong, data=EEG_task_RT_lmm)
-  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+<span class="co"># Visualize normality assumption of residuals (without log transform)</span>
+  mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data=</span>EEG_task_RT_lmm)
+  res.mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_no_log)
 
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-1.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  qqpl_RT_lmm_no_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_no_log, <span class="dt">main=</span><span class="st">&quot;QQplot before transformation&quot;</span>)    
+  norm_RT_lmm_no_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_no_log), <span class="dt">main=</span><span class="st">&quot;Density plot before transformation&quot;</span>)  </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-1.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))
 
-# Check which transformation of DV is suitable
+<span class="co"># Check which transformation of DV is suitable</span>
 
-# Calculate box-cox plot
-  mod_RT_targ = lm(RTs ~ Cong, data=EEG_task_RT_lmm)
-  boxcox(mod_RT_targ)   </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-2.png" width="576" /></p>
-<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
-  mod_RT_lmm_log = lm(log(RTs) ~ Cong, data=EEG_task_RT_lmm)
-  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+<span class="co"># Calculate box-cox plot</span>
+  mod_RT_targ =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data=</span>EEG_task_RT_lmm)
+  <span class="kw">boxcox</span>(mod_RT_targ)   </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-2.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Visualize normality assumption of residuals (with log transform)</span>
+  mod_RT_lmm_log =<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data=</span>EEG_task_RT_lmm)
+  res.mod_RT_lmm_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_log)
   
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main=&quot;QQplot after transformation&quot;)    
-  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-3.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))</code></pre>
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  qqpl_RT_lmm_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_log, <span class="dt">main=</span><span class="st">&quot;QQplot after transformation&quot;</span>)    
+  norm_RT_lmm_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_log), <span class="dt">main=</span><span class="st">&quot;Density plot after transformation&quot;</span>)  </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-3.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</code></pre></div>
 <hr />
 </div>
 <div id="lmm1-homoscedasticity" class="section level5">
 <h5>LMM1: Homoscedasticity</h5>
 <p>Based on the figure, we assume homoscedasticity.</p>
-<pre class="r"><code># Check homoscedasticity
-  plot(fitted(mod_RT_EEG.lmer5), residuals(mod_RT_EEG.lmer5))
-  abline(0, 0) </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_homosk-1.png" width="480" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check homoscedasticity</span>
+  <span class="kw">plot</span>(<span class="kw">fitted</span>(mod_RT_EEG.lmer5), <span class="kw">residuals</span>(mod_RT_EEG.lmer5))
+  <span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>) </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_homosk-1.png" width="480" style="display: block; margin: auto;" /></p>
 <hr />
 </div>
 <div id="lmm2-random-effect-structure" class="section level5">
 <h5>LMM2: Random effect structure</h5>
-<pre class="r"><code># Choose outlier-free data and correct answers          
-  EEG_task_RT_targ_lmm = subset(EEG_task_data, Response == 1)
-  EEG_task_RT_targ_lmm = subset(EEG_task_RT_targ_lmm,Exclude_smaller_250ms == FALSE &amp; Exclude_larger_7s == FALSE &amp; Exclude_MAD == FALSE)  
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Choose outlier-free data and correct answers          </span>
+  EEG_task_RT_targ_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
+  EEG_task_RT_targ_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_targ_lmm,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
-# Rename variables 
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==4] = &quot;hap&quot;
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==5] = &quot;neu&quot;
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==6] = &quot;ang&quot;
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==7] = &quot;hap&quot;
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==8] = &quot;neu&quot;
-  EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==9] = &quot;ang&quot;
+<span class="co"># Rename variables </span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;hap&quot;</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">5</span>] =<span class="st"> &quot;neu&quot;</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">6</span>] =<span class="st"> &quot;ang&quot;</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">7</span>] =<span class="st"> &quot;hap&quot;</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">8</span>] =<span class="st"> &quot;neu&quot;</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">9</span>] =<span class="st"> &quot;ang&quot;</span>
 
-# Create factors, define neutral as baseline
-  EEG_task_RT_targ_lmm$Target = factor(EEG_task_RT_targ_lmm$Target, levels=c(&quot;neu&quot;,&quot;hap&quot;,&quot;ang&quot;))
-  EEG_task_RT_targ_lmm$ID = as.factor(EEG_task_RT_targ_lmm$ID)
-  EEG_task_RT_targ_lmm$Stim_Type = as.factor(EEG_task_RT_targ_lmm$Stim_Type)
+<span class="co"># Create factors, define neutral as baseline</span>
+  EEG_task_RT_targ_lmm<span class="op">$</span>Target =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_targ_lmm<span class="op">$</span>Target, <span class="dt">levels=</span><span class="kw">c</span>(<span class="st">&quot;neu&quot;</span>,<span class="st">&quot;hap&quot;</span>,<span class="st">&quot;ang&quot;</span>))
+  EEG_task_RT_targ_lmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_RT_targ_lmm<span class="op">$</span>ID)
+  EEG_task_RT_targ_lmm<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_RT_targ_lmm<span class="op">$</span>Stim_Type)
 
-# Create contrast for emotion
-  contrasts(EEG_task_RT_targ_lmm$Target) = contr.treatment(3, base = 1)
+<span class="co"># Create contrast for emotion</span>
+  <span class="kw">contrasts</span>(EEG_task_RT_targ_lmm<span class="op">$</span>Target) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>, <span class="dt">base =</span> <span class="dv">1</span>)
 
-# Add contrast columns
-  mm_EEG_task_RT_targ =  model.matrix( ~ Target, EEG_task_RT_targ_lmm) 
+<span class="co"># Add contrast columns</span>
+  mm_EEG_task_RT_targ =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Target, EEG_task_RT_targ_lmm) 
 
-# Attach to dataframe
-  EEG_task_RT_targ_lmm[,(ncol(EEG_task_RT_targ_lmm)+1):(ncol(EEG_task_RT_targ_lmm)+3)] = mm_EEG_task_RT_targ
-  names(EEG_task_RT_targ_lmm)[(ncol(EEG_task_RT_targ_lmm)-2):ncol(EEG_task_RT_targ_lmm)] = c(&quot;Mean&quot;,&quot;Hap_Neu&quot;, &quot;Ang_Neu&quot;)    
+<span class="co"># Attach to dataframe</span>
+  EEG_task_RT_targ_lmm[,(<span class="kw">ncol</span>(EEG_task_RT_targ_lmm)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(EEG_task_RT_targ_lmm)<span class="op">+</span><span class="dv">3</span>)] =<span class="st"> </span>mm_EEG_task_RT_targ
+  <span class="kw">names</span>(EEG_task_RT_targ_lmm)[(<span class="kw">ncol</span>(EEG_task_RT_targ_lmm)<span class="op">-</span><span class="dv">2</span>)<span class="op">:</span><span class="kw">ncol</span>(EEG_task_RT_targ_lmm)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;Hap_Neu&quot;</span>, <span class="st">&quot;Ang_Neu&quot;</span>)    
 
 ## Define model 
-  mod_RT_targ.lmer1 = lmer(log(RTs) ~ 
-                             Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                             (1 + Hap_Neu + Ang_Neu||ID) +
-                             (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                           data = EEG_task_RT_targ_lmm,
-                           control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+  mod_RT_targ.lmer1 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>
+<span class="st">                             </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                             </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                             </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>Stim_Type),
+                           <span class="dt">data =</span> EEG_task_RT_targ_lmm,
+                           <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_RT_targ.lmer1))
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_targ.lmer1))
 
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_RT_targ.lmer1),comp = &quot;Variance&quot;)
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_targ.lmer1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
-# 3rd: remove all terms with zero variance --&gt; comprises final model
-  mod_RT_targ.lmer2 = lmer(log(RTs) ~ 
-                           Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                           (1 |ID) +
-                           (0 + Hap_Neu + Ang_Neu||Stim_Type),
-                         data = EEG_task_RT_targ_lmm,
-                         control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># 3rd: remove all terms with zero variance --&gt; comprises final model</span>
+  mod_RT_targ.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>
+<span class="st">                           </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                           </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                           </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu<span class="op">||</span>Stim_Type),
+                         <span class="dt">data =</span> EEG_task_RT_targ_lmm,
+                         <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# 4th: re-check the model PCA / variance of random factors
-  summary(rePCA(mod_RT_targ.lmer2))
-  print(VarCorr(mod_RT_targ.lmer2),comp = &quot;Variance&quot;)
+<span class="co"># 4th: re-check the model PCA / variance of random factors</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_targ.lmer2))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_targ.lmer2),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
-# 5th: Likelihood-ratio-testing
-# Stim Type
-  mod_RT_targ.lmer3 = lmer(log(RTs) ~ 
-                           Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                           (1 |ID) +
-                           (1 |Stim_Type),
-                         data = EEG_task_RT_targ_lmm,
-                         control=lmerControl(calc.derivs = FALSE), REML = FALSE)
+<span class="co"># 5th: Likelihood-ratio-testing</span>
+<span class="co"># Stim Type</span>
+  mod_RT_targ.lmer3 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>
+<span class="st">                           </span>Hap_Neu <span class="op">+</span><span class="st"> </span>Ang_Neu <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                           </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                           </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),
+                         <span class="dt">data =</span> EEG_task_RT_targ_lmm,
+                         <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
-# Calculate ANOVA  
-  anova(mod_RT_targ.lmer2,mod_RT_targ.lmer3)
+<span class="co"># Calculate ANOVA  </span>
+  <span class="kw">anova</span>(mod_RT_targ.lmer2,mod_RT_targ.lmer3)
 
 
-# Re-check the model PCA / variance of random factors
-  summary(rePCA(mod_RT_targ.lmer3))
-  print(VarCorr(mod_RT_targ.lmer3),comp = &quot;Variance&quot;)</code></pre>
+<span class="co"># Re-check the model PCA / variance of random factors</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_RT_targ.lmer3))
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_RT_targ.lmer3),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)</code></pre></div>
 <p>According to our hypothesis, the main fixed effects of interest was emotion of Face 2. we applied a treatment contrast comparing neutral vs happy and neutral vs angry emotional facial expressions (<code>Neutral vs Happy</code>, <code>Neutral vs Angry</code>). The final model was comprised of:</p>
 <p><code>log(RTs) ~ Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + (1 | ,     ID) + (1 | Stim_Type)</code></p>
 <hr />
@@ -1314,42 +1071,42 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <div id="lmm2-normality-of-residuals" class="section level5">
 <h5>LMM2: Normality of residuals</h5>
 <p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
-<pre class="r"><code>## Check properties of DV / residuals 
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Check properties of DV / residuals 
 
-# Visualize normality assumption of residuals (without log transform)
-  mod_RT_lmm_no_log = lm(RTs ~ Target, data=EEG_task_RT_lmm)
-  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
+<span class="co"># Visualize normality assumption of residuals (without log transform)</span>
+  mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Target, <span class="dt">data=</span>EEG_task_RT_lmm)
+  res.mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_no_log)
   
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main=&quot;QQplot before transformation&quot;)    
-  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main=&quot;Density plot before transformation&quot;)  </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-1.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  qqpl_RT_lmm_no_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_no_log, <span class="dt">main=</span><span class="st">&quot;QQplot before transformation&quot;</span>)    
+  norm_RT_lmm_no_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_no_log), <span class="dt">main=</span><span class="st">&quot;Density plot before transformation&quot;</span>)  </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-1.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))
 
-# Check which transformation of DV is suitable 
+<span class="co"># Check which transformation of DV is suitable </span>
 
-# Calculate box-cox plot
-  mod_resp = lm(RTs ~ Target, data=EEG_task_RT_targ_lmm)
-  boxcox(mod_resp)   </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-2.png" width="576" /></p>
-<pre class="r"><code># Visualize normality assumption of residuals (with log transform)
-  mod_RT_lmm_log = lm(log(RTs) ~ Target, data=EEG_task_RT_targ_lmm)
-  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
+<span class="co"># Calculate box-cox plot</span>
+  mod_resp =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Target, <span class="dt">data=</span>EEG_task_RT_targ_lmm)
+  <span class="kw">boxcox</span>(mod_resp)   </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-2.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Visualize normality assumption of residuals (with log transform)</span>
+  mod_RT_lmm_log =<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Target, <span class="dt">data=</span>EEG_task_RT_targ_lmm)
+  res.mod_RT_lmm_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_log)
   
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log,main=&quot;QQplot after transformation&quot;)    
-  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main=&quot;Density plot after transformation&quot;)</code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-3.png" width="576" /></p>
-<pre class="r"><code>  par(mfrow=c(1,1))</code></pre>
+  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>))
+  qqpl_RT_lmm_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_log,<span class="dt">main=</span><span class="st">&quot;QQplot after transformation&quot;</span>)    
+  norm_RT_lmm_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_log), <span class="dt">main=</span><span class="st">&quot;Density plot after transformation&quot;</span>)</code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_normres-3.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">par</span>(<span class="dt">mfrow=</span><span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</code></pre></div>
 <hr />
 </div>
 <div id="lmm2-homoscedasticity" class="section level5">
 <h5>LMM2: Homoscedasticity</h5>
 <p>Based on the figure, we assume homoscedasticity.</p>
-<pre class="r"><code># Check homoscedasticity
-  plot(fitted(mod_RT_targ.lmer2), residuals(mod_RT_targ.lmer3))
-  abline(0, 0)    </code></pre>
-<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_homosk-1.png" width="480" /></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Check homoscedasticity</span>
+  <span class="kw">plot</span>(<span class="kw">fitted</span>(mod_RT_targ.lmer2), <span class="kw">residuals</span>(mod_RT_targ.lmer3))
+  <span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)    </code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM2_homosk-1.png" width="480" style="display: block; margin: auto;" /></p>
 <hr />
 </div>
 </div>
@@ -1357,15 +1114,16 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <h4><strong>Results</strong></h4>
 <!-- Print LMM results -->
 <p>Contrary to our hypothesis, we did not find a significant main effect of novelty. Children seemed to be equally fast in detecting novel and repeated facial expression. Trials in which the emotion happy was presented as Face 2 were detected significantly faster compared to neutral faces. No difference between angry and neutral as Face 2 could be found.</p>
-<pre class="r"><code># Create table
-  tab_model(mod_RT_EEG.lmer5, mod_RT_targ.lmer3,
-          pred.labels=labels,
-          string.est = &quot;b&quot;,
-          show.se=TRUE, string.se = &quot;SE&quot;,
-          show.stat=TRUE, string.stat = &quot;t&quot;,
-          show.ci = FALSE, 
-          show.re.var = TRUE, show.obs = TRUE,
-          emph.p = TRUE, dv.labels=c(&quot;Face 2 Novelty&quot;,&quot;Face 2 Emotion&quot;) , show.icc = TRUE)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Create table</span>
+  <span class="kw">tab_model</span>(mod_RT_EEG.lmer5, mod_RT_targ.lmer3,
+          <span class="dt">show.intercept =</span> <span class="ot">FALSE</span>,
+          <span class="dt">pred.labels=</span>labels,
+          <span class="dt">string.est =</span> <span class="st">&quot;b&quot;</span>,
+          <span class="dt">show.se=</span><span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
+          <span class="dt">show.stat=</span><span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
+          <span class="dt">show.ci =</span> <span class="ot">FALSE</span>, 
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;Face 2 Novelty&quot;</span>,<span class="st">&quot;Face 2 Emotion&quot;</span>) , <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
 <tr>
 <th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
@@ -1405,35 +1163,6 @@ t
 </td>
 <td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
 p
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
-Intercept
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-6.97
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.06
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-107.60
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-<strong>&lt;0.001
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-7.01
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.07
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-104.25
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>&lt;0.001
 </td>
 </tr>
 <tr>
@@ -1666,211 +1395,199 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </table>
 <p><br></p>
 <p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>b</em>: unstandardized coefficient; <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
-<p><br></p>
 </div>
 </div>
-<div id="session-info" class="section level3">
-<h3>Session info</h3>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
 <!-- Provide session info  -->
-<pre class="r"><code># Get session info 
-  sessionInfo()</code></pre>
-<pre><code>## R version 3.6.2 (2019-12-12)
-## Platform: x86_64-w64-mingw32/x64 (64-bit)
-## Running under: Windows 10 x64 (build 16299)
-## 
-## Matrix products: default
-## 
-## locale:
-## [1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
-## [3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
-## [5] LC_TIME=German_Germany.1252    
-## 
-## attached base packages:
-## [1] stats     graphics  grDevices utils     datasets  methods   base     
-## 
-## other attached packages:
-##  [1] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
-##  [4] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
-##  [7] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
-## [10] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
-## [13] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
-## [16] lmerTest_3.1-2       lme4_1.1-23          Matrix_1.2-18       
-## [19] Hmisc_4.4-0          Formula_1.2-3        survival_3.1-8      
-## [22] lattice_0.20-38      ggstatsplot_0.4.0    ez_4.4-0            
-## [25] EnvStats_2.3.1       eeptools_1.2.2       ggplot2_3.3.0       
-## [28] dplyr_0.8.5          cowplot_1.0.0        table1_1.2          
-## [31] miceadds_3.9-14      mice_3.9.0           XLConnectJars_0.2-15
-## [34] XLConnect_1.0.1      kableExtra_1.1.0    
-## 
-## loaded via a namespace (and not attached):
-##   [1] estimability_1.3          coda_0.19-3              
-##   [3] acepack_1.4.1             knitr_1.28               
-##   [5] multcomp_1.4-13           data.table_1.12.8        
-##   [7] rpart_4.1-15              inline_0.3.15            
-##   [9] generics_0.0.2            callr_3.4.3              
-##  [11] TH.data_1.0-10            correlation_0.2.0        
-##  [13] lubridate_1.7.8           webshot_0.5.2            
-##  [15] xml2_1.3.1                httpuv_1.5.2             
-##  [17] StanHeaders_2.21.0-1      assertthat_0.2.1         
-##  [19] WRS2_1.0-0                xfun_0.13                
-##  [21] hms_0.5.3                 rJava_0.9-12             
-##  [23] evaluate_0.14             promises_1.1.0           
-##  [25] tidyBF_0.2.0              fansi_0.4.1              
-##  [27] dbplyr_1.4.3              readxl_1.3.1             
-##  [29] DBI_1.1.0                 htmlwidgets_1.5.1        
-##  [31] reshape_0.8.8             stats4_3.6.2             
-##  [33] paletteer_1.1.0           ellipsis_0.3.0           
-##  [35] rcompanion_2.3.25         backports_1.1.6          
-##  [37] insight_0.8.3             ggcorrplot_0.1.3         
-##  [39] libcoin_1.0-5             jmvcore_1.2.5            
-##  [41] vctrs_0.2.4               abind_1.4-5              
-##  [43] withr_2.2.0               metaBMA_0.6.2            
-##  [45] bdsmatrix_1.3-4           checkmate_2.0.0          
-##  [47] emmeans_1.4.6             vcd_1.4-7                
-##  [49] prettyunits_1.1.1         mnormt_1.5-6             
-##  [51] fastGHQuad_1.0            cluster_2.1.0            
-##  [53] crayon_1.3.4              pkgconfig_2.0.3          
-##  [55] nlme_3.1-147              statsExpressions_0.4.1   
-##  [57] palr_0.2.0                nnet_7.3-12              
-##  [59] pals_1.6                  rlang_0.4.5              
-##  [61] lifecycle_0.2.0           miniUI_0.1.1.1           
-##  [63] groupedstats_0.2.2        skimr_2.1.1              
-##  [65] LaplacesDemon_16.1.4      MatrixModels_0.4-1       
-##  [67] sandwich_2.5-1            EMT_1.1                  
-##  [69] modelr_0.1.6              dichromat_2.0-0          
-##  [71] cellranger_1.1.0          matrixStats_0.56.0       
-##  [73] broomExtra_4.0.0          lmtest_0.9-37            
-##  [75] loo_2.2.0                 mc2d_0.1-18              
-##  [77] carData_3.0-3             boot_1.3-23              
-##  [79] zoo_1.8-7                 reprex_0.3.0             
-##  [81] base64enc_0.1-3           processx_3.4.2           
-##  [83] png_0.1-7                 viridisLite_0.3.0        
-##  [85] rjson_0.2.20              oompaBase_3.2.9          
-##  [87] parameters_0.6.1          ggExtra_0.9              
-##  [89] multcompView_0.1-8        maptools_0.9-9           
-##  [91] coin_1.3-1                arm_1.10-1               
-##  [93] jpeg_0.1-8.1              ggeffects_0.14.3         
-##  [95] ggsignif_0.6.0            scales_1.1.0             
-##  [97] magrittr_1.5              compiler_3.6.2           
-##  [99] rstantools_2.0.0          bbmle_1.0.23.1           
-## [101] RColorBrewer_1.1-2        cli_2.0.2                
-## [103] pbapply_1.4-2             ps_1.3.2                 
-## [105] TMB_1.7.16                Brobdingnag_1.2-6        
-## [107] htmlTable_1.13.3          mgcv_1.8-31              
-## [109] tidyselect_1.0.0          stringi_1.4.6            
-## [111] highr_0.8                 mitools_2.4              
-## [113] yaml_2.2.1                latticeExtra_0.6-29      
-## [115] ggrepel_0.8.2             bridgesampling_1.0-0     
-## [117] grid_3.6.2                tools_3.6.2              
-## [119] parallel_3.6.2            rio_0.5.16               
-## [121] rstudioapi_0.11           foreign_0.8-72           
-## [123] gridExtra_2.3             ipmisc_2.0.0             
-## [125] pairwiseComparisons_0.3.0 farver_2.0.3             
-## [127] digest_0.6.23             shiny_1.4.0.2            
-## [129] nortest_1.0-4             jmv_1.2.5                
-## [131] Rcpp_1.0.3                car_3.0-7                
-## [133] broom_0.5.6               metafor_2.4-0            
-## [135] BayesFactor_0.9.12-4.2    performance_0.4.5        
-## [137] metaplus_0.7-11           later_1.0.0              
-## [139] httr_1.4.1                effectsize_0.3.0         
-## [141] sjstats_0.17.9            colorspace_1.4-1         
-## [143] fs_1.4.1                  rvest_0.3.5              
-## [145] splines_3.6.2             statmod_1.4.34           
-## [147] rematch2_2.1.1            expm_0.999-4             
-## [149] sp_1.4-1                  mapproj_1.2.7            
-## [151] jcolors_0.0.4             xtable_1.8-4             
-## [153] jsonlite_1.6.1            nloptr_1.2.2.1           
-## [155] rstan_2.19.3              zeallot_0.1.0            
-## [157] modeltools_0.2-23         scico_1.1.0              
-## [159] R6_2.4.1                  broom.mixed_0.2.5        
-## [161] pillar_1.4.3              htmltools_0.4.0          
-## [163] mime_0.9                  glue_1.4.0               
-## [165] fastmap_1.0.1             minqa_1.2.4              
-## [167] codetools_0.2-16          maps_3.3.0               
-## [169] pkgbuild_1.0.6            mvtnorm_1.1-0            
-## [171] numDeriv_2016.8-1.1       curl_4.3                 
-## [173] DescTools_0.99.34         gtools_3.8.2             
-## [175] logspline_2.1.15          zip_2.0.4                
-## [177] openxlsx_4.1.4            rmarkdown_2.1            
-## [179] repr_1.1.0                munsell_0.5.0            
-## [181] haven_2.2.0               gtable_0.3.0             
-## [183] bayestestR_0.6.0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get session info </span>
+  <span class="kw">sessionInfo</span>()</code></pre></div>
+<pre><code>R version 3.6.2 (2019-12-12)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 16299)
+
+Matrix products: default
+
+locale:
+[1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
+[3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
+[5] LC_TIME=German_Germany.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
+ [4] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
+ [7] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
+[10] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
+[13] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
+[16] lmerTest_3.1-2       lme4_1.1-23          Matrix_1.2-18       
+[19] Hmisc_4.4-0          Formula_1.2-3        survival_3.1-8      
+[22] lattice_0.20-38      ggstatsplot_0.4.0    ez_4.4-0            
+[25] EnvStats_2.3.1       eeptools_1.2.2       ggplot2_3.3.0       
+[28] dplyr_0.8.5          cowplot_1.0.0        table1_1.2          
+[31] miceadds_3.9-14      mice_3.9.0           rmdformats_0.3.7    
+[34] XLConnectJars_0.2-15 XLConnect_1.0.1      kableExtra_1.1.0    
+
+loaded via a namespace (and not attached):
+ [1] estimability_1.3       coda_0.19-3            acepack_1.4.1         
+ [4] knitr_1.28             multcomp_1.4-13        data.table_1.12.8     
+ [7] rpart_4.1-15           inline_0.3.15          generics_0.0.2        
+[10] callr_3.4.3            TH.data_1.0-10         correlation_0.2.0     
+[13] lubridate_1.7.8        webshot_0.5.2          xml2_1.3.1            
+[16] httpuv_1.5.2           StanHeaders_2.21.0-1   assertthat_0.2.1      
+[19] WRS2_1.0-0             xfun_0.13              hms_0.5.3             
+[22] rJava_0.9-12           evaluate_0.14          promises_1.1.0        
+[25] tidyBF_0.2.0           fansi_0.4.1            dbplyr_1.4.3          
+[28] readxl_1.3.1           htmlwidgets_1.5.1      DBI_1.1.0             
+[31] reshape_0.8.8          stats4_3.6.2           paletteer_1.1.0       
+[34] ellipsis_0.3.0         rcompanion_2.3.25      backports_1.1.6       
+[37] bookdown_0.18          insight_0.8.3          ggcorrplot_0.1.3      
+[40] libcoin_1.0-5          jmvcore_1.2.5          vctrs_0.2.4           
+[43] abind_1.4-5            withr_2.2.0            metaBMA_0.6.2         
+[46] checkmate_2.0.0        bdsmatrix_1.3-4        emmeans_1.4.6         
+[49] vcd_1.4-7              prettyunits_1.1.1      mnormt_1.5-6          
+[52] fastGHQuad_1.0         cluster_2.1.0          crayon_1.3.4          
+[55] pkgconfig_2.0.3        nlme_3.1-147           statsExpressions_0.4.1
+[58] palr_0.2.0             nnet_7.3-12            pals_1.6              
+[61] rlang_0.4.5            lifecycle_0.2.0        miniUI_0.1.1.1        
+[64] groupedstats_0.2.2     skimr_2.1.1            LaplacesDemon_16.1.4  
+[67] MatrixModels_0.4-1     sandwich_2.5-1         EMT_1.1               
+[70] modelr_0.1.6           dichromat_2.0-0        cellranger_1.1.0      
+[73] matrixStats_0.56.0     broomExtra_4.0.0       lmtest_0.9-37         
+ [ reached getOption(&quot;max.print&quot;) -- omitted 109 entries ]</code></pre>
 </div>
 
-
-
-</div>
-</div>
-
-</div>
-
-<script>
-
-// add bootstrap table styles to pandoc tables
-function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
-}
-$(document).ready(function () {
-  bootstrapStylePandocTables();
-});
-
-
-</script>
-
-<!-- tabsets -->
+    </div>
+    <div class="col-xs-2">
+        <div class="btn-toolbar">
+    <div class="btn-group">
+    <a href="#" class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="text-muted">Code</span> <span class="text-muted caret"></span></a>
+    <ul class="dropdown-menu" style="min-width: 50px;">
+    <li><a id="rmd-show-all-code" href="#">Show All</a></li>
+    <li><a id="rmd-hide-all-code" href="#">Hide All</a></li>
+    </ul>
+    </div>
+    </div>
+        </div>
+  </div>
+  </div>
+  </div>
+  <div class="row">
+    </div>
+  </div>
 
 <script>
 $(document).ready(function () {
-  window.buildTabsets("TOC");
-});
+  // add bootstrap table styles to pandoc tables
+  $('tr.header').parent('thead').parent('table').addClass('table table-striped table-hover');
 
-$(document).ready(function () {
-  $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
-  });
+  
+    $('.pages img')
+ 	  .addClass("image-lb");
+  $('.pages').magnificPopup({
+	      type:'image',
+	      closeOnContentClick: false,
+	      closeBtnInside: false,
+        delegate: 'img',
+	      gallery: {enabled: true },
+          removalDelay: 500,
+          callbacks: {
+              beforeOpen: function() {
+                // just a hack that adds mfp-anim class to markup
+                this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+              }
+          },
+          mainClass: 'mfp-move-from-top',
+	      image: {
+	        verticalFit: true,
+            titleSrc: 'alt'
+	      }
+ 	    });
+ 	
+    
+    $('#toc ul li').first().addClass("active");
+    $('#toc ul li').attr("data-target", function() {
+        return($(this).children("a").attr("href"));
+    })
+    $('body .section.level1').first().addClass("active");
+    $('body .section.level1').not('.active').hide();
+    
+    $('#toc a[href*="#"]').click(function() {
+
+      var id = $(this).attr("href");
+      if (id === "#") return;
+      if (id.substring(0, 8) === "#dyntab-") return;
+      toggle_page(id);
+
+      // Menu
+      var menu_entry = $(".menu li[data-target='"+id+"']");
+      menu_entry.addClass("active");
+      $(".menu li").not(menu_entry).removeClass("active"); 
+      
+
+    });
+
+    function toggle_page(id) {
+      $(".page").not(page).removeClass("active").hide();
+      window.page = id;
+      var page = $(window.page);
+      window.location.hash = window.page;
+      //$(this).addClass("active");
+
+      page.show();
+
+      var totop = setInterval(function () {
+        $(".pages").animate({scrollTop: 0}, 0);
+      }, 10);
+
+      setTimeout(function () {
+        page.addClass("active");
+        setTimeout(function () {
+          clearInterval(totop);
+        }, 1000);
+      }, 100);
+
+      window.dispatchEvent(new Event('resize'));
+
+    }
+
+
+    $(".menu li").click(function () {
+
+      toggle_page($(this).data("target"));
+
+      // Menu
+      if (!$(this).data("target")) return;
+      if ($(this).is(".active")) return;
+      $(".menu li").not($(this)).removeClass("active");
+      $(this).addClass("active");
+
+    });
+  
+    
+
+
+    window.page = window.location.hash;
+    if (window.page != "") {
+      $(".menu").find("li[data-target=" + window.page + "]").trigger("click");
+    }
+
+    /* init material bootstrap js */
+    $.material.init();
 });
 </script>
 
-<!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
-<script>
-$(document).ready(function ()  {
 
-    // move toc-ignore selectors from section div to header
-    $('div.section.toc-ignore')
-        .removeClass('toc-ignore')
-        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
-
-    // establish options
-    var options = {
-      selectors: "h1,h2,h3,h4",
-      theme: "bootstrap3",
-      context: '.toc-content',
-      hashGenerator: function (text) {
-        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
-      },
-      ignoreSelector: ".toc-ignore",
-      scrollTo: 0
-    };
-    options.showAndHide = true;
-    options.smoothScroll = true;
-
-    // tocify
-    var toc = $("#TOC").tocify(options).data("toc-tocify");
-});
-</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

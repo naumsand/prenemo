@@ -1,11 +1,17 @@
 ---
 title: "Emotion and empathy measures"
 output: 
-  html_document:
+  rmdformats::material:
+    highlight: kate
+    css: web_style.css
+    thumbnails: false
+    lightbox: true
+    gallery: true
+    cards: true
+    self_contained: no
+    number_sections: no
     code_folding: hide
-    toc: true
-    toc_float: true 
-    toc_depth: 3  
+    fig_caption: yes
 ---
 
 <!-- Set up workspace -->
@@ -13,7 +19,18 @@ output:
 ```{r setup, include = FALSE, message = FALSE, warning = FALSE}
 
 # Set general settings for Markdown file 
-  knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, results = FALSE)
+  options(max.print="75")
+
+  knitr::opts_chunk$set(echo=TRUE,
+  	             #cache=TRUE,
+                 prompt=FALSE,
+                 tidy=TRUE,
+                 comment=NA,
+                 message=FALSE,
+                 warning=FALSE,
+                 results = FALSE,
+  	             fig.align="center")
+  knitr::opts_knit$set(width=75)
 
 # Swipe environment
   rm(list=ls())
@@ -120,9 +137,7 @@ apaCorr <- function(mat, corrtype = "pearson") {
 
 ```
 
-<br>
-
-### Emotion matching task
+# Emotion matching task
 
 We employed an emotion matching task (EMT; adapted from Watling & Damaskinou, 2018) to assess children's emotion knowledge. Children saw two faces with the same identity but different facial expression. Both faces were presented at the same time. While the faces were on screen, the children heard an audio lay-over of one of the emotion words (happy, angry or neutral). The children had to indicate with a button press which face matched the audio lay-over. We measured reaction times and accuracy.  
 
@@ -487,9 +502,7 @@ With regard to accuracy, we did not find a significant effect for happy vs neutr
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-<br>
-
-### Emotion- and empathy related measures and ERP
+# Emotion- and empathy related measures and ERP
 
 We also investigated the link between ERP amplitudes and emotion- and empathy-related measures. We calculated correlations between the amplitude differences of angry and neutral faces with composite scores parents' and experimenter's rating of children's empathy and emotion knowledge.
 
@@ -585,3 +598,21 @@ None of the correlations between ERP amplitude differences and emotion- and empa
 ```
 
 *Note:* Correlation coefficients were computed with Spearman's rank correlations. * p< .05; ** p< .01; *** p< .001.
+
+```{r, include = FALSE, eval = FALSE}
+# To create APA table  
+  library(apaTables)
+  apa.cor.table(ERPs_corr, filename="Table1_APA.doc", table.number=1)
+```
+
+# Session info
+
+<!-- Provide session info  -->
+
+```{r session_info, results = TRUE}
+
+# Get session info 
+  sessionInfo()
+
+```
+

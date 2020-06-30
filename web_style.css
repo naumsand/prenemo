@@ -1,0 +1,88 @@
+footer {
+    position: relative;
+    text-align: right;
+    font-size: 1.35rem;
+    margin-right: 30px;
+    margin-bottom: 10px;
+}
+
+/* button code */
+.btn-group>.btn:first-child {
+    margin-top: 100px;
+}
+
+
+.btn-group-raised .btn:not(.btn-link), .btn-group-raised .input-group-btn .btn:not(.btn-link), .btn.btn-raised:not(.btn-link), .input-group-btn .btn.btn-raised:not(.btn-link) {
+      background-color: #dedede;
+}
+
+.text-muted {
+    color: #264b71;
+}
+
+
+
+
+/* HEADING */
+h1, .h1 {
+  margin-top: 60px;
+  color: #575659;
+  margin-bottom: 1em;
+
+}
+
+.header-panel h1 {
+    font-size: 22px;
+}
+
+
+/* CAPTION */
+/* ------- */
+
+caption {
+  font-size: 1em;
+  color: #939393;
+  text-align: justify;
+}
+
+/* TABLE */
+table {
+  caption-side: top;
+}
+
+.caption {
+  font-size: 1em;
+  color: #939393;
+  margin-right: 0;
+  margin-left: 0;
+  margin-bottom: 25px;
+  text-align: justify;
+}
+
+
+/* TABS */
+/* --- */
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
+    color: #fff;
+    background-color: #575659;
+}
+
+a, a:focus, a:hover {
+    color: #44709e;
+}
+
+/* NAVIGATION BAR */
+/* -------------- */
+
+.navbar, .navbar.navbar-default {
+    background-color: #575659;
+  }
+  
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    color: #FFC0CB;
+  }
+
+.header-panel {
+    background-color: #575659;
+  }
