@@ -915,7 +915,7 @@ labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quo
           <span class="dt">show.se=</span><span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
           <span class="dt">show.stat=</span><span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
           <span class="dt">show.ci =</span> <span class="ot">FALSE</span>, 
-          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">FALSE</span>,
           <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;P1 Amplitudes&quot;</span>,<span class="st">&quot;N170 Amplitudes&quot;</span>,<span class="st">&quot;P3 Amplitudes&quot;</span>),
           <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
@@ -1287,29 +1287,15 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-2859
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-5718
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-2859
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
 0.008 / 0.119
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
 0.001 / 0.061
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
 0.014 / 0.110
 </td>
 </tr>
@@ -1624,8 +1610,9 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <!-- LMM Model specifications -->
 <div id="lmm_p1-random-effect-structure-1" class="section level5">
 <h5>LMM_P1: Random effect structure</h5>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select correct responses</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select correct responses and outlier-free data </span>
   P1_Cat =<span class="st"> </span><span class="kw">subset</span>(ERP_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)    
+  P1_Cat =<span class="st"> </span><span class="kw">subset</span>(P1_Cat, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
 <span class="co"># Select targets</span>
   P1_Cat =<span class="st"> </span><span class="kw">subset</span>(P1_Cat,Group_pt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>)   
@@ -1730,15 +1717,16 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select targets</span>
   N170_Cat =<span class="st"> </span><span class="kw">subset</span>(ERP_data, Group_pt <span class="op">==</span><span class="st"> </span><span class="dv">2</span>) 
 
-<span class="co"># Select correct responses</span>
+<span class="co"># Select correct responses and outlier-free data</span>
   N170_Cat =<span class="st"> </span><span class="kw">subset</span>(N170_Cat, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)    
+  N170_Cat =<span class="st"> </span><span class="kw">subset</span>(N170_Cat, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
 <span class="co"># Define novel vs repeated trials</span>
   N170_Cat[N170_Cat<span class="op">$</span>Group_pcic<span class="op">==</span><span class="dv">2</span>,]<span class="op">$</span>Group_pcic =<span class="st"> &quot;repeated&quot;</span>
   N170_Cat[N170_Cat<span class="op">$</span>Group_pcic<span class="op">==</span><span class="dv">3</span>,]<span class="op">$</span>Group_pcic =<span class="st"> &quot;novel&quot;</span>
 
 <span class="co"># Separate data in left and right hemisphere</span>
-  N170_Cat =<span class="st"> </span><span class="kw">gather</span> (N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l<span class="op">:</span>mean_ROI_N170r, <span class="dt">factor_key =</span> <span class="ot">TRUE</span>)
+  N170_Cat =<span class="st"> </span><span class="kw">gather</span>(N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l<span class="op">:</span>mean_ROI_N170r, <span class="dt">factor_key =</span> <span class="ot">TRUE</span>)
   N170_Cat<span class="op">$</span>Elect_site =<span class="st"> </span><span class="kw">as.character</span>(N170_Cat<span class="op">$</span>Elect_site)
 
 <span class="co"># Add variable name</span>
@@ -1760,8 +1748,10 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
   <span class="kw">contrasts</span>(N170_Cat<span class="op">$</span>Group_pcic) =<span class="st"> </span><span class="kw">contr.sum</span>(<span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>
 
 <span class="co"># Add contrast columns</span>
-  mm_N170_Cat =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Group_pcic <span class="op">+</span><span class="st"> </span>Elect_site <span class="op">+</span><span class="st"> </span>Group_pcic<span class="op">*</span>Elect_site, N170_Cat) 
-
+  mm_N170_Cat =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Group_pcic <span class="op">+</span><span class="st"> </span>Group_pcic<span class="op">*</span>Elect_site, N170_Cat) 
+  
+  <span class="kw">nrow</span>(N170_Cat)
+  
 <span class="co"># Attach to dataframe</span>
   N170_Cat[,(<span class="kw">ncol</span>(N170_Cat)<span class="op">+</span><span class="dv">1</span>)<span class="op">:</span>(<span class="kw">ncol</span>(N170_Cat)<span class="op">+</span><span class="dv">4</span>)] =<span class="st"> </span>mm_N170_Cat
   <span class="kw">names</span>(N170_Cat)[(<span class="kw">ncol</span>(N170_Cat)<span class="op">-</span><span class="dv">3</span>)<span class="op">:</span><span class="kw">ncol</span>(N170_Cat)] =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Mean&quot;</span>,<span class="st">&quot;Nov_Rep&quot;</span>,<span class="st">&quot;Elect_site&quot;</span>,<span class="st">&quot;Nov_RepxElect_site&quot;</span>) 
@@ -1783,7 +1773,8 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <span class="co"># Improved model </span>
   mod_N170_cat.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(N170_Amplitude <span class="op">~</span><span class="st"> </span>
 <span class="st">                              </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site <span class="op">+</span><span class="st"> </span>Elect_site <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
-<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Elect_site<span class="op">||</span>ID),
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site<span class="op">||</span>Stim_Type),
                             <span class="dt">data =</span> N170_Cat,
                             <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
 
@@ -1796,21 +1787,32 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <span class="co"># ID</span>
   mod_N170_cat.lmer3 =<span class="st"> </span><span class="kw">lmer</span>(N170_Amplitude <span class="op">~</span><span class="st"> </span>
 <span class="st">                              </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site <span class="op">+</span><span class="st"> </span>Elect_site <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
-<span class="st">                              </span>(<span class="dv">1</span> <span class="op">|</span>ID),
+<span class="st">                              </span>(<span class="dv">1</span><span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site<span class="op">||</span>Stim_Type),
+                            <span class="dt">data =</span> N170_Cat,
+                            <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
+  
+<span class="co"># Stim Type</span>
+  mod_N170_cat.lmer4 =<span class="st"> </span><span class="kw">lmer</span>(N170_Amplitude <span class="op">~</span><span class="st"> </span>
+<span class="st">                              </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site <span class="op">+</span><span class="st"> </span>Elect_site <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span><span class="op">|</span>Stim_Type),
                             <span class="dt">data =</span> N170_Cat,
                             <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))
 
 <span class="co"># Calculate ANOVA</span>
-  <span class="kw">anova</span>(mod_N170_cat.lmer2 ,mod_N170_cat.lmer3 )
+  <span class="kw">anova</span>(mod_N170_cat.lmer2, mod_N170_cat.lmer3)
+  <span class="kw">anova</span>(mod_N170_cat.lmer2, mod_N170_cat.lmer4)
 
 <span class="co"># Final model</span>
   mod_N170_cat.lmer4 =<span class="st"> </span><span class="kw">lmer</span>(N170_Amplitude <span class="op">~</span><span class="st"> </span>
 <span class="st">                              </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site <span class="op">+</span><span class="st"> </span>Elect_site <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
-<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Elect_site<span class="op">||</span>ID),
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span>Nov_RepxElect_site<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span><span class="op">|</span>Stim_Type),
                             <span class="dt">data =</span> N170_Cat,
                             <span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))</code></pre></div>
 <p>According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions. For the N170, we also added a scaled sum contrast for Hemisphere (<code>ROI</code>) and the interaction of novelty with hemisphere (<code>NvsR x ROI</code>).The final model was comprised of:</p>
-<p><code>N170_Amplitude ~ Nov_Rep + Nov_RepxElect_site + Elect_site + ,     scale(Age) + scale(WM) + ((1 | ID) + (0 + Elect_site | ID))</code></p>
+<p><code>N170_Amplitude ~ Nov_Rep + Nov_RepxElect_site + Elect_site + ,     scale(Age) + scale(WM) + ((1 | ID) + (0 + Nov_Rep | ID) + ,     (0 + Nov_RepxElect_site | ID)) + (1 | Stim_Type)</code></p>
 <hr />
 </div>
 <div id="lmm_n170-normality-of-residuals-1" class="section level5">
@@ -1844,8 +1846,9 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </div>
 <div id="lmm_p3-random-effect-structure-1" class="section level5">
 <h5>LMM_P3: Random effect structure</h5>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Correct responses</span>
-  P3_Cat =<span class="st"> </span><span class="kw">subset</span>(ERP_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select correct responses and outlier-free data</span>
+  P3_Cat =<span class="st"> </span><span class="kw">subset</span>(ERP_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)    
+  P3_Cat =<span class="st"> </span><span class="kw">subset</span>(P3_Cat, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
 
 <span class="co"># Factor random factors </span>
   P3_Cat<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(P3_Cat<span class="op">$</span>ID)
@@ -1863,7 +1866,6 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 
 <span class="co"># Set treatment contrast</span>
   <span class="kw">contrasts</span>(P3_Cat<span class="op">$</span>Group_pcic) =<span class="st"> </span><span class="kw">contr.sum</span>(<span class="dv">2</span>)<span class="op">/</span><span class="dv">2</span>
-
            
 <span class="co"># Add contrast columns</span>
   mm_P3_Cat =<span class="st">  </span><span class="kw">model.matrix</span>( <span class="op">~</span><span class="st"> </span>Group_pcic, P3_Cat) 
@@ -1884,7 +1886,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
   <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_P3_cat.lmer1))
 
 <span class="co"># 2nd: check which random terms explain the least variance</span>
-  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_P3_cat.lmer1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_P3_cat.lmer1), <span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 <span class="co"># Improved model</span>
   mod_P3_cat.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(mean_ROI_P3 <span class="op">~</span><span class="st"> </span>
@@ -1981,7 +1983,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
             <span class="dt">show.se=</span><span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
             <span class="dt">show.stat=</span><span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
             <span class="dt">show.ci =</span> <span class="ot">FALSE</span>, 
-            <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+            <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">FALSE</span>,
             <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;P1 Amplitudes&quot;</span>,<span class="st">&quot;N170 Amplitudes&quot;</span>,<span class="st">&quot;P3 Amplitudes&quot;</span>),
             <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
@@ -2045,40 +2047,40 @@ p
 Novel vs Repeated
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--1.54
+-1.23
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.87
+0.92
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--1.77
+-1.34
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.076
+0.181
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.19
+-0.29
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.56
+0.77
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.33
+-0.37
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.738
+0.712
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  0">
-0.09
+0.30
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  1">
-1.00
+1.08
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  2">
-0.09
+0.27
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  3">
-0.925
+0.786
 </td>
 </tr>
 <tr>
@@ -2086,40 +2088,40 @@ Novel vs Repeated
 Age
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.89
+1.81
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.09
+1.10
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.73
+1.65
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.084
+0.100
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.67
+-0.62
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.63
+0.67
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--1.07
+-0.92
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.282
+0.357
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  0">
-1.71
+1.67
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  1">
-1.27
+1.26
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  2">
-1.35
+1.32
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  3">
-0.176
+0.186
 </td>
 </tr>
 <tr>
@@ -2130,37 +2132,37 @@ Working Memory
 0.39
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.11
+1.12
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.35
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.728
+0.725
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.56
+0.51
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.64
+0.68
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-0.87
+0.75
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.383
+0.451
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  0">
-0.08
+0.09
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  1">
 1.29
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  2">
-0.06
+0.07
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  3">
-0.953
+0.947
 </td>
 </tr>
 <tr>
@@ -2176,16 +2178,16 @@ NvsR X ROI
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.31
+-0.47
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-1.10
+1.46
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.28
+-0.32
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.779
+0.749
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  0">
 </td>
@@ -2209,16 +2211,16 @@ ROI
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.11
+1.64
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.91
+0.57
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.22
+2.87
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.224
+<strong>0.004</strong>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  0">
 </td>
@@ -2239,26 +2241,26 @@ Random Effects
 σ<sup>2</sup>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-180.03
+179.60
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-147.48
+147.91
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-231.64
+238.51
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 τ<sub>00</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-28.36 <sub>ID</sub>
+28.09 <sub>ID</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.00 <sub>ID</sub>
+1.16 <sub>Stim_Type</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.48 <sub>Stim_Type</sub>
+1.88 <sub>Stim_Type</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -2267,33 +2269,31 @@ Random Effects
  
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-11.89 <sub>ID.1</sub>
+24.73 <sub>ID</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-38.39 <sub>ID</sub>
+37.23 <sub>ID</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-τ<sub>11</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
  
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-13.85 <sub>ID.1.Elect_siteright</sub>
+5.70 <sub>ID.1</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
  
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
-ρ<sub>01</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
  
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.41 <sub>ID.1</sub>
+10.04 <sub>ID.2</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
  
@@ -2306,7 +2306,7 @@ ICC
 0.14
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.00
+0.02
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
 0.14
@@ -2331,37 +2331,23 @@ N
  
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
- 
+37 <sub>Stim_Type</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-40 <sub>Stim_Type</sub>
+37 <sub>Stim_Type</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-1170
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-2340
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-1170
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.022 / 0.155
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.019 / 0.152
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.006 / 0.006
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.008 / 0.026
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.011 / 0.152
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.010 / 0.145
 </td>
 </tr>
 </table>
@@ -2377,7 +2363,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
   <span class="kw">sessionInfo</span>()</code></pre></div>
 <pre><code>R version 3.6.2 (2019-12-12)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 16299)
+Running under: Windows 10 x64 (build 18362)
 
 Matrix products: default
 
@@ -2392,7 +2378,7 @@ attached base packages:
 other attached packages:
  [1] gvlma_1.0.0.3        eegUtils_0.5.0       akima_0.6-2         
  [4] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
- [7] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
+ [7] readr_1.3.1          tidyr_1.1.0          tibble_3.0.1        
 [10] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
 [13] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
 [16] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
@@ -2408,12 +2394,12 @@ loaded via a namespace (and not attached):
  [1] vcd_1.4-7            ps_1.3.2             lmtest_0.9-37       
  [4] crayon_1.3.4         jcolors_0.0.4        nlme_3.1-147        
  [7] backports_1.1.6      metafor_2.4-0        reprex_0.3.0        
-[10] ggcorrplot_0.1.3     rlang_0.4.5          readxl_1.3.1        
+[10] ggcorrplot_0.1.3     rlang_0.4.7          readxl_1.3.1        
 [13] performance_0.4.5    nloptr_1.2.2.1       callr_3.4.3         
 [16] rjson_0.2.20         glue_1.4.0           loo_2.2.0           
 [19] rstan_2.19.3         parallel_3.6.2       processx_3.4.2      
 [22] shinydashboard_0.7.1 tcltk_3.6.2          haven_2.2.0         
-[25] tidyselect_1.0.0     rio_0.5.16           zoo_1.8-7           
+[25] tidyselect_1.1.0     rio_0.5.16           zoo_1.8-7           
 [28] mc2d_0.1-18          xtable_1.8-4         MatrixModels_0.4-1  
 [31] magrittr_1.5         evaluate_0.14        cli_2.0.2           
 [34] rstudioapi_0.11      miniUI_0.1.1.1       sp_1.4-1            
@@ -2426,7 +2412,7 @@ loaded via a namespace (and not attached):
 [55] zeallot_0.1.0        withr_2.2.0          rcompanion_2.3.25   
 [58] cellranger_1.1.0     pracma_2.2.9         coda_0.19-3         
 [61] pillar_1.4.3         multcomp_1.4-13      fs_1.4.1            
-[64] paletteer_1.1.0      vctrs_0.2.4          ellipsis_0.3.0      
+[64] paletteer_1.1.0      vctrs_0.3.1          ellipsis_0.3.0      
 [67] generics_0.0.2       nortest_1.0-4        tools_3.6.2         
 [70] foreign_0.8-72       munsell_0.5.0        emmeans_1.4.6       
 [73] fastmap_1.0.1        compiler_3.6.2       abind_1.4-5         

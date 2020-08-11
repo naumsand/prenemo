@@ -206,6 +206,7 @@ $(document).ready(function () {
 <li>Reaction times &lt; 250 ms or &gt; 7s</li>
 <li>Values &lt;/&gt; 2.5 of the median absolute deviation (MAD) based on the individual participant</li>
 <li>Incorrect answers</li>
+<li>Rejected EEG trials</li>
 </ul>
 <p>We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all (general) linear mixed model analyses to control for cognitive abilities of the children as well as potential differences in age.</p>
 <p>The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.</p>
@@ -218,7 +219,7 @@ $(document).ready(function () {
 <h4><strong>Descriptive statistics</strong></h4>
 <!-- Draw EEG task accuracy plots -->
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select outlier-free data and correct trials</span>
-  EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
   EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_Acc_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 ## Plot separated by novel vs repeated trials  
@@ -253,7 +254,7 @@ $(document).ready(function () {
 ## Plot separated by emotions
 
 <span class="co"># Select outlier-free data and correct trials</span>
-  EEG_task_Acc_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
   EEG_task_Acc_targ_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_Acc_targ_plot,Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
   
 <span class="co"># Recode variable</span>
@@ -306,7 +307,7 @@ $(document).ready(function () {
 <div id="glmm-1-random-effect-structure" class="section level5">
 <h5>GLMM 1: Random effect structure</h5>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Select outlier-free data</span>
-  EEG_task_Acc_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 <span class="co"># Factor random effects</span>
   EEG_task_Acc_glmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_glmm<span class="op">$</span>ID)
@@ -344,26 +345,40 @@ $(document).ready(function () {
 
 <span class="co"># 2nd: check which random terms explain the least variance</span>
   <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_Acc_EEG.glmm1),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
+  
+
+<span class="co"># Adapt model</span>
+  mod_Acc_EEG.glmm2 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),
+                              <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                              <span class="dt">family =</span> binomial)
+  
+<span class="co"># 1st: check how many zero variance terms you got in random effects</span>
+  <span class="kw">summary</span>(<span class="kw">rePCA</span>(mod_Acc_EEG.glmm2))
+
+<span class="co"># 2nd: check which random terms explain the least variance</span>
+  <span class="kw">print</span>(<span class="kw">VarCorr</span>(mod_Acc_EEG.glmm2),<span class="dt">comp =</span> <span class="st">&quot;Variance&quot;</span>)
 
 ## Likelihood-ratio-testing
   
 <span class="co"># ID   </span>
-  mod_Acc_EEG.glmm2 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
-<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID) <span class="op">+</span>
-<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),
-                          <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
-                          <span class="dt">family =</span> binomial)
+  mod_Acc_EEG.glmm3 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">0</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),
+                              <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                              <span class="dt">family =</span> binomial)
 
 <span class="co"># Stim Type</span>
-  mod_Acc_EEG.glmm3 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
-<span class="st">                            </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID)  <span class="op">+</span>
-<span class="st">                            </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),
-                          <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
-                          <span class="dt">family =</span> binomial)
+ mod_Acc_EEG.glmm4 =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>Nov_Rep <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span>
+<span class="st">                              </span>(<span class="dv">1</span><span class="op">|</span>Stim_Type),
+                              <span class="dt">data =</span> EEG_task_Acc_glmm,<span class="dt">control=</span><span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>),
+                              <span class="dt">family =</span> binomial)
 
 <span class="co"># Calculate ANOVAs</span>
-  anov_glmm1_glmm2 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
-  anov_glmm1_glmm3 =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
+  anov_glmm1_glmm2_<span class="dv">3</span> =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm3)
+  anov_glmm1_glmm2_<span class="dv">4</span> =<span class="st"> </span><span class="kw">anova</span>(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm4)
 
 
 <span class="co"># Final model</span>
@@ -382,13 +397,13 @@ $(document).ready(function () {
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span>
   <span class="kw">overdisp_fun</span>(mod_Acc_EEG.glmm4)</code></pre></div>
 <pre><code>  chisq   ratio     rdf       p 
-2725.06    0.87 3139.00    1.00 </code></pre>
+2259.43    0.86 2624.00    1.00 </code></pre>
 <hr />
 </div>
 <div id="glmm-2-random-effect-structure" class="section level5">
 <h5>GLMM 2: Random effect structure</h5>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Get outlier-free data</span>
-  EEG_task_Acc_targ_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)
+  EEG_task_Acc_targ_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 <span class="co"># Rename variables</span>
   EEG_task_Acc_targ_glmm<span class="op">$</span>Target[EEG_task_Acc_targ_glmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;hap&quot;</span>
@@ -485,8 +500,8 @@ $(document).ready(function () {
 <p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span>
   <span class="kw">overdisp_fun</span>(mod_Acc_targ.glmm5)</code></pre></div>
-<pre><code> chisq  ratio    rdf      p 
-2813.2    0.9 3138.0    1.0 </code></pre>
+<pre><code>  chisq   ratio     rdf       p 
+2340.25    0.89 2623.00    1.00 </code></pre>
 <hr />
 </div>
 </div>
@@ -506,7 +521,7 @@ $(document).ready(function () {
           <span class="dt">pred.labels=</span>labels, <span class="dt">show.ci =</span> <span class="ot">FALSE</span>,
           <span class="dt">show.se =</span> <span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
           <span class="dt">show.stat =</span> <span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
-          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">FALSE</span>,
           <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;Face 2 Novelty&quot;</span>,<span class="st">&quot;Face 2 Emotion&quot;</span>) , <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
 <tr>
@@ -554,16 +569,16 @@ p
 Novel vs Repeated
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.00
+1.02
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.33
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.00
+0.07
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.000
+0.944
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
@@ -579,28 +594,28 @@ Novel vs Repeated
 Age
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.98
+1.01
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.22
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.11
+0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.913
+0.955
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.98
+1.02
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
 0.21
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.09
+0.11
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.925
+0.916
 </td>
 </tr>
 <tr>
@@ -608,28 +623,28 @@ Age
 Working memory
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.79
+0.80
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.22
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--1.10
+-1.01
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.271
+0.312
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.78
+0.79
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
 0.21
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--1.16
+-1.09
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.246
+0.276
 </td>
 </tr>
 <tr>
@@ -645,16 +660,16 @@ Neutral vs Happy
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.17
+1.14
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
 0.12
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.38
+1.10
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.168
+0.269
 </td>
 </tr>
 <tr>
@@ -670,16 +685,16 @@ Neutral vs Angry
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.03
+1.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.11
+0.13
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-0.23
+0.45
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.815
+0.652
 </td>
 </tr>
 <tr>
@@ -702,10 +717,10 @@ Random Effects
 τ<sub>00</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.02 <sub>Stim_Type</sub>
+0.00 <sub>Stim_Type</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.11 <sub>Stim_Type</sub>
+0.21 <sub>Stim_Type</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -714,7 +729,7 @@ Random Effects
 2.69 <sub>ID</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.13 <sub>Stim_Type.1</sub>
+0.06 <sub>Stim_Type.1</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -723,7 +738,7 @@ Random Effects
 1.18 <sub>ID.1</sub>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-1.11 <sub>ID</sub>
+1.12 <sub>ID</sub>
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -756,24 +771,13 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-3146
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-3146
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.015 / 0.186
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.012 / 0.180
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.015 / 0.270
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.012 / 0.274
 </td>
 </tr>
 </table>
@@ -792,7 +796,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## Plot separated by novel vs repeated trials 
 
 <span class="co"># Choose outlier-free and correct trial data</span>
-  EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
+  EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  
   EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 <span class="co"># Rename values for repeated and novel trials </span>
@@ -875,7 +879,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <div id="lmm1-random-effect-structure" class="section level5">
 <h5>LMM1: Random effect structure</h5>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Choose outlier-free data and correct answers    </span>
-  EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
+  EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  
   EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_lmm, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
 
 <span class="co"># Recode for repeated and novel trials</span>
@@ -916,7 +920,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <span class="co"># 3rd: remove all terms with zero variance --&gt; comprises final model </span>
   mod_RT_EEG.lmer2 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
 <span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>ID) <span class="op">+</span><span class="st"> </span>
-<span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),                   
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),                   
                         <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
 <span class="co"># 4th: re-check the model PCA / variance of random factors</span>
@@ -928,7 +932,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <span class="co"># LRT without random slope Nov_Rep for ID</span>
   mod_RT_EEG.lmer3 =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Nov_Rep  <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(Age) <span class="op">+</span><span class="st"> </span><span class="kw">scale</span>(WM) <span class="op">+</span><span class="st"> </span>
 <span class="st">                          </span>(<span class="dv">1</span> <span class="op">|</span>ID) <span class="op">+</span><span class="st"> </span>
-<span class="st">                          </span>(<span class="dv">1</span> <span class="op">+</span><span class="st"> </span>Nov_Rep<span class="op">||</span>Stim_Type),                   
+<span class="st">                          </span>(<span class="dv">1</span> <span class="op">|</span>Stim_Type),                   
                         <span class="dt">data =</span> EEG_task_RT_lmm,<span class="dt">control=</span><span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">REML =</span> <span class="ot">FALSE</span>)
 
 <span class="co"># Calculate ANOVA</span>
@@ -1001,7 +1005,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 <h5>LMM2: Random effect structure</h5>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Choose outlier-free data and correct answers          </span>
   EEG_task_RT_targ_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)
-  EEG_task_RT_targ_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_targ_lmm,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)  
+  EEG_task_RT_targ_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_targ_lmm,Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_larger_7s <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_MAD <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>EEG_trial_loss <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)  
 
 <span class="co"># Rename variables </span>
   EEG_task_RT_targ_lmm<span class="op">$</span>Target[EEG_task_RT_targ_lmm<span class="op">$</span>Target<span class="op">==</span><span class="dv">4</span>] =<span class="st"> &quot;hap&quot;</span>
@@ -1129,7 +1133,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
           <span class="dt">show.se=</span><span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>,
           <span class="dt">show.stat=</span><span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>,
           <span class="dt">show.ci =</span> <span class="ot">FALSE</span>, 
-          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">TRUE</span>,
+          <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">FALSE</span>,
           <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels=</span><span class="kw">c</span>(<span class="st">&quot;Face 2 Novelty&quot;</span>,<span class="st">&quot;Face 2 Emotion&quot;</span>) , <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <table style="border-collapse:collapse; border:none;">
 <tr>
@@ -1177,16 +1181,16 @@ p
 Novel vs Repeated
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.04
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.03
+1.35
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.07
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.284
+0.177
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
@@ -1205,25 +1209,25 @@ Age
 -0.05
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.07
+0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.75
+-0.77
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.452
+0.439
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 -0.05
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
-0.07
+0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.76
+-0.79
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.450
+0.430
 </td>
 </tr>
 <tr>
@@ -1237,10 +1241,10 @@ Working memory
 0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-1.38
+1.46
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
-0.169
+0.145
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 0.09
@@ -1249,10 +1253,10 @@ Working memory
 0.06
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
-1.39
+1.49
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.164
+0.137
 </td>
 </tr>
 <tr>
@@ -1274,10 +1278,10 @@ Neutral vs Happy
 0.03
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--2.75
+-2.47
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-<strong>0.006</strong>
+<strong>0.013</strong>
 </td>
 </tr>
 <tr>
@@ -1293,16 +1297,16 @@ Neutral vs Angry
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
--0.03
+-0.05
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
 0.03
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
--0.91
+-1.36
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
-0.363
+0.174
 </td>
 </tr>
 <tr>
@@ -1315,10 +1319,10 @@ Random Effects
 σ<sup>2</sup>
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.36
+0.35
 </td>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.36
+0.35
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
@@ -1379,24 +1383,13 @@ N
 </td>
 <tr>
 <td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
-Observations
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-2361
-</td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
-2361
-</td>
-</tr>
-<tr>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
 Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.022 / 0.041
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.025 / 0.043
 </td>
-<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
-0.019 / 0.254
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.020 / 0.253
 </td>
 </tr>
 </table>
@@ -1412,7 +1405,7 @@ Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
   <span class="kw">sessionInfo</span>()</code></pre></div>
 <pre><code>R version 3.6.2 (2019-12-12)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 16299)
+Running under: Windows 10 x64 (build 18362)
 
 Matrix products: default
 
@@ -1426,7 +1419,7 @@ attached base packages:
 
 other attached packages:
  [1] forcats_0.5.0        stringr_1.4.0        purrr_0.3.4         
- [4] readr_1.3.1          tidyr_1.0.2          tibble_3.0.1        
+ [4] readr_1.3.1          tidyr_1.1.0          tibble_3.0.1        
  [7] tidyverse_1.3.0      sjlabelled_1.1.3     sjmisc_2.8.4        
 [10] sjPlot_2.8.3         Rmisc_1.5            plyr_1.8.6          
 [13] reshape2_1.4.4       psych_1.9.12.31      MASS_7.3-51.5       
@@ -1453,13 +1446,13 @@ loaded via a namespace (and not attached):
 [34] ellipsis_0.3.0         rcompanion_2.3.25      backports_1.1.6       
 [37] bookdown_0.18          insight_0.8.3          ggcorrplot_0.1.3      
 [40] rapportools_1.0        libcoin_1.0-5          jmvcore_1.2.5         
-[43] vctrs_0.2.4            abind_1.4-5            withr_2.2.0           
+[43] vctrs_0.3.1            abind_1.4-5            withr_2.2.0           
 [46] pryr_0.1.4             metaBMA_0.6.2          bdsmatrix_1.3-4       
 [49] checkmate_2.0.0        emmeans_1.4.6          vcd_1.4-7             
 [52] prettyunits_1.1.1      mnormt_1.5-6           fastGHQuad_1.0        
 [55] cluster_2.1.0          crayon_1.3.4           pkgconfig_2.0.3       
 [58] nlme_3.1-147           statsExpressions_0.4.1 palr_0.2.0            
-[61] nnet_7.3-12            pals_1.6               rlang_0.4.5           
+[61] nnet_7.3-12            pals_1.6               rlang_0.4.7           
 [64] lifecycle_0.2.0        miniUI_0.1.1.1         groupedstats_0.2.2    
 [67] skimr_2.1.1            LaplacesDemon_16.1.4   MatrixModels_0.4-1    
 [70] sandwich_2.5-1         EMT_1.1                modelr_0.1.6          
