@@ -110,7 +110,7 @@ output:
 
 ```
 
-```{r rable_descr, results = 'asis'}
+```{r table_descr, results = 'asis'}
 
 # descriptive statistics
 dfSummary(qn_data[c('sex', 'age', 'PPVT_Perc', 'CMM_Perc', 'SRS', 'SCQ','wink_ind')], 

@@ -883,7 +883,7 @@ labels = c("Happy vs Neutral", "Angry vs Neutral", "Age", "Working Memory","HvsN
           show.se=TRUE, string.se = "SE",
           show.stat=TRUE, string.stat = "t",
           show.ci = FALSE, 
-          show.re.var = TRUE, show.obs = TRUE,
+          show.re.var = TRUE, show.obs = FALSE,
           emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
           show.icc = TRUE)
 
@@ -1211,8 +1211,9 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
 ```{r P1_cat_build_mod}
 
-# Select correct responses
+# Select correct responses and outlier-free data 
   P1_Cat = subset(ERP_data, Response == 1)    
+  P1_Cat = subset(P1_Cat, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
 
 # Select targets
   P1_Cat = subset(P1_Cat,Group_pt == 2)   
@@ -1279,6 +1280,7 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
                             (1|ID),
                           data = P1_Cat,
                           control=lmerControl(calc.derivs = FALSE))
+  
 ```
 
 According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions (`Novel vs Repeated`. The final model was comprised of:
@@ -1287,9 +1289,7 @@ According to our hypothesis, the main fixed effects of interest was novelty of F
 
 ---
 
-
 ##### LMM_P1: Normality of residuals 
-
 
 ```{r P1_cat_res_box, fig.width = 6, fig.asp = .62}
 
@@ -1339,15 +1339,16 @@ Based on visual inspection, we assumed homoscedasticity.
 # Select targets
   N170_Cat = subset(ERP_data, Group_pt == 2) 
 
-# Select correct responses
+# Select correct responses and outlier-free data
   N170_Cat = subset(N170_Cat, Response == 1)    
+  N170_Cat = subset(N170_Cat, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
 
 # Define novel vs repeated trials
   N170_Cat[N170_Cat$Group_pcic==2,]$Group_pcic = "repeated"
   N170_Cat[N170_Cat$Group_pcic==3,]$Group_pcic = "novel"
 
 # Separate data in left and right hemisphere
-  N170_Cat = gather (N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
+  N170_Cat = gather(N170_Cat, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
   N170_Cat$Elect_site = as.character(N170_Cat$Elect_site)
 
 # Add variable name
@@ -1369,8 +1370,10 @@ Based on visual inspection, we assumed homoscedasticity.
   contrasts(N170_Cat$Group_pcic) = contr.sum(2)/2
 
 # Add contrast columns
-  mm_N170_Cat =  model.matrix( ~ Group_pcic + Elect_site + Group_pcic*Elect_site, N170_Cat) 
-
+  mm_N170_Cat =  model.matrix( ~ Group_pcic + Group_pcic*Elect_site, N170_Cat) 
+  
+  nrow(N170_Cat)
+  
 # Attach to dataframe
   N170_Cat[,(ncol(N170_Cat)+1):(ncol(N170_Cat)+4)] = mm_N170_Cat
   names(N170_Cat)[(ncol(N170_Cat)-3):ncol(N170_Cat)] = c("Mean","Nov_Rep","Elect_site","Nov_RepxElect_site") 
@@ -1392,7 +1395,8 @@ Based on visual inspection, we assumed homoscedasticity.
 # Improved model 
   mod_N170_cat.lmer2 = lmer(N170_Amplitude ~ 
                               Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                              (1 + Elect_site||ID),
+                              (1 + Nov_Rep + Nov_RepxElect_site||ID) +
+                              (0 + Nov_Rep + Nov_RepxElect_site||Stim_Type),
                             data = N170_Cat,
                             control=lmerControl(calc.derivs = FALSE))
 
@@ -1405,20 +1409,30 @@ Based on visual inspection, we assumed homoscedasticity.
 # ID
   mod_N170_cat.lmer3 = lmer(N170_Amplitude ~ 
                               Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                              (1 |ID),
+                              (1|ID) +
+                              (0 + Nov_Rep + Nov_RepxElect_site||Stim_Type),
+                            data = N170_Cat,
+                            control=lmerControl(calc.derivs = FALSE))
+  
+# Stim Type
+  mod_N170_cat.lmer4 = lmer(N170_Amplitude ~ 
+                              Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
+                              (1 + Nov_Rep + Nov_RepxElect_site||ID) +
+                              (1|Stim_Type),
                             data = N170_Cat,
                             control=lmerControl(calc.derivs = FALSE))
 
 # Calculate ANOVA
-  anova(mod_N170_cat.lmer2 ,mod_N170_cat.lmer3 )
+  anova(mod_N170_cat.lmer2, mod_N170_cat.lmer3)
+  anova(mod_N170_cat.lmer2, mod_N170_cat.lmer4)
 
 # Final model
   mod_N170_cat.lmer4 = lmer(N170_Amplitude ~ 
                               Nov_Rep + Nov_RepxElect_site + Elect_site + scale(Age) + scale(WM) + 
-                              (1 + Elect_site||ID),
+                              (1 + Nov_Rep + Nov_RepxElect_site||ID) +
+                              (1|Stim_Type),
                             data = N170_Cat,
                             control=lmerControl(calc.derivs = FALSE))
-            
 ```
 
 According to our hypothesis, the main fixed effects of interest was novelty of Face 2. We applied a scaled sum contrast to compare trials with novel vs repeated emotional facial expressions. For the N170, we also added a scaled sum contrast for Hemisphere (`ROI`) and the interaction of novelty with hemisphere (`NvsR x ROI`).The final model was comprised of:
@@ -1473,8 +1487,9 @@ Based on visual inspection, we assumed homoscedasticity.
 
 ```{r P3_cat_build_mod}
 
-# Correct responses
-  P3_Cat = subset(ERP_data, Response == 1)
+# Select correct responses and outlier-free data
+  P3_Cat = subset(ERP_data, Response == 1)    
+  P3_Cat = subset(P3_Cat, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
 
 # Factor random factors 
   P3_Cat$ID = as.factor(P3_Cat$ID)
@@ -1492,7 +1507,6 @@ Based on visual inspection, we assumed homoscedasticity.
 
 # Set treatment contrast
   contrasts(P3_Cat$Group_pcic) = contr.sum(2)/2
-
            
 # Add contrast columns
   mm_P3_Cat =  model.matrix( ~ Group_pcic, P3_Cat) 
@@ -1513,7 +1527,7 @@ Based on visual inspection, we assumed homoscedasticity.
   summary(rePCA(mod_P3_cat.lmer1))
 
 # 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_P3_cat.lmer1),comp = "Variance")
+  print(VarCorr(mod_P3_cat.lmer1), comp = "Variance")
 
 # Improved model
   mod_P3_cat.lmer2 = lmer(mean_ROI_P3 ~ 
@@ -1629,7 +1643,7 @@ In contrast to our hypothesis, we did not find P1 amplitude difference between t
             show.se=TRUE, string.se = "SE",
             show.stat=TRUE, string.stat = "t",
             show.ci = FALSE, 
-            show.re.var = TRUE, show.obs = TRUE,
+            show.re.var = TRUE, show.obs = FALSE,
             emph.p = TRUE, dv.labels=c("P1 Amplitudes","N170 Amplitudes","P3 Amplitudes"),
             show.icc = TRUE)
 
@@ -1639,7 +1653,19 @@ In contrast to our hypothesis, we did not find P1 amplitude difference between t
 
 <br>
 
-*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
+
+```{r save_models, include = FALSE, eval = FALSE}
+
+# Save data set in RData format
+  save(mod_P1_val.lmer4, file = "./data/mod_P1_val.lmer4.RData")
+  save(mod_N170_val.lmer2, file = "./data/mod_N170_val.lmer2.RData")
+  save(mod_P3_val.lmer4, file = "./data/mod_P3_val.lmer4.RData")
+  save(mod_P1_cat.lmer4, file = "./data/mod_P1_cat.lmer4.RData")
+  save(mod_N170_cat.lmer4, file = "./data/mod_N170_cat.lmer4.RData")
+  save(mod_P3_cat.lmer4, file = "./data/mod_P3_cat.lmer4.RData")
+  
+```
 
 # Session info
 

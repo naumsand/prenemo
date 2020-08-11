@@ -68,7 +68,7 @@ output:
   }
   
 # Raincloud plot function   
-     source("./functions/geom_flat_violin.R")
+  source("./functions/geom_flat_violin.R")
   
 # Round to 2 digits   
   options(digits=2)
@@ -109,6 +109,7 @@ We excluded:
   + Reaction times < 250 ms or >  7s
   + Values </> 2.5 of the median absolute deviation (MAD) based on the individual participant
   + Incorrect answers
+  + Rejected EEG trials
   
 We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. Chronological age and working memory were entered as scaled covariates in all (general) linear mixed model analyses to control for cognitive abilities of the children as well as potential differences in age.
 
@@ -127,7 +128,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 ```{r EEG_Acc_plots, results = TRUE}
 
 # Select outlier-free data and correct trials
-  EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+  EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)
   EEG_task_Acc_plot = subset(EEG_task_Acc_plot, Response == 1)
 
 ## Plot separated by novel vs repeated trials  
@@ -162,7 +163,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 ## Plot separated by emotions
 
 # Select outlier-free data and correct trials
-  EEG_task_Acc_targ_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+  EEG_task_Acc_targ_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)
   EEG_task_Acc_targ_plot = subset(EEG_task_Acc_targ_plot,Response == 1)
   
 # Recode variable
@@ -220,7 +221,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 ```{r EEG_Acc_GLMM_res_1}
 
 # Select outlier-free data
-  EEG_task_Acc_glmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+  EEG_task_Acc_glmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)
 
 # Factor random effects
   EEG_task_Acc_glmm$ID = as.factor(EEG_task_Acc_glmm$ID)
@@ -258,26 +259,40 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
 
 # 2nd: check which random terms explain the least variance
   print(VarCorr(mod_Acc_EEG.glmm1),comp = "Variance")
+  
+
+# Adapt model
+  mod_Acc_EEG.glmm2 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                              (1 + Nov_Rep||ID) +
+                              (0 + Nov_Rep||Stim_Type),
+                              data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                              family = binomial)
+  
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_Acc_EEG.glmm2))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_Acc_EEG.glmm2),comp = "Variance")
 
 ## Likelihood-ratio-testing
   
 # ID   
-  mod_Acc_EEG.glmm2 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                            (1 | ID) +
-                            (1 + Nov_Rep||Stim_Type),
-                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)
+  mod_Acc_EEG.glmm3 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                              (1 |ID) +
+                              (0 + Nov_Rep||Stim_Type),
+                              data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                              family = binomial)
 
 # Stim Type
-  mod_Acc_EEG.glmm3 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
-                            (1 + Nov_Rep||ID)  +
-                            (1 |Stim_Type),
-                          data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
-                          family = binomial)
+ mod_Acc_EEG.glmm4 = glmer(Response ~ Nov_Rep + scale(Age) + scale(WM) +
+                              (1 + Nov_Rep||ID) +
+                              (1|Stim_Type),
+                              data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                              family = binomial)
 
 # Calculate ANOVAs
-  anov_glmm1_glmm2 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm2)
-  anov_glmm1_glmm3 = anova(mod_Acc_EEG.glmm1,mod_Acc_EEG.glmm3)
+  anov_glmm1_glmm2_3 = anova(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm3)
+  anov_glmm1_glmm2_4 = anova(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm4)
 
 
 # Final model
@@ -313,7 +328,7 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 ```{r EEG_Acc_GLMM_res_2}
 
 # Get outlier-free data
-  EEG_task_Acc_targ_glmm = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+  EEG_task_Acc_targ_glmm = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)
 
 # Rename variables
   EEG_task_Acc_targ_glmm$Target[EEG_task_Acc_targ_glmm$Target==4] = "hap"
@@ -440,7 +455,7 @@ Model results indicated that participants were equally accurate in trials with r
           pred.labels=labels, show.ci = FALSE,
           show.se = TRUE, string.se = "SE",
           show.stat = TRUE, string.stat = "t",
-          show.re.var = TRUE, show.obs = TRUE,
+          show.re.var = TRUE, show.obs = FALSE,
           emph.p = TRUE, dv.labels=c("Face 2 Novelty","Face 2 Emotion") , show.icc = TRUE)
     
 ```
@@ -466,7 +481,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 ## Plot separated by novel vs repeated trials 
 
 # Choose outlier-free and correct trial data
-  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
+  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)  
   EEG_task_RT_plot = subset(EEG_task_RT_plot, Response == 1)
 
 # Rename values for repeated and novel trials 
@@ -554,7 +569,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 ```{r EEG_RT_LMM1_build_res}
 
 # Choose outlier-free data and correct answers    
-  EEG_task_RT_lmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
+  EEG_task_RT_lmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)  
   EEG_task_RT_lmm = subset(EEG_task_RT_lmm, Response == 1)
 
 # Recode for repeated and novel trials
@@ -595,7 +610,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 # 3rd: remove all terms with zero variance --> comprises final model 
   mod_RT_EEG.lmer2 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
                           (1 + Nov_Rep||ID) + 
-                          (1 + Nov_Rep||Stim_Type),                   
+                          (1 |Stim_Type),                   
                         data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
 
 # 4th: re-check the model PCA / variance of random factors
@@ -607,7 +622,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 # LRT without random slope Nov_Rep for ID
   mod_RT_EEG.lmer3 = lmer(log(RTs) ~ Nov_Rep  + scale(Age) + scale(WM) + 
                           (1 |ID) + 
-                          (1 + Nov_Rep||Stim_Type),                   
+                          (1 |Stim_Type),                   
                         data = EEG_task_RT_lmm,control=lmerControl(calc.derivs = FALSE), REML = FALSE)
 
 # Calculate ANOVA
@@ -695,7 +710,7 @@ Based on the figure, we assume homoscedasticity.
 
 # Choose outlier-free data and correct answers          
   EEG_task_RT_targ_lmm = subset(EEG_task_data, Response == 1)
-  EEG_task_RT_targ_lmm = subset(EEG_task_RT_targ_lmm,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
+  EEG_task_RT_targ_lmm = subset(EEG_task_RT_targ_lmm,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)  
 
 # Rename variables 
   EEG_task_RT_targ_lmm$Target[EEG_task_RT_targ_lmm$Target==4] = "hap"
@@ -838,7 +853,7 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
           show.se=TRUE, string.se = "SE",
           show.stat=TRUE, string.stat = "t",
           show.ci = FALSE, 
-          show.re.var = TRUE, show.obs = TRUE,
+          show.re.var = TRUE, show.obs = FALSE,
           emph.p = TRUE, dv.labels=c("Face 2 Novelty","Face 2 Emotion") , show.icc = TRUE)
 ```
 
@@ -847,6 +862,17 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
 <br>
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
+
+```{r save_models, include = FALSE, eval = FALSE}
+
+# Save data set in RData format
+  save(mod_Acc_EEG.glmm4, file = "./data/mod_Acc_EEG.glmm4.RData")
+  save(mod_Acc_targ.glmm5, file = "./data/mod_Acc_targ.glmm5.RData")
+  save(mod_RT_EEG.lmer5, file = "./data/mod_RT_EEG.lmer5.RData")
+  save(mod_RT_targ.lmer3, file = "./data/mod_RT_targ.lmer3.RData")
+    
+```
+
 
 # Session info
 
@@ -858,4 +884,6 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
   sessionInfo()
 
 ```
+
+
 
