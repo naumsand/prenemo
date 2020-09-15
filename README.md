@@ -1,2 +1,3 @@
-# Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children
-Electrophysiological_Correlates_of_Decoding_Emotional_Face_Expressions_in_Children
+#  Preschoolers‘ sensitivity to emotional facial expressions and their repetition: An ERP study
+
+The provided code and data has been used to write the paper 'Preschoolers‘ sensitivity to emotional facial expressions and their repetition: An ERP study'
