@@ -33,7 +33,6 @@ output:
 # Load packages
   library(kableExtra)
   library(XLConnect)
-  library(XLConnectJars)
   library(rmdformats)
 
 # Swipe environment
