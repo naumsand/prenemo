@@ -76,8 +76,8 @@ output:
           legend.position = "none")
   
 # Set figure color palettes
-  emotion_col = c("#829dac","#1d4f6a","#032f47")
-  nov_col = c("#547460","#0A381C")
+  emotion_col = c("#99bada","#3375b5","#003162")  # order: neutral, happy, angry
+  nov_col = c("#879e90","#0A381C") # order: novel, repeated 
   
 ```
 
@@ -137,22 +137,23 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 # Plot data
   P1_P3_val_traj = ggplot(Face1_data_all_emo_sep,aes(Time,ROI_Average))+
     theme(panel.background = element_blank(), panel.border = element_rect(colour = "grey", fill=NA, size=2),
-          axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
-          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+          axis.title.y = element_text(size = 11, margin = margin(t = 0, r = 10, b = 0, l = 0)),
+          axis.title.x = element_text(size = 11, margin = margin(t = -5, r = 10, b = 0, l = 0)),
           legend.text=element_text(size=7),
-          legend.key = element_rect(fill = "white"))+
-    stat_summary(fun.y = mean, geom = "line", size = 0.8, linetype = "solid", aes(colour= Condition))+
+          legend.key = element_rect(fill = "white"),
+          text=element_text(size = 10))+
+    stat_summary(fun.y = mean, geom = "line", size = 0.6, linetype = "solid", aes(colour = Condition))+
     scale_color_discrete(guide = guide_legend(override.aes = list(color = "white")))+
     scale_colour_manual(values = emotion_col)+
-    labs(x = "\ntime (ms)",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
+    labs(x = "\nTime [ms]",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
     theme(legend.position="none") +
     coord_cartesian(ylim=c(-2, 16),xlim=c(-100,600)) +
-    scale_y_continuous(breaks=seq(-2,16,2))+
-    scale_x_continuous(breaks=seq(-100,600,100))+
-    geom_vline(xintercept = 0, linetype = "dashed",colour="grey" )+
+    scale_y_continuous(breaks=seq(-2,16,4))+
+    scale_x_continuous(breaks=seq(-100,600,200))+
+    geom_vline(xintercept = 0, linetype = "dashed",colour="grey")+
     geom_hline(yintercept = 0, linetype = "dashed",colour="grey")+
-    geom_text(x=110, y=14, label = "P1", color="black", size=3)+
-    geom_text(x=350, y=14, label = "P3", color="black", size=3)
+    geom_text(x=110, y=14, label = "P1", color="black", size = 2)+
+    geom_text(x=350, y=14, label = "P3", color="black", size = 2)
 
 
 ## N170 trajectories
@@ -195,20 +196,21 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 # Plot N170 trajectory   
    N170_val_traj = ggplot(Face1_N170,aes(Time,ROI_Average))+
       theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-            axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
-            axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+            axis.title.y = element_text(size = 11, margin = margin(t = 0, r = 20, b = 0, l = 0)),
+            axis.title.x = element_text(size = 11, margin = margin(t = -5, r = 10, b = 0, l = 0)),
             legend.text=element_text(size=7),
-            legend.key = element_rect(fill = "white"))+
-      stat_summary(fun.y = mean, geom = "line",size = 0.8, linetype = "solid", aes(colour= Condition))+
+            legend.key = element_rect(fill = "white"),
+            text=element_text(size = 10))+
+      stat_summary(fun.y = mean, geom = "line",size = 0.6, linetype = "solid", aes(colour= Condition))+
       scale_colour_manual(values = emotion_col)+
       theme(legend.position="none")+
-      labs(x = "\ntime (ms)",y = expression(paste("")),colour = "")+
+      labs(x = "\nTime [ms]",y = expression(paste("")),colour = "")+
       coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
-      scale_y_continuous(breaks=seq(-6,6,2))+
-      scale_x_continuous(breaks=seq(-100,600,100))+
+      scale_y_continuous(breaks=seq(-6,6,4))+
+      scale_x_continuous(breaks=seq(-100,600,200))+
       geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
       geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
-      geom_text(x=200, y=-5.2, label = "N170", color="black", size = 3)
+      geom_text(x=200, y=-5.2, label = "N170", color="black", size = 2)
 
 # Load topography information
   Topo_Emo = read.csv(file="./data/ERPs_Topo_Face1.csv", header=TRUE, sep=",")
@@ -257,25 +259,25 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 # Draw topographies
   topo_diff_ang_neu_P1 = ggplot(Topo_Diff_Ang_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("P1 (80-120 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 6))
   
 
 # Draw topographies
   topo_diff_hap_neu_P1 = ggplot(Topo_Diff_Hap_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                    ggtitle("")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold"))  
 
 ## N170s 
 
@@ -289,28 +291,28 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 
 # Draw topographies
   topo_diff_ang_neu_N170 = ggplot(Topo_Diff_Ang_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("N170 (170-230 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("N170 (180-220 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 6))
   
 
 # Draw topographies
   topo_diff_hap_neu_N170 = ggplot(Topo_Diff_Hap_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))  
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold"))  
   
-## P3s   
+## P3s  
 
 # Select time windows
   Topo_Diff_Ang_Neu_P3 = subset(Topo_Diff_Ang_Neu, time >= 300 & time <= 600)
@@ -322,26 +324,26 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
 
 # Draw topographies
   topo_diff_ang_neu_P3 = ggplot(Topo_Diff_Ang_Neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("P3 (300-600 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("P3 (300-500 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 6))
   
 
 # Draw topographies
   topo_diff_hap_neu_P3 = ggplot(Topo_Diff_Hap_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+                              head_size = 0.9) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold"))
 
 
 # Get legend for trajectories
@@ -367,12 +369,12 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
   topo_leg_P1 =  ggplot(Topo_Diff_Ang_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                       ggtitle("Angry-Neutral")+
                       geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
-                                head_size = 1.5) +
+                                head_size = 0.9) +
                       scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
                       theme_void() +
                       coord_equal() +
                       labs(fill = expression(paste(" ", mu,"V")))+
-                      theme(legend.position  = "right")
+                      theme(legend.position  = "right", legend.text.align = 1)
   
   topo_leg_P1 = get_legend(topo_leg_P1)
 
@@ -380,12 +382,12 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
   topo_leg_N170 = ggplot(Topo_Diff_Ang_Neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                       ggtitle("Angry-Neutral")+
                       geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
-                                head_size = 1.5) +
+                                head_size = 0.9) +
                       scale_fill_distiller(palette = "RdBu" , limits = c(-3,3)) +
                       theme_void() +
                       coord_equal() +
                       labs(fill = expression(paste(" ", mu,"V")))+
-                      theme(legend.position = "right")
+                      theme(legend.position = "right", legend.text.align = 1)
  
   
   topo_leg_N170 = get_legend(topo_leg_N170)
@@ -394,12 +396,12 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
   topo_leg_P3 =  ggplot(Topo_Diff_Ang_Neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                       ggtitle("Angry-Neutral")+
                       geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 2,
-                                head_size = 1.5) +
+                                head_size = 0.9) +
                       scale_fill_distiller(palette = "RdBu" , limits = c(-3,4)) +
                       theme_void() +
                       coord_equal() +
                       labs(fill = expression(paste(" ", mu,"V")))+
-                      theme(legend.position  = "right")
+                      theme(legend.position  = "right", legend.text.align = 1)
   
   topo_leg_P3 = get_legend(topo_leg_P3)  
 
@@ -433,24 +435,8 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
           panel.background = element_rect(colour = "white", size = 0.5),
           axis.ticks = element_blank()) 
   
-# Get capital letters
-  text = paste("\n A\n","\n \n","\n \n","\n \n","\n B\n")
-  
-  first_plot = ggplot() + 
-    annotate("text", x = 4, y = 25, size=5, label = text) + 
-    theme_minimal() +
-    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
-          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
-          axis.text.x = element_blank(),
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          panel.background = element_rect(colour = "white", size = 0.5),
-          axis.ticks = element_blank()) 
-  
 # Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
   ggdraw(xlim = c(0, 1.2), ylim = c(0,1.4)) +
-    draw_plot(first_plot, -0.68, 0.25, 1.4, 1.4) +
     draw_plot(P1_P3_val_traj, 0.05, 0.7, 0.5, 0.6)+ 
     draw_plot(N170_val_traj, 0.55, 0.7, 0.5, 0.6)+
     draw_plot(traj_leg_emo, 1, 1, 0.25, 0.25)+
@@ -458,13 +444,13 @@ We predicted that ERP amplitudes of sensory (P1, N170) and higher-order (P3) com
     draw_plot(hap_neu_text, -0.05, -0.05, 0.3, 0.3)+
     draw_plot(topo_diff_ang_neu_P1, 0.12, 0.3, 0.3, 0.3) +
     draw_plot(topo_diff_hap_neu_P1, 0.12, 0.00, 0.3, 0.3) +
-    draw_plot(topo_leg_P1, 0.37, 0.25, 0.15, 0.15)+ 
+    draw_plot(topo_leg_P1, 0.37, 0.25, 0.14, 0.14)+ 
     draw_plot(topo_diff_ang_neu_N170, 0.47, 0.3, 0.3, 0.3) +
     draw_plot(topo_diff_hap_neu_N170, 0.47, 0.00, 0.3, 0.3) +
-    draw_plot(topo_leg_N170, 0.72, 0.25, 0.15, 0.15)+
+    draw_plot(topo_leg_N170, 0.72, 0.25, 0.14, 0.14)+
     draw_plot(topo_diff_ang_neu_P3, 0.82, 0.3, 0.3, 0.3) +
     draw_plot(topo_diff_hap_neu_P3, 0.82, 0.00, 0.3, 0.3) +
-    draw_plot(topo_leg_P3, 1.07, 0.25, 0.15, 0.15)
+    draw_plot(topo_leg_P3, 1.07, 0.25, 0.14, 0.14)
   
 ```
 
@@ -866,7 +852,7 @@ Based on visual inspection, we assumed homoscedasticity.
 
 <!-- Present ERP valence effects -->
 
-P1 Amplitudes at Face 1 were significantly larger for angry in comparison to neutral facial expressions. No difference was found for the contrast of happy vs neutral faces. In contrast to our hypothesis, no differences N170 amplitde difference between happy or angry faces compared to neutral faces were detected. None of the interactions of hemisphere with the emotion contrasts reached significance. In line with our hypothesis, angry faces elicited larger amplitudes compared to neutral faces. No difference, however, was found between happy and neutral faces. 
+P1 amplitudes at Face 1 were significantly larger for angry in comparison to neutral facial expressions. No difference was found for the contrast of happy vs. neutral faces. None of the covariates reached significance. In contrast to our hypothesis, no N170 amplitude differences between emotional in contrast to neutral faces were detected. Neither the main effect of hemisphere, the interaction of hemisphere with emotion, nor covariates reached significance. In line with our hypothesis, angry faces elicited larger P3 amplitudes compared to neutral faces. No difference, however, was found between happy and neutral faces. Covariates yielded no significant results.
 
 <div align="center">
 
@@ -934,21 +920,21 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
   
   P1_cat_traj = ggplot(Face2_data_icc,aes(Time,ROI_Average))+
     theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-          axis.title.y = element_text(margin = margin(t = 0, r = 5, b = 0, l = 0)),
-          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)),
+          axis.title.y = element_text(size = 11, margin = margin(t = 0, r = 15, b = 0, l = 0)),
+          axis.title.x = element_text(size = 11, margin = margin(t = -5, r = 10, b = 0, l = 0)),
           axis.text=element_text(size=8))+
-    stat_summary(fun.y = mean,geom = "line", size = 0.8, linetype = "solid",aes(colour= Condition))+
+    stat_summary(fun.y = mean,geom = "line", size = 0.6, linetype = "solid",aes(colour= Condition))+
     scale_colour_manual(values = nov_col)+
     #ggtitle("P1 & P3") +
     theme(legend.position="none")+      
-    labs(x = "\ntime (ms)",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
+    labs(x = "\nTime [ms]",y = expression(paste("Mean ROI amplitude [",mu,"V]")),colour = "")+
     coord_cartesian(ylim=c(-2, 18),xlim=c(-100,600)) +
     scale_y_continuous(breaks=seq(-2,18,4))+
-    scale_x_continuous(breaks=seq(-100,600,100))+
+    scale_x_continuous(breaks=seq(-100,600,200))+
     geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
     geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
-    geom_text(x=120, y=16.8, label = "P1", color="black", size=3)+
-    geom_text(x=350, y=14.8, label = "P3", color="black", size=3)
+    geom_text(x=120, y=16.8, label = "P1", color="black", size=2)+
+    geom_text(x=350, y=14.8, label = "P3", color="black", size=2)
 
 ## N170
   Face2_data_l = read.csv("./data/left_ROI_N170_Face2.csv",header = TRUE)
@@ -997,18 +983,20 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 # Plot N170 trajectory
   N170_cat_traj = ggplot(Face2_N170,aes(Time,ROI_Average))+
     theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
-          axis.title.y = element_text(margin = margin(t = 0, r = 20, b = 0, l = 0)),
-          axis.title.x = element_text(margin = margin(t = -5, r = 10, b = 0, l = 0)))+
-    stat_summary(fun.y = mean,geom = "line",size = 0.8 ,linetype = "solid",aes(colour= Condition))+
+          axis.title.y = element_text(size = 11, margin = margin(t = 0, r = 20, b = 0, l = 0)),
+          axis.title.x = element_text(size = 11, margin = margin(t = -5, r = 10, b = 0, l = 0)),
+          axis.text=element_text(size=8))+
+    stat_summary(fun.y = mean,geom = "line",size = 0.6, linetype = "solid",aes(colour= Condition))+
     scale_colour_manual(values =  nov_col)+
     theme(legend.position="none")+          # turn off legend
-    labs(x = "\ntime (ms)",y = expression(paste("")),colour = "")+
+    labs(x = "\nTime [ms]",y = expression(paste("")),colour = "")+
     coord_cartesian(ylim=c(-6,6),xlim=c(-100,600)) +
-    scale_y_continuous(breaks=seq(-6,6,2))+
-    scale_x_continuous(breaks=seq(-100,600,100))+
+    scale_y_continuous(breaks=seq(-6,6,4))+
+    scale_x_continuous(breaks=seq(-100,600,200))+
     geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
     geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
-    geom_text(x=200, y=-5, label = "N170", color="black", size=3)
+    geom_text(x=200, y=-5, label = "N170", color="black", size=2)
+ 
   
 # Load topography information
   Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
@@ -1047,13 +1035,13 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
   topo_diff_Nov_Rep_P1 = ggplot(Topo_Diff_Nov_Rep_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("P1 (80-120 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.4) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 7, hjust = 0.6))
   
   
 ## N170
@@ -1066,14 +1054,14 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
   
   topo_diff_Nov_Rep_N170 = ggplot(Topo_Diff_Nov_Rep_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("N170 (170-230 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("N170 (180-220 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.4) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-1,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 7, hjust = 0.6))
   
 ## P3
   
@@ -1085,14 +1073,14 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 
   
   topo_diff_Nov_Rep_P3 = ggplot(Topo_Diff_Nov_Rep_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("P3 (300-600 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("P3 (300-500 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.4) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
-                    theme(legend.position = "none", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", vjust = 7, hjust = 0.6))
 
 
 # Get legend for trajectories
@@ -1117,37 +1105,37 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
 # Get legend for topos
   topo_P1_leg_cat = ggplot(Topo_Diff_Nov_Rep_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("P1 (80-120 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.7,
+                              head_size = 0.5) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("", mu,"V")))+
-                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "right", legend.text.align = 1, plot.title = element_text(size = 8, face = "bold"))
   
   topo_P1_leg_cat = get_legend(topo_P1_leg_cat)
   
   topo_N170_leg_cat = ggplot(Topo_Diff_Nov_Rep_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("N170 (170-230 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("N170 (180-220 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.7,
+                              head_size = 0.5) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-1,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("", mu,"V")))+
-                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "right", legend.text.align = 1, plot.title = element_text(size = 8, face = "bold"))
   
   topo_N170_leg_cat = get_legend(topo_N170_leg_cat)
   
   topo_P3_leg_cat = ggplot(Topo_Diff_Nov_Rep_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("P3 (300-600 ms)")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 1,
-                              head_size = 1.5) +
+                    ggtitle("P3 (300-500 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.7,
+                              head_size = 0.5) +
                     scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,2)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("", mu,"V")))+
-                    theme(legend.position = "right", plot.title = element_text(size = 10, face = "bold"))
+                    theme(legend.position = "right", legend.text.align = 1, plot.title = element_text(size = 8, face = "bold"))
     
     
   topo_P3_leg_cat = get_legend(topo_P3_leg_cat)
@@ -1157,7 +1145,7 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
   text = paste("\n Novel-\n", "Repeated\n")
   
   nov_rep_text = ggplot() + 
-    annotate("text", x = 4, y = 25, size=4, label = text) + 
+    annotate("text", x = 4, y = 25, size=4, label = text, hjust = 0) + 
     theme_minimal() +
     theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
           axis.line = element_line(color = "white",size = 1, linetype = "solid"),
@@ -1168,34 +1156,18 @@ We hypothesized that ERP amplitudes for Face 2 would decrease in response to an 
           panel.background = element_rect(colour = "white", size = 0.5),
           axis.ticks = element_blank())
   
-# Get capital letters
-  text = paste("\n A\n","\n \n","\n \n","\n \n","\n B\n")
-  
-  first_plot = ggplot() + 
-    annotate("text", x = 4, y = 25, size=5, label = text) + 
-    theme_minimal() +
-    theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank(),
-          axis.line = element_line(color = "white",size = 1, linetype = "solid"),
-          axis.text.x = element_blank(),
-          axis.text.y = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          panel.background = element_rect(colour = "white", size = 0.5),
-          axis.ticks = element_blank()) 
-  
 # Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1)
   ggdraw(xlim = c(0, 1.2), ylim = c(0,1.4)) +
-    draw_plot(first_plot, -0.68, 0.25, 1.4, 1.4) +
     draw_plot(P1_cat_traj, 0.05, 0.7, 0.5, 0.6) + 
-    draw_plot(N170_cat_traj, 0.55, 0.7, 0.5, 0.6) +
-    draw_plot(traj_leg_cat, 0.45, 0.6, 0.3, 0.25) +
-    draw_plot(nov_rep_text, -0.05, 0.15, 0.3, 0.3) +
+    draw_plot(N170_cat_traj, 0.63, 0.7, 0.5, 0.6) +
+    draw_plot(traj_leg_cat, 0.45, 0.57, 0.3, 0.25) +
+    draw_plot(nov_rep_text, -0.102, 0.15, 0.3, 0.3) +
     draw_plot(topo_diff_Nov_Rep_P1, 0.1, 0.15, 0.4, 0.4) +
-    draw_plot(topo_P1_leg_cat, 0.25, 0.15, 0.4, 0.4) +
+    draw_plot(topo_P1_leg_cat, 0.26, 0.15, 0.4, 0.4) +
     draw_plot(topo_diff_Nov_Rep_N170, 0.43, 0.15, 0.4, 0.4) +
-    draw_plot(topo_N170_leg_cat, 0.58, 0.15, 0.4, 0.4) +
+    draw_plot(topo_N170_leg_cat, 0.59, 0.15, 0.4, 0.4) +
     draw_plot(topo_diff_Nov_Rep_P3, 0.75, 0.15, 0.4, 0.4) +
-    draw_plot(topo_P3_leg_cat, 0.9, 0.15, 0.4, 0.4) 
+    draw_plot(topo_P3_leg_cat, 0.91, 0.15, 0.4, 0.4) 
   
 ```
 
@@ -1626,7 +1598,7 @@ Based on visual inspection, we assumed homoscedasticity.
 
 #### **Results**
 
-In contrast to our hypothesis, we did not find P1 amplitude difference between trials with novel in contrast to repeated emotions. We also failed to find a significant effect of novelty for N170 amplitudes. Neither the main effect of hemisphere nor the interaction of hemisphere with novelty was significant. P3 amplitudes did not differ for novelty either. 
+In contrast to our hypothesis, we did not find a difference between P1 amplitudes in trials with novel in contrast to repeated facial expressions. None of the covariates reached significance. In contrast to our hypothesis, we did not find a significant effect of novelty. We detected a significant main effect of hemisphere, with amplitudes being larger in the right compared to the left hemisphere. The interaction of hemisphere with novelty was not significant. Age or working memory as covariates did not reach significance. We did not find an effect of novelty, nor did any of the covariates reach significance.
 
 <div align="center">
 
@@ -1655,7 +1627,7 @@ In contrast to our hypothesis, we did not find P1 amplitude difference between t
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
 
-```{r save_models, include = FALSE, eval = FALSE}
+```{r save_models, include = FALSE, eval = TRUE}
 
 # Save data set in RData format
   save(mod_P1_val.lmer4, file = "./data/mod_P1_val.lmer4.RData")

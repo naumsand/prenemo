@@ -30,13 +30,14 @@ output:
                  warning=FALSE,
                  results = FALSE,
   	             fig.align="center",
-  	             fig.width = 7, fig.height = 5)
+  	             fig.width = 6, fig.height = 4)
   knitr::opts_knit$set(width=75)
 
 # Swipe environment
   #rm(list=ls())
   
 # Load packages
+  library(apaTables)
   library(corrplot)
   library(cowplot)
   library(dplyr)
@@ -124,7 +125,11 @@ apaCorr <- function(mat, corrtype = "spearman") {
           legend.position = "none")  
   
 # Set figure color palettes
-  emotion_col = c("#829dac","#1d4f6a","#032f47")
+  emotion_col = c("#99bada","#3375b5","#003162")
+  
+# Mean-center function
+  center_scale <- function(x) {
+    scale(x, scale = FALSE)}  
   
 ```
 
@@ -179,9 +184,12 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
 
 # Recode to accuracy in percent
   acc_all$Freq = (acc_all$Freq/24)*100
+  
+# Set ID as factor  
+  acc_all$ID = as.factor(acc_all$ID)
 
 # Calculate descriptives on accuracy
-  stats_acc_all = summarySE(acc_all, measurevar="Freq", groupvars=c("emotion"))
+  stats_acc_all = summarySEwithin(acc_all, measurevar="Freq", withinvars=c("emotion"), idvar = "ID")
 
 # Plot accuracy
   EMT_Acc_bar = ggplot(stats_acc_all, aes(x=emotion, y=Freq, fill = emotion)) + 
@@ -193,54 +201,7 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
     scale_fill_manual(values=emotion_col)+
     theme_bw()+
     theme_SN
-
-# Raincloud plot EMT RT
-
-# Only examine clean data
-  EMT_RT_Plot = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
-
-# Select correct responses
-  EMT_RT_Plot = subset(EMT_RT_Plot, Answer == 1)
-
-# Create factor, define neutral as baseline
-  EMT_RT_Plot$emotion = factor(EMT_RT_Plot$emotion, levels=c("neutral","happy","angry"))
-
-# Calculate summary
-  lb = function(x) mean(x) - sd(x)
-  ub = function(x) mean(x) + sd(x)
   
-  sumld = ddply(EMT_RT_Plot , ~ emotion, summarise,
-                mean = mean(RT_in_ms), median = median(RT_in_ms), lower = lb(RT_in_ms), upper = ub(RT_in_ms))
-  
-# Plot rainclouds
-  EMT_RT_rain =  ggplot(data = EMT_RT_Plot, aes(y = RT_in_ms, x = emotion, fill = emotion))  +
-    geom_flat_violin(position = position_nudge(x = .12, y = 0), alpha = 1, color="black") +
-    geom_point(aes(y = RT_in_ms, color = emotion), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1)  +
-    geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = .2), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .2, y = 0), width = 0)+
-    scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,6500,2000), limits=c(0,6500))+
-    xlab("")+
-    expand_limits(x = 2.00) +
-    guides(fill = FALSE) +
-    guides(color = FALSE) +
-    coord_flip() + # flip or not?
-    scale_fill_manual(values=emotion_col) +
-    scale_color_manual(values=emotion_col)+
-    theme_bw() +
-    theme_SN+
-    theme(panel.grid.major.y = element_blank())
-  
-# Combine plots
-  combine_plots(EMT_Acc_bar, EMT_RT_rain,
-                ncol = 2, nrow = 1,
-                labels = c("A", "B"))
-
-```
-
-<br>
-
-```{r EMT_RT_barplot}
-
 # Only examine clean data
   EMT_RT_Plot = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
 
@@ -253,12 +214,15 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
 # Get accuracy for novel and repeated condition 
   RT_all = aggregate(EMT_RT_Plot$RT_in_ms,
                list(ID = EMT_RT_Plot$ID, emotion = EMT_RT_Plot$emotion), mean)
+  
+# Set ID as factor  
+  RT_all$ID = as.factor(RT_all$ID)  
 
-# Calculate descriptives on accuracy
-  stats_RT_all = summarySE(RT_all, measurevar="x", groupvars=c("emotion"))
+# Calculate descriptives on RT
+  stats_RT_all = summarySEwithin(RT_all, measurevar="x", withinvars=c("emotion"), idvar = "ID")
 
-# Plot accuracy
-  EMT_RT = ggplot(stats_RT_all, aes(x=emotion, y=x, fill = emotion)) + 
+# Plot RTs
+  EMT_RT_bar = ggplot(stats_RT_all, aes(x=emotion, y=x, fill = emotion)) + 
     geom_bar(position=position_dodge(), stat="identity",colour="black", size=0.7,width=0.9) +
     geom_errorbar(aes(ymin=x-se, ymax=x+se), size=1, width=0.2, position=position_dodge(.9)) +
     labs (x= "", y = "RT [ms]") +
@@ -267,8 +231,48 @@ We expected the highest accuracy rates for happy faces (tested with `GLMM`) and 
     scale_fill_manual(values=emotion_col)+
     theme_bw()+
     theme_SN
+
+# Raincloud plot EMT RT
+
+# # Only examine clean data
+#   EMT_RT_Plot = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+# 
+# # Select correct responses
+#   EMT_RT_Plot = subset(EMT_RT_Plot, Answer == 1)
+# 
+# # Create factor, define neutral as baseline
+#   EMT_RT_Plot$emotion = factor(EMT_RT_Plot$emotion, levels=c("neutral","happy","angry"))
+# 
+# # Calculate summary
+#   lb = function(x) mean(x) - sd(x)
+#   ub = function(x) mean(x) + sd(x)
+#   
+#   sumld = ddply(EMT_RT_Plot , ~ emotion, summarise,
+#                 mean = mean(RT_in_ms), median = median(RT_in_ms), lower = lb(RT_in_ms), upper = ub(RT_in_ms))
+#   
+# # Plot rainclouds
+#   EMT_RT_rain =  ggplot(data = EMT_RT_Plot, aes(y = RT_in_ms, x = emotion, fill = emotion))  +
+#     geom_flat_violin(position = position_nudge(x = .12, y = 0), alpha = 1, color="black") +
+#     geom_point(aes(y = RT_in_ms, color = emotion), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1)  +
+#     geom_point(data = sumld, aes(x = emotion, y = mean), position = position_nudge(x = .2), size = 2.5) +
+#     geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .2, y = 0), width = 0)+
+#     scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,6500,2000), limits=c(0,6500))+
+#     xlab("")+
+#     expand_limits(x = 2.00) +
+#     guides(fill = FALSE) +
+#     guides(color = FALSE) +
+#     coord_flip() + # flip or not?
+#     scale_fill_manual(values=emotion_col) +
+#     scale_color_manual(values=emotion_col)+
+#     theme_bw() +
+#     theme_SN+
+#     theme(panel.grid.major.y = element_blank())
   
-  EMT_RT
+# Combine plots
+  combine_plots(EMT_Acc_bar, EMT_RT_bar,
+                ncol = 2, nrow = 1,
+                labels = c("A", "B"))
+
 ```
 
 <br>
@@ -515,7 +519,7 @@ RTs were log-transformed (determined using the Box-Cox procedure) to meet the as
 
 <!-- Print GLMM / LMM results -->
 
-With regard to accuracy, we did not find a significant effect for happy vs neutral faces or angry vs neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.
+With regard to accuracy, we did not find a significant effect for happy vs. neutral faces or angry vs. neutral faces. Children were significantly faster for happy compared to neutral faces, but not for angry compared to neutral faces. None of the covariates reached significance.
 
 <div align="center">
 
@@ -542,13 +546,13 @@ With regard to accuracy, we did not find a significant effect for happy vs neutr
 
 # Emotion- and empathy related measures and ERP
 
-We also investigated the link between ERP amplitudes and emotion- and empathy-related measures. We calculated correlations between the amplitude differences of angry and neutral faces with composite scores parents' and experimenter's rating of children's empathy and emotion knowledge.
+We performed correlational analyses using Pearson\'s correlations (corrected for multiple comparisons using the false discovery rate) to associate behavior and brain variables. We calculated difference scores between P1/P3 amplitudes to angry vs. neutral facial expressions. Subsequently, we performed correlational analysis with the empathy (EM) and emotion knowledge (EK) composite scores of the EMK 3-6. 
 
 <!-- Display correlation plots -->
 
 ```{r EMK_ERP_scat_plots}
 
-## Separate data set for neutral and angry and dalculate participant's P1/P3 mean
+## Separate data set for neutral and angry and calculate participant's P1/P3 mean
 
 # angry
   ERPs_ang = subset(ERPs, Condition == 3)
@@ -560,10 +564,17 @@ We also investigated the link between ERP amplitudes and emotion- and empathy-re
   ERPs_neu = subset(ERPs, Condition == 2)
   ERPs_mean$P1_neu = tapply(ERPs_neu$mean_ROI_P1,ERPs_neu$ID, mean)
   ERPs_mean$P3_neu = tapply(ERPs_neu$mean_ROI_P3,ERPs_neu$ID, mean)
+  
+# happy  
+  ERPs_hap = subset(ERPs, Condition == 1)
+  ERPs_mean$P1_hap = tapply(ERPs_hap$mean_ROI_P1,ERPs_hap$ID, mean)
+  ERPs_mean$P3_hap = tapply(ERPs_hap$mean_ROI_P3,ERPs_hap$ID, mean)
 
 # Calculate difference score for angry-neutral
   ERPs_mean$P1_Diff_Ang_Neu = ERPs_mean$P1_ang-ERPs_mean$P1_neu
   ERPs_mean$P3_Diff_Ang_Neu = ERPs_mean$P3_ang-ERPs_mean$P3_neu
+  ERPs_mean$P1_Diff_Hap_Neu = ERPs_mean$P1_hap-ERPs_mean$P1_neu
+  ERPs_mean$P3_Diff_Hap_Neu = ERPs_mean$P3_hap-ERPs_mean$P3_neu
 
 # Remove rows of de-selected participants 
   ERPs_mean = ERPs_mean[-c(4),]  
@@ -578,27 +589,11 @@ We also investigated the link between ERP amplitudes and emotion- and empathy-re
   ERPs_mean$EMK_EM_Ch = qn_data$EMK_EM_Ch
 
 # Compute composite scores for parental/children measures of EMK
-  ERPs_mean$EMK_EK = ERPs_mean$EMK_EK_P + ERPs_mean$EMK_EK_Ch
-  ERPs_mean$EMK_EM = ERPs_mean$EMK_EM_Ch + ERPs_mean$EMK_EM_Ch
+  ERPs_mean$EMK_EK = scale(ERPs_mean$EMK_EK_P) + scale(ERPs_mean$EMK_EK_Ch)
+  ERPs_mean$EMK_EM = scale(ERPs_mean$EMK_EM_P) + scale(ERPs_mean$EMK_EM_Ch)
 
 # Select variables
   ERPs_corr = subset(ERPs_mean,select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM,EMK_EK))
-  
-# Select RT inspected criteria
-  EMT_acc_cor = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE) 
-
-# Calculate mean accuracy per participant in percent 
-  EMT_corr = data.frame(tapply(EMT_acc_cor$Answer,EMT_acc_cor$ID, sum)/72)
-  
-# Calculate mean RT per participant in percent 
-  EMT_corr$RT = tapply(EMT_acc_cor$RT_in_ms,EMT_acc_cor$ID, mean)
-  
-# Rename columns 
-  colnames(EMT_corr) = c("EMT_Acc", "EMT_RT")
-
-# Combine with with other empathy / ERP measures
-  ERPs_corr$EMT_Acc = EMT_corr$EMT_Acc
-  ERPs_corr$EMT_RT = EMT_corr$EMT_RT
 
 ## Plot correlations
 
@@ -606,30 +601,29 @@ We also investigated the link between ERP amplitudes and emotion- and empathy-re
   EMK_ERP_scat1 = ggplot(ERPs_mean,aes(x = EMK_EM, y = P1_Diff_Ang_Neu))+
     geom_point(shape = 21, size = 2, color ="gray0", fill = "gray0")+
     geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "Empathy Score", y = "P1 difference angry vs neutral")+
+    labs(x = "EMK 3-6 (EM)", y = "P1 angry vs. neutral")+
     theme_bw()
 
 # Empathy and P3 difference  
   EMK_ERP_scat2 = ggplot(ERPs_mean,aes(x = EMK_EM, y = P3_Diff_Ang_Neu))+
     geom_point(shape = 21, size = 2, color ="gray27", fill ="gray27")+
     geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "Empathy Score", y = "P3 difference angry vs neutral")+
+    labs(x = "EMK 3-6 (EM)", y = "P3 angry vs. neutral")+
     theme_bw()
 
 # EK and P1 difference  
   EMK_ERP_scat3 = ggplot(ERPs_mean,aes(x = EMK_EK, y = P1_Diff_Ang_Neu))+
     geom_point(shape = 21, size = 2, color ="gray35", fill = "gray35")+
     geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "Emotion knowledge", y = "P1 difference angry vs neutral")+
+    labs(x = "EMK 3-6 (EK)", y = "P1 angry vs. neutral")+
     theme_bw()
 
 # EK and P3 difference  
   EMK_ERP_scat4 = ggplot(ERPs_mean,aes(x = EMK_EK, y = P3_Diff_Ang_Neu))+
     geom_point(shape = 21, size = 2, color ="gray52", fill ="gray52")+
     geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "Emotion knowledge", y = "P3 difference angry vs neutral")+
+    labs(x = "EMK 3-6 (EK)", y = "P3 angry vs. neutral")+
     theme_bw()
-  
   
 # Combine plots (Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1))
   ggdraw(xlim = c(0, 1), ylim = c(0,1)) +
@@ -637,449 +631,54 @@ We also investigated the link between ERP amplitudes and emotion- and empathy-re
     draw_plot(EMK_ERP_scat2, 0.5, 0.5, 0.5, 0.5) +
     draw_plot(EMK_ERP_scat3, 0, 0, 0.5, 0.5) +
     draw_plot(EMK_ERP_scat4, 0.5, 0, 0.5, 0.5) 
-  
-# EMT RT and P1 difference  
-  EMT_RT_P1 = ggplot(ERPs_corr, aes(x = EMT_RT, y = P1_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color ="gray0", fill = "gray0")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EMT RT [ms]", y = "P1 difference angry vs neutral")+
-    theme_bw()
-
-# EMT RT and P3 difference  
-  EMT_RT_P3 = ggplot(ERPs_corr, aes(x = EMT_RT, y = P3_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color ="gray27", fill ="gray27")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EMT RT [ms]", y = "P3 difference angry vs neutral")+
-    theme_bw()
-
-# EMT Acc P1 difference  
-  EMT_Acc_P1 = ggplot(ERPs_corr, aes(x = EMT_Acc, y = P1_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color ="gray35", fill = "gray35")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EMT Accuracy [%]", y = "P1 difference angry vs neutral")+
-    theme_bw()
-
-# EMT Acc and P3 difference  
-  EMT_Acc_P3 = ggplot(ERPs_corr, aes(x = EMT_Acc, y = P3_Diff_Ang_Neu))+
-    geom_point(shape = 21, size = 2, color ="gray52", fill ="gray52")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EMT Accuracy [%]", y = "P3 difference angry vs neutral")+
-    theme_bw()
-  
-# Combine plots (Explanation: draw_plot(plot, for position: x = 0, y = 0, width = 1, height = 1))
-  ggdraw(xlim = c(0, 1), ylim = c(0,1)) +
-    draw_plot(EMT_RT_P1, 0, 0.5, 0.5, 0.5) +
-    draw_plot(EMT_RT_P3, 0.5, 0.5, 0.5, 0.5) +
-    draw_plot(EMT_Acc_P1, 0, 0, 0.5, 0.5) +
-    draw_plot(EMT_Acc_P3, 0.5, 0, 0.5, 0.5) 
     
 ```
 
-```{r EMT_ERP_scat_plots}
+<br>
+
+We found a significant correlation between the empathy score and the difference between P1 amplitudes to angry vs. neutral facial expressions, but not for the P3 difference score. None of the correlations between emotion knowledge with P1 or P3 difference scores yielded significant results.
+
+<br>
+
+```{r EMK_ERP_corr_prep, include = FALSE}
+
+# Subset data for empathy and emotion knowledge 
+  ERPs_corr_EM = subset(ERPs_corr, select = c(EMK_EM, P1_Diff_Ang_Neu, P3_Diff_Ang_Neu))
+  ERPs_corr_EK = subset(ERPs_corr, select = c(EMK_EK, P1_Diff_Ang_Neu, P3_Diff_Ang_Neu))
   
-# EEG task data 
-  load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")
+# For saving them in word file
+ # apa.cor.table(ERPs_corr_EM, filename="Table_Corr_EM_ERPs.doc", table.number=1))
+ # apa.cor.table(ERPs_corr_EK, filename="Table_Corr_EK_ERPs.doc", table.number=2)
   
-# Select RT inspected criteria
-  EEG_task_data = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)
+# Print table in Rmarkdown  
+  ERP_corr_table_EM  = corr.test(ERPs_corr_EM, use = "pairwise", method = "pearson", alpha = .05)
+  ERP_corr_table_EK  = corr.test(ERPs_corr_EK, use = "pairwise", method = "pearson", alpha = .05)
   
-# Calculate mean accuracy per participant in percent 
-  EEG_corr = data.frame(tapply(EEG_task_data$Response,EEG_task_data$ID, sum)/144)
-  
-# Calculate mean RT per participant in percent 
-  EEG_corr$RT = tapply(EEG_task_data$RTs,EEG_task_data$ID, mean)
-  
-# Rename columns 
-  colnames(EEG_corr) = c("EEG_Acc", "EEG_RT")
-  
-# Combine with with other empathy / ERP measures
-  ERPs_corr$EEG_Acc = EEG_corr$EEG_Acc
-  ERPs_corr$EEG_RT = EEG_corr$EEG_RT  
-  
-# Add SES
-  ERPs_corr$SES = qn_data$wink_ind
-  
+# Re-name columns / rows
+  colnames(ERP_corr_table_EM$ci) = c("lower CI","r","upper CI","p")
+  colnames(ERP_corr_table_EK$ci) = c("lower CI","r","upper CI","p")
+
+  rownames(ERP_corr_table_EM$ci) = c("EMK 3-6 EM x P1 angry vs. neutral", "EMK 3-6 EM x P3 angry vs. neutral", "P1 angry vs. neutral x P3 angry vs. neutral")
+  rownames(ERP_corr_table_EK$ci) = c("EMK 3-6 EK x P1 angry vs. neutral", "EMK 3-6 EK x P3 angry vs. neutral", "P1 angry vs. neutral x P3 angry vs. neutral")
+
 ```
 
-<br>
-
-None of the correlations between ERP amplitude differences and emotion- and empathy-related measures reached significance.
-
-<br>
-
-Including all variables:
-
-<!-- Display correlation table -->
-
-<div align="center">
-
-```{r EMK_EMT_ERP_SES_corr, results = 'asis'}
-
-# Create correlation table
-  #ERP_corr_table  = apaCorr(as.matrix(ERPs_corr), corrtype = "spearman")
-  #kable(ERP_corr_table , format = "markdown")
-  
-  ERP_corr_table  = corr.test(ERPs_corr, use = "pairwise", method = "spearman", alpha = .05)
-
-# Adjust p-values   
-  pvalues = ERP_corr_table$ci$p 
-  ERP_corr_table$ci$p = p.adjust(pvalues, method="holm")
-  
+```{r EM_ERP_corr_table, results = 'asis'}
 # Print table   
-  ERP_corr_table$ci %>%
-  pander(caption="Correlation matrix.")
-  
+  ERP_corr_table_EM$ci %>%
+  pander(caption="Correlations between composite EMK 3-6 empathy score with P1 and P3 difference scores to angry vs. neutral faces.")
 ```
 
-</div>
+*Note:* Correlation coefficients were computed with Pearson's correlation. EM: Composite score for empathy of the Inventory to survey of emotional competences for three to six-year-olds; CI = confidence interval; * p < .05; ** p < .01; *** p < .001.
 
-*Note:* Correlation coefficients were computed with Spearman's rank correlations. * p < .05; ** p < .01; *** p < .001.
-
-<br>
-
-Including selection of interest: 
-
-<!-- Display correlation table -->
-
-<div align="center">
-
-```{r EMK_EMT_ERP_corr, results = 'asis'}
-
-# Select variables 
-  ERPs_corr_sel = subset(ERPs_corr, select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM, EMK_EK, EMT_Acc, EMT_RT))
-
-# Create correlation table
-  ERP_corr_table_sel  = corr.test(ERPs_corr_sel, use = "pairwise", method = "spearman", alpha = .05)
-
-# Adjust p-values   
-  pvalues = ERP_corr_table_sel$ci$p 
-  ERP_corr_table_sel$ci$p = p.adjust(pvalues, method="holm")
-  
+```{r EK_ERP_corr_table, results = 'asis'}
 # Print table   
-  ERP_corr_table_sel$ci %>%
-  pander(caption="Correlation matrix.")
+  ERP_corr_table_EK$ci %>%
+  pander(caption="Correlations between composite EMK 3-6 emotion knowledge score with P1 and P3 difference scores to angry vs. neutral faces.")  
   
 ```
 
-</div>
-
-*Note:* Correlation coefficients were computed with Spearman's rank correlations. * p < .05; ** p < .01; *** p < .001.
-
-<br>
-
-Excluding EMT: 
-
-<!-- Display correlation table -->
-
-<div align="center">
-
-```{r EMK_ERP_corr, results = 'asis'}
-
-# Select variables 
-  ERPs_corr_sel = subset(ERPs_corr, select = c(P1_Diff_Ang_Neu, P3_Diff_Ang_Neu, EMK_EM, EMK_EK))
-
-# Create correlation table
-  ERP_corr_table_sel  = corr.test(ERPs_corr_sel, use = "pairwise", method = "spearman", alpha = .05)
-
-# Adjust p-values   
-  pvalues = ERP_corr_table_sel$ci$p 
-  ERP_corr_table_sel$ci$p = p.adjust(pvalues, method="holm")
-  
-# Print table   
-  ERP_corr_table_sel$ci %>%
-  pander(caption="Correlation matrix.")
-  
-```
-
-</div>
-
-*Note:* Correlation coefficients were computed with Spearman's rank correlations. * p < .05; ** p < .01; *** p < .001.
-
-# Exploratory: Speed-Accuracy-Trade-Off - LISAS
-
-```{r EMT_LISAS, include = FALSE}
-
-# Select RT inspected criteria
-  EMT_lisas = subset(EMT,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE) 
-
-# Calculate participant's overall RT standard deviation
-  lisas = data.frame(tapply(EMT_lisas$RT_in_ms, EMT_lisas$ID, sd))
-  
-# Calculate participant's overall proportion of error (PE) standard deviation  
-  lisas$PE_SD = 1 - EMT_corr$EMT_Acc
-
-# Rename column 1
-  names(lisas)[1] = "RT_SD"
-  
-# Divide SD of RTs by SD of PE
-  lisas$prop_rt_pe = lisas$RT_SD/lisas$PE_SD
-  
-# Get PE per condition 
-  acc_con = data.frame(xtabs(~ID+emotion,EMT_lisas))
-  lisas$ID = acc_con$ID[acc_con$emotion == "angry"]
-  lisas$PE_ang = 1 - (acc_con$Freq[acc_con$emotion == "angry"])/24
-  lisas$PE_hap = 1 - (acc_con$Freq[acc_con$emotion == "happy"])/24
-  lisas$PE_neu = 1 - (acc_con$Freq[acc_con$emotion == "neutral"])/24
-  
-# Match lisas variables with EMT master table
-  
-  EMT_lisas$prop_rt_pe = lisas$prop_rt_pe[match(EMT_lisas$ID, lisas$ID,nomatch = NA)]
-  
-  EMT_lisas_hap = subset(EMT_lisas, emotion == "happy")
-  EMT_lisas_hap$pe_cond = lisas$PE_hap[match(EMT_lisas_hap$ID, lisas$ID,nomatch = NA)]
-  
-  EMT_lisas_ang = subset(EMT_lisas, emotion == "angry")
-  EMT_lisas_ang$pe_cond = lisas$PE_ang[match(EMT_lisas_ang$ID, lisas$ID,nomatch = NA)]
-  
-  EMT_lisas_neu = subset(EMT_lisas, emotion == "neutral")
-  EMT_lisas_neu$pe_cond = lisas$PE_neu[match(EMT_lisas_neu$ID, lisas$ID,nomatch = NA)]
-  
-  EMT_lisas = rbind(EMT_lisas_hap, EMT_lisas_ang, EMT_lisas_neu)
-  
-# Multiply proportion of SD PE & RT with PE per condition  
-  EMT_lisas$prop_indiv_cond = EMT_lisas$prop_rt_pe * EMT_lisas$pe_cond
- 
-# Calculate LISAS RT   
-  EMT_lisas$lisas_RT = EMT_lisas$prop_indiv_cond + EMT_lisas$RT_in_ms
-  
-# Calculate mean RT per participant in percent 
-  EMT_lisas_corr = data.frame(tapply(EMT_lisas$lisas_RT,EMT_lisas$ID, mean))
-  
-# Rename columns 
-  colnames(EMT_lisas_corr) = c("EMT_lisas_RT")
-
-```
-
-#### **Descriptives**
-
-<br>
-
-Speed-Accuracy-Trade-Off EEG task and EMT
-
-```{r EMT_EEG_SAT}
-# EMT RT and Accuracy 
-  EMT_Acc_RT = ggplot(ERPs_corr, aes(x = EMT_Acc, y = EMT_RT))+
-    geom_point(shape = 21, size = 2, color ="gray35", fill = "gray35")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EMT Accuracy", y = "EMT RTs")+
-    theme_bw()  
-  
-# Speed accuracy trade-off for EEG task    
-    
-# EEG RT and Accuracy 
-  EEG_Acc_RT = ggplot(ERPs_corr, aes(x = EEG_Acc, y = EEG_RT))+
-    geom_point(shape = 21, size = 2, color ="gray35", fill = "gray35")+
-    geom_smooth(method=lm, color = "black", size = 1)+
-    labs(x = "EEG Accuracy", y = "EEG RTs")+
-    theme_bw()
-  
-# No speed accuracy trade-off for EEG task     
-
-# Plot RT-Accuracy correlations
-   ggdraw(xlim = c(0, 1), ylim = c(0,1)) +
-    draw_plot(EMT_Acc_RT, 0, 0, 0.5, 1) +
-    draw_plot(EEG_Acc_RT, 0.5, 0, 0.5, 1)
-```
-
-LISAS (linear integrated speed-accuracy score) for EMT task
-
-```{r EMT_LISAS_plot}
-
-# Select correct trials
-  EMT_RT_lisas_plot = subset(EMT_lisas, Answer == 1)
-
-# Create factor, define neutral as baseline
-  EMT_RT_lisas_plot$emotion = factor(EMT_RT_lisas_plot$emotion, levels=c("neutral","happy","angry"))
-
-# Get accuracy for novel and repeated condition 
-  RT_all = aggregate(EMT_RT_lisas_plot$lisas_RT,
-               list(ID = EMT_RT_lisas_plot$ID, emotion = EMT_RT_lisas_plot$emotion),
-               mean)
-
-# Calculate descriptives on accuracy
-  stats_RT_all = summarySE(RT_all, measurevar="x", groupvars=c("emotion"))
-
-# Plot accuracy
-  EMT_lisas_RT = ggplot(stats_RT_all, aes(x=emotion, y=x, fill = emotion)) + 
-    geom_bar(position=position_dodge(), stat="identity",colour="black", size=0.7,width=0.9) +
-    geom_errorbar(aes(ymin=x-se, ymax=x+se), size=1, width=0.2, position=position_dodge(.9)) +
-    labs (x= "", y = "RT [ms]") +
-    coord_cartesian(ylim = c(0, 3500)) +
-    scale_y_continuous(breaks=seq(0,4000,1000))+
-    scale_fill_manual(values=emotion_col)+
-    theme_bw()+
-    theme_SN
-  
-  EMT_lisas_RT
-```
-
-#### **Model specification** {.tabset .tabset-pills}
-
-##### LMM: Random effect structure 
-
-```{r EMT_RT_LMM_lisas_build_mod}
-  
-# Correct responses
-  EMT_lisas_RT = subset(EMT_lisas, Answer == 1)
-
-# Factor random effects 
-  EMT_lisas_RT$ID = as.factor(EMT_lisas_RT$ID)
-  EMT_lisas_RT$Stim_Type = as.factor(EMT_lisas_RT$Stim_Type)
-
-# Create factor, define neutral as baseline
-  EMT_lisas_RT$emotion = factor(EMT_lisas_RT$emotion, levels=c("neutral","happy","angry"))
-
-# Set treatment contrast
-  contrasts(EMT_lisas_RT$emotion) = contr.treatment(3)
-
-# Add contrast columns
-  mm_c =  model.matrix( ~ emotion, EMT_lisas_RT) 
-
-# Attach to dataframe
-  EMT_lisas_RT[,(ncol(EMT_lisas_RT)+1):(ncol(EMT_lisas_RT)+3)] = mm_c
-  names(EMT_lisas_RT)[(ncol(EMT_lisas_RT)-2):ncol(EMT_lisas_RT)] =  c("Mean","Hap_Neu", "Ang_Neu") 
-
-# Build model 
-  mod_EMT_lisas_RT.lmer1 = lmer(log(lisas_RT) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Hap_Neu + Ang_Neu||ID) +
-                            (1 + Hap_Neu + Ang_Neu||Stim_Type),
-                          data = EMT_lisas_RT,
-                          control=lmerControl(calc.derivs = FALSE))
-
-# 1st: check how many zero variance terms you got in random effects
-  summary(rePCA(mod_EMT_lisas_RT.lmer1))
-
-# 2nd: check which random terms explain the least variance
-  print(VarCorr(mod_EMT_lisas_RT.lmer1),comp = "Variance")
-
-# Improved model
-  mod_EMT_lisas_RT.lmer2 = lmer(log(lisas_RT) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Hap_Neu + Ang_Neu||ID) +
-                            (1 | Stim_Type),
-                          data = EMT_lisas_RT,
-                          control=lmerControl(calc.derivs = FALSE))
-
-# Re-check the model
-  summary(rePCA(mod_EMT_lisas_RT.lmer2))
-  print(VarCorr(mod_EMT_lisas_RT.lmer2 ),comp = "Variance")
-
-## Likelihood ratio testing
-
-# Stim Type 
-  mod_EMT_lisas_RT.lmer3 = lmer(log(lisas_RT) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 + Hap_Neu + Ang_Neu||ID),
-                          data = EMT_lisas_RT,
-                          control=lmerControl(calc.derivs = FALSE))
-
-# Calculate ANOVA
-  anova(mod_EMT_lisas_RT.lmer2,mod_EMT_lisas_RT.lmer3)
-  
-  
-# ID 
-  mod_EMT_lisas_RT.lmer4 = lmer(log(lisas_RT) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 |ID),
-                          data = EMT_lisas_RT,
-                          control=lmerControl(calc.derivs = FALSE))  
-  
-  
-# Calculate ANOVA
-  anova(mod_EMT_lisas_RT.lmer3,mod_EMT_lisas_RT.lmer4)  
-
-
-# Final model
-  mod_EMT_lisas_RT.lmer4 = lmer(log(lisas_RT) ~ 
-                            Hap_Neu + Ang_Neu + scale(Age) + scale(WM) + 
-                            (1 |ID),
-                          data = EMT_lisas_RT,
-                          control=lmerControl(calc.derivs = FALSE))
-  
-# Model summary   
-  tab_model(mod_EMT_lisas_RT.lmer4)
-
-```
-
-##### LMM: Normality of residuals
-
-RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.
-
-```{r EMT_lisas_RT_LMM_res, fig.width = 6, fig.asp = .62}
-
-# Visualize normality assumption of residuals (without log transform)
-  mod_RT_lmm_no_log = lm(lisas_RT ~ emotion, data=EMT_lisas_RT)
-  res.mod_RT_lmm_no_log = residuals(mod_RT_lmm_no_log)
-  
-  par(mfrow=c(1,2))
-  
-  qqpl_RT_lmm_no_log = qqPlot(res.mod_RT_lmm_no_log, main="QQplot before transformation")    
-  norm_RT_lmm_no_log = plot(density(res.mod_RT_lmm_no_log), main="Density plot before transformation")  
-  par(mfrow=c(1,1))
-
-# Check which transformation of DV is suitable
-
-# Calculate box-cox plot
-  mod_RT_targ = lm(lisas_RT ~ emotion, data=EMT_lisas_RT)
-  boxcox(mod_RT_targ)   
-
-# Visualize normality assumption of residuals (with log transform)
-  mod_RT_lmm_log = lm(log(lisas_RT) ~ emotion, data=EMT_lisas_RT)
-  res.mod_RT_lmm_log = residuals(mod_RT_lmm_log)
-  
-  par(mfrow=c(1,2))
-  qqpl_RT_lmm_log = qqPlot(res.mod_RT_lmm_log, main="QQplot after transformation")    
-  norm_RT_lmm_log = plot(density(res.mod_RT_lmm_log), main="Density plot after transformation")  
-  par(mfrow=c(1,1))            
-            
-```
----
-
-##### LMM: Homoscedasticity
-
-```{r EMT_lisas_RT_LMM_homosk, fig.width = 5, fig.asp = .62}
-
-# Check homoscedasticity  
-  plot(fitted(mod_EMT_lisas_RT.lmer4), residuals(mod_EMT_lisas_RT.lmer4))
-  abline(0, 0)         
-        
-```
-
-#### **Results**
-
-```{r EMT_lisas_result_table, results = TRUE}
- 
-# Define labels      
-  labels = c("Intercept","Happy vs Neutral", "Angry vs Neutral", "Age","Working memory")
-
-# Show results
-  tab_model(mod_EMT_lisas_RT.lmer4,
-          pred.labels=labels, show.ci = FALSE,
-          show.se = TRUE, string.se = "SE",
-          show.stat = TRUE, string.stat = "t",
-          show.re.var = TRUE, show.obs = FALSE,
-          emph.p = TRUE, dv.labels=c("LISAS") , show.icc = TRUE)
-  
-```
-
----
-
-```{r save_models, include = FALSE, eval = FALSE}
-
-# Save data set in RData format
-  save(mod_EMT_Acc.glmm4, file = "./data/mod_EMT_Acc.glmm4.RData")
-  save(mod_EMT_RT.lmer5, file = "./data/mod_EMT_RT.lmer5.RData")
-  
-```
-
-
-```{r, include = FALSE, eval = FALSE}
-# To create APA table  
-  library(apaTables)
-  apa.cor.table(ERPs_corr, filename="Table1_APA.doc", table.number=1)
-```
-
+*Note:* Correlation coefficients were computed with Pearson's correlation. EK: Composite score for emotion knowledge of the Inventory to survey of emotional competences for three to six-year-olds; CI = confidence interval; * p < .05; ** p < .01; *** p < .001.
 
 # Session info
 

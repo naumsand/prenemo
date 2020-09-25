@@ -1,5 +1,5 @@
 ---
-title: "Matching task"
+title: "Delayed matched-to-sample task"
 output: 
   rmdformats::material:
     highlight: kate
@@ -86,8 +86,8 @@ output:
           legend.position = "none")
   
 # Set figure color palettes
-  emotion_col = c("#829dac","#1d4f6a","#032f47")
-  nov_col = c("#547460","#0A381C")
+  emotion_col = c("#99bada","#3375b5","#003162")
+  nov_col = c("#879e90","#0A381C")
   
 ```
 
@@ -147,7 +147,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
   acc_all$Cong = as.factor(acc_all$Cong)
 
 # Calculate descriptives on accuracy
-  stats_acc_all = summarySE(acc_all, measurevar="Freq", groupvars=c("Cong"))
+  stats_acc_all = summarySEwithin(acc_all, measurevar="Freq", withinvars=c("Cong"), idvar = "ID")
 
 # Plot accuracy
   EEG_acc_plot=ggplot(stats_acc_all, aes(x=Cong, y=Freq, fill = Cong)) +
@@ -189,7 +189,7 @@ We predicted that children would be less accurate when Face 1 and Face 2 were re
   acc_emo$Target = as.factor(acc_emo$Target)
   
 # Calculate descriptives on accuracy
-  stats_acc_emo = summarySE(acc_emo, measurevar="Freq", groupvars=c("Target"))
+  stats_acc_emo = summarySEwithin(acc_emo, measurevar="Freq", withinvars=c("Target"), idvar = "ID")
   
 # Plot accuracy
   EEG_acc_emo_plot=ggplot(stats_acc_emo, aes(x=Target, y=Freq, fill = Target)) +
@@ -440,7 +440,7 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 
 <!-- Print GLMM results -->
 
-Model results indicated that participants were equally accurate in trials with repeated in comparison to a novel emotion at Face 2. Descriptively, participants showed the highest accuracy when happy faces were presented as Face 2. This difference, however, was not significant in comparison to neutral faces. Similarly, there was no significant difference between angry and neutral facial expressions. 
+Participants were equally accurate in trials with repeated in comparison to novel emotions at Face 2.  We built an additional GLMM separated by emotions of Face 2 (average across repeated / novel trials) to identify potential matching differences elicited by emotion. We found no significant differences for happy facial expression in comparison to neutral facial expressions. Similarly, there was no significant difference between angry and neutral faces presented as Face 2
 
 <div align="center">
 
@@ -457,7 +457,7 @@ Model results indicated that participants were equally accurate in trials with r
           show.stat = TRUE, string.stat = "t",
           show.re.var = TRUE, show.obs = FALSE,
           emph.p = TRUE, dv.labels=c("Face 2 Novelty","Face 2 Emotion") , show.icc = TRUE)
-    
+  
 ```
 
 </div>
@@ -466,7 +466,7 @@ Model results indicated that participants were equally accurate in trials with r
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-# Reaction time
+# Reaction times
 
 We expected children to be slower when Face 1 and Face 2 showed the same emotion (`LMM1`). Additionally, we expected the lowest reaction times for pairings where happy faces were involved (`LMM2`). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity). 
 
@@ -481,7 +481,7 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 ## Plot separated by novel vs repeated trials 
 
 # Choose outlier-free and correct trial data
-  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE & EEG_trial_loss == 1)  
+  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE)  
   EEG_task_RT_plot = subset(EEG_task_RT_plot, Response == 1)
 
 # Rename values for repeated and novel trials 
@@ -498,9 +498,8 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 # Plot rainclouds
   EEG_task_RT_rain = ggplot(data = EEG_task_RT_plot, aes(y = RTs, x = Cong, fill = Cong))  +
     geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha = 1, color="black") +
-    geom_point(aes(y = RTs, color = Cong), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
-    geom_point(data = sumld, aes(x = Cong, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22), width = 0)+
+    geom_point(aes(y = RTs, color = Cong), shape = 19, position = position_jitter(width = .1), size = .3, alpha = 1) +
+    geom_boxplot(width = .1, guides = FALSE, outlier.shape = NA, alpha = 0.5, color = "black") +
     scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,7000,2000), limits=c(250,7000))+
     scale_x_discrete(name="")+
     expand_limits(x =1, y = 1) +
@@ -538,10 +537,9 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
 
 # Plot rainclouds
   EEG_RT_emo_rain = ggplot(data = EEG_task_RT_targ_plot, aes(y = RTs, x = Target, fill = Target))  +
-    geom_point(aes(y = RTs, color = Target), shape = 19, position = position_jitter(width = .1), size = .7, alpha = 1) +
+    geom_point(aes(y = RTs, color = Target), shape = 19, position = position_jitter(width = .1), size = .3, alpha = 1) +
     geom_flat_violin(position = position_nudge(x = .18, y = 0),  adjust=1.5, trim=TRUE, alpha= 1, color="black") +
-    geom_point(data = sumld, aes(x = Target, y = mean), position = position_nudge(x = .22), size = 2.5) +
-    geom_errorbar(data = sumld, aes(ymin = lower, ymax = upper, y = mean), position = position_nudge(x = .22), width = 0)+
+    geom_boxplot(width = .1, guides = FALSE, outlier.shape = NA, alpha = 0.5, color = "black") +
     scale_y_continuous(name="Reaction time [ms]", breaks=seq(0,7000,2000), limits=c(250,7000))+
     xlab("")+
     expand_limits(x = 1.00, y = 1) +
@@ -554,7 +552,9 @@ We expected children to be slower when Face 1 and Face 2 showed the same emotion
     theme(panel.grid.major.y = element_blank())
   
 # Display plots
-  fig_EEG_RT = cowplot::plot_grid(EEG_task_RT_rain, EEG_RT_emo_rain, ncol=2, rel_widths=c(1, 1))
+  fig_EEG_RT = cowplot::plot_grid(EEG_task_RT_rain, EEG_RT_emo_rain,
+                                  labels = c("A","B"),
+                                  ncol=2, rel_widths=c(1, 1))
   fig_EEG_RT
 
 ```
@@ -839,7 +839,7 @@ Based on the figure, we assume homoscedasticity.
 
 <!-- Print LMM results -->
 
-Contrary to our hypothesis, we did not find a significant main effect of novelty. Children seemed to be equally fast in detecting novel and repeated facial expression. Trials in which the emotion happy was presented as Face 2 were detected significantly faster compared to neutral faces. No difference between angry and neutral as Face 2 could be found. 
+Contrary to our hypothesis, we did not find a significant main effect of novelty. Children seemed to be equally fast in detecting novel and repeated facial expression. We built an additional LMM to identify potential matching differences for different emotions for Face 2 (contrast: happy vs. neutral, angry vs. neutral). Trials in which the emotion happy was presented as Face 2 were detected significantly faster than neutral faces. No difference between angry and neutral faces could be found. None of the covariates reached significance.
 
 <div align="center">
 
@@ -863,7 +863,7 @@ Contrary to our hypothesis, we did not find a significant main effect of novelty
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
 
-```{r save_models, include = FALSE, eval = FALSE}
+```{r save_models, include = FALSE, eval = TRUE}
 
 # Save data set in RData format
   save(mod_Acc_EEG.glmm4, file = "./data/mod_Acc_EEG.glmm4.RData")
