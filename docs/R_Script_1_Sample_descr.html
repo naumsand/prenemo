@@ -1,463 +1,526 @@
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="generator" content="pandoc" />
 
-<head>
+    
+    
+    <title>Sample description</title>
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
+        <script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+        <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+        <script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+        <script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+        <script src="site_libs/navigation-1.1/tabsets.js"></script>
+        <script src="site_libs/navigation-1.1/codefolding.js"></script>
+        <link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
+        <script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
+        <link href="site_libs/bootstrap_material-0.1/bootstrap-material-design.min.css" rel="stylesheet" />
+        <link href="site_libs/bootstrap_material-0.1/ripples.min.css" rel="stylesheet" />
+        <script src="site_libs/bootstrap_material-0.1/material.min.js"></script>
+        <script src="site_libs/bootstrap_material-0.1/ripples.min.js"></script>
+        <link href="site_libs/material-0.1/material.css" rel="stylesheet" />
+        <script src="site_libs/material-0.1/material.js"></script>
+        <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+        <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    
+    
+        <style type="text/css">code{white-space: pre;}</style>
+    <style type="text/css">
+      pre > code.sourceCode { white-space: pre; position: relative; }
+      pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+      pre > code.sourceCode > span:empty { height: 1.2em; }
+      code.sourceCode > span { color: inherit; text-decoration: inherit; }
+      div.sourceCode { margin: 1em 0; }
+      pre.sourceCode { margin: 0; }
+      @media screen {
+      div.sourceCode { overflow: auto; }
+      }
+      @media print {
+      pre > code.sourceCode { white-space: pre-wrap; }
+      pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+      }
+      pre.numberSource code
+        { counter-reset: source-line 0; }
+      pre.numberSource code > span
+        { position: relative; left: -4em; counter-increment: source-line; }
+      pre.numberSource code > span > a:first-child::before
+        { content: counter(source-line);
+          position: relative; left: -1em; text-align: right; vertical-align: baseline;
+          border: none; display: inline-block;
+          -webkit-touch-callout: none; -webkit-user-select: none;
+          -khtml-user-select: none; -moz-user-select: none;
+          -ms-user-select: none; user-select: none;
+          padding: 0 4px; width: 4em;
+          background-color: #ffffff;
+          color: #a0a0a0;
+        }
+      pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
+      div.sourceCode
+        { color: #1f1c1b; background-color: #ffffff; }
+      @media screen {
+      pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+      }
+      code span { color: #1f1c1b; } /* Normal */
+      code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
+      code span.an { color: #ca60ca; } /* Annotation */
+      code span.at { color: #0057ae; } /* Attribute */
+      code span.bn { color: #b08000; } /* BaseN */
+      code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
+      code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
+      code span.ch { color: #924c9d; } /* Char */
+      code span.cn { color: #aa5500; } /* Constant */
+      code span.co { color: #898887; } /* Comment */
+      code span.cv { color: #0095ff; } /* CommentVar */
+      code span.do { color: #607880; } /* Documentation */
+      code span.dt { color: #0057ae; } /* DataType */
+      code span.dv { color: #b08000; } /* DecVal */
+      code span.er { color: #bf0303; text-decoration: underline; } /* Error */
+      code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
+      code span.fl { color: #b08000; } /* Float */
+      code span.fu { color: #644a9b; } /* Function */
+      code span.im { color: #ff5500; } /* Import */
+      code span.in { color: #b08000; } /* Information */
+      code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
+      code span.op { color: #1f1c1b; } /* Operator */
+      code span.ot { color: #006e28; } /* Other */
+      code span.pp { color: #006e28; } /* Preprocessor */
+      code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
+      code span.sc { color: #3daee9; } /* SpecialChar */
+      code span.ss { color: #ff5500; } /* SpecialString */
+      code span.st { color: #bf0303; } /* String */
+      code span.va { color: #0057ae; } /* Variable */
+      code span.vs { color: #bf0303; } /* VerbatimString */
+      code span.wa { color: #bf0303; } /* Warning */
+    </style>
+    
+        <link rel="stylesheet" href="web_style.css" type="text/css" />
+    
+    <!-- tabsets -->
+    <script>
+      $(document).ready(function () {
+	  window.buildTabsets("toc");
+      });
+      $(document).ready(function () {
+	  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+	      $(this).parent().toggleClass('nav-tabs-open')
+	  });
+      });
+    </script>
 
+    <!-- code folding -->
+        <script>
+      $(document).ready(function () {
+	  	  	  window.initializeCodeFolding("hide" === "show");
+	        });
+    </script>
+    
+    <!-- code download -->
+    
 
+    <!-- tabsets dropdown -->
 
-<title>Sample description</title>
-<!-- Material Design fonts -->
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<script src="site_libs/header-attrs-2.3/header-attrs.js"></script>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
-<script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
-<link href="site_libs/magnific-popup-1.1.0/magnific-popup.css" rel="stylesheet" />
-<script src="site_libs/magnific-popup-1.1.0/jquery.magnific-popup.min.js"></script>
-<link href="site_libs/bootstrap_material-0.1/bootstrap-material-design.min.css" rel="stylesheet" />
-<link href="site_libs/bootstrap_material-0.1/ripples.min.css" rel="stylesheet" />
-<script src="site_libs/bootstrap_material-0.1/material.min.js"></script>
-<script src="site_libs/bootstrap_material-0.1/ripples.min.js"></script>
-<link href="site_libs/material-0.1/material.css" rel="stylesheet" />
-<script src="site_libs/material-0.1/material.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+    <style type="text/css">
+      .tabset-dropdown > .nav-tabs {
+	  display: inline-table;
+	  max-height: 500px;
+	  min-height: 44px;
+	  overflow-y: auto;
+	  background: white;
+	  border: 1px solid #ddd;
+	  border-radius: 4px;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li.active:before {
+	  content: "";
+	  font-family: 'Glyphicons Halflings';
+	  display: inline-block;
+	  padding: 10px;
+	  border-right: 1px solid #ddd;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+	  content: "&#xe258;";
+	  border: none;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+	  content: "";
+	  font-family: 'Glyphicons Halflings';
+	  display: inline-block;
+	  padding: 10px;
+	  border-right: 1px solid #ddd;
+      }
+      
+      .pages .tabset-dropdown > .nav-tabs > li.active {
+	  display: block;
+      }
 
-
-<style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    background-color: #ffffff;
-    color: #a0a0a0;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #a0a0a0;  padding-left: 4px; }
-div.sourceCode
-  { color: #1f1c1b; background-color: #ffffff; }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span { color: #1f1c1b; } /* Normal */
-code span.al { color: #bf0303; background-color: #f7e6e6; font-weight: bold; } /* Alert */
-code span.an { color: #ca60ca; } /* Annotation */
-code span.at { color: #0057ae; } /* Attribute */
-code span.bn { color: #b08000; } /* BaseN */
-code span.bu { color: #644a9b; font-weight: bold; } /* BuiltIn */
-code span.cf { color: #1f1c1b; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #924c9d; } /* Char */
-code span.cn { color: #aa5500; } /* Constant */
-code span.co { color: #898887; } /* Comment */
-code span.cv { color: #0095ff; } /* CommentVar */
-code span.do { color: #607880; } /* Documentation */
-code span.dt { color: #0057ae; } /* DataType */
-code span.dv { color: #b08000; } /* DecVal */
-code span.er { color: #bf0303; text-decoration: underline; } /* Error */
-code span.ex { color: #0095ff; font-weight: bold; } /* Extension */
-code span.fl { color: #b08000; } /* Float */
-code span.fu { color: #644a9b; } /* Function */
-code span.im { color: #ff5500; } /* Import */
-code span.in { color: #b08000; } /* Information */
-code span.kw { color: #1f1c1b; font-weight: bold; } /* Keyword */
-code span.op { color: #1f1c1b; } /* Operator */
-code span.ot { color: #006e28; } /* Other */
-code span.pp { color: #006e28; } /* Preprocessor */
-code span.re { color: #0057ae; background-color: #e0e9f8; } /* RegionMarker */
-code span.sc { color: #3daee9; } /* SpecialChar */
-code span.ss { color: #ff5500; } /* SpecialString */
-code span.st { color: #bf0303; } /* String */
-code span.va { color: #0057ae; } /* Variable */
-code span.vs { color: #bf0303; } /* VerbatimString */
-code span.wa { color: #bf0303; } /* Warning */
-</style>
-
-<link rel="stylesheet" href="web_style.css" type="text/css" />
-
-<!-- tabsets -->
-<script>
-$(document).ready(function () {
-  window.buildTabsets("toc");
-});
-</script>
-
-<!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
-
+      .pages .tabset-dropdown > .nav-tabs > li.active > a {
+	  background-color: transparent !important;
+	  color: #000000 !important;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li > a,
+      .tabset-dropdown > .nav-tabs > li > a:focus,
+      .tabset-dropdown > .nav-tabs > li > a:hover {
+	  border: none;
+	  display: inline-block;
+	  border-radius: 4px;
+	  background-color: transparent;
+	  color: #00A698 !important;
+	  font-weight: 300 !important;
+	  font-size: 14px;
+      }
+      
+      .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+	  display: block;
+	  float: none;
+      }
+      
+      .tabset-dropdown > .nav-tabs > li {
+	  display: none;
+      }
+    </style>
+    
 </head>
 
 <body>
 
-<div class="header-panel shadow z-2">
+  <div class="header-panel shadow z-2">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-3">
-        <div id="header">
-    <h1 class="title">Sample description</h1>
-                </div>
+      <div class="row">
+        <div class="col-xs-3">
+	  	  <div id="header">
+	    <h1 class="title">Sample description</h1>
+	    	    	    	  </div>
+	  	</div>
+      </div>
     </div>
-</div>
-</div>
-</div>
-
-
-<div class="container-fluid main-container">
+  </div>
+  
+  <div class="container-fluid main-container">
     <div class="row">
+
       <nav class="col-xs-3 menu">
-        <div id="toc">
-        <ul>
-        <li><a href="#demographics">Demographics</a></li>
-        <li><a href="#session-info">Session info</a></li>
-        </ul>
-        </div>
-        
-        
-        
+	<div id="toc">
+          <ul>
+          <li><a href="#demographics">Demographics</a></li>
+          <li><a href="#session-info">Session info</a></li>
+          </ul>
+	</div>
       </nav>
-     <div class="pages col-xs-9">
-     <div class="row">
-       <div class="col-xs-10">
-
-
-<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="index.html">Naumann et al.</a>
-    </div>
-    <div id="navbar" class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li>
-  <a href="index.html">
-    <span class="glyphicon glyphicon-info-sign"></span>
-     
-    Data description
-  </a>
-</li>
-<li>
-  <a href="R_Script_1_Sample_descr.html">
-    <span class="glyphicon glyphicon-user"></span>
-     
-    Sample description
-  </a>
-</li>
-<li>
-  <a href="R_Script_2_EEG_task_measures.html">
-    <span class="glyphicon glyphicon-hand-up"></span>
-     
-    Del. matched-to-sample task
-  </a>
-</li>
-<li>
-  <a href="R_Script_3_ERP_measures.html">
-    <span class="glyphicon glyphicon-flash"></span>
-     
-    ERP measures
-  </a>
-</li>
-<li>
-  <a href="R_Script_4_Emotion_empathy_measures.html">
-    <span class="glyphicon glyphicon-link"></span>
-     
-    Emotion &amp; Empathy measures
-  </a>
-</li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
-  <a href="https://osf.io/nas48/">
-    <span class="ai ai ai ai-osf ai-lg"></span>
-     
-  </a>
-</li>
-<li>
-  <a href="mailto:sandra.naumann@hu-berlin.de">
-    <span class="fa fa-envelope fa-lg"></span>
-     
-  </a>
-</li>
-      </ul>
-    </div><!--/.nav-collapse -->
-  </div><!--/.container -->
-</div><!--/.navbar -->
-<link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
-
-
-<!-- Set up workspace -->
-<!-- How to calculate Winkler index -->
-<div id="demographics" class="section level1">
-<h1>Demographics</h1>
-<!-- Load data -->
-<!-- Create demographic table -->
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># descriptive statistics</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">dfSummary</span>(qn_data[<span class="kw">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;PPVT_Perc&quot;</span>, <span class="st">&quot;CMM_Perc&quot;</span>, <span class="st">&quot;SRS&quot;</span>, <span class="st">&quot;SCQ&quot;</span>, <span class="st">&quot;wink_ind&quot;</span>)], </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>    <span class="dt">varnumbers =</span> <span class="ot">FALSE</span>, <span class="dt">valid.col =</span> <span class="ot">FALSE</span>, <span class="dt">na.col =</span> <span class="ot">FALSE</span>, <span class="dt">graph.col =</span> <span class="ot">FALSE</span>, <span class="dt">display.labels =</span> <span class="ot">FALSE</span>, </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="dt">labels.col =</span> <span class="ot">FALSE</span>, <span class="dt">headings =</span> <span class="ot">FALSE</span>, <span class="dt">graph.magnif =</span> <span class="fl">0.75</span>)</span></code></pre></div>
-<table style="width:86%;">
-<colgroup>
-<col width="19%" />
-<col width="37%" />
-<col width="29%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">Variable</th>
-<th align="left">Stats / Values</th>
-<th align="left">Freqs (% of Valid)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">sex [character]</td>
-<td align="left">1. female 2. male</td>
-<td align="left">15 (48.4%) 16 (51.6%)</td>
-</tr>
-<tr class="even">
-<td align="left">age [numeric]</td>
-<td align="left">Mean (sd) : 5.1 (0.7) min &lt; med &lt; max: 4.1 &lt; 5.1 &lt; 6.3 IQR (CV) : 1.2 (0.1)</td>
-<td align="left">31 distinct values</td>
-</tr>
-<tr class="odd">
-<td align="left">PPVT_Perc [numeric]</td>
-<td align="left">Mean (sd) : 58.5 (27.4) min &lt; med &lt; max: 6.7 &lt; 65.5 &lt; 98.6 IQR (CV) : 46.4 (0.5)</td>
-<td align="left">21 distinct values</td>
-</tr>
-<tr class="even">
-<td align="left">CMM_Perc [numeric]</td>
-<td align="left">Mean (sd) : 60.1 (36.3) min &lt; med &lt; max: 1 &lt; 79 &lt; 99 IQR (CV) : 71.5 (0.6)</td>
-<td align="left">19 distinct values</td>
-</tr>
-<tr class="odd">
-<td align="left">SRS [numeric]</td>
-<td align="left">Mean (sd) : 35 (12.7) min &lt; med &lt; max: 16 &lt; 35 &lt; 69 IQR (CV) : 14 (0.4)</td>
-<td align="left">22 distinct values</td>
-</tr>
-<tr class="even">
-<td align="left">SCQ [numeric]</td>
-<td align="left">Mean (sd) : 4.3 (2.1) min &lt; med &lt; max: 1 &lt; 4 &lt; 9 IQR (CV) : 2 (0.5)</td>
-<td align="left">1 : 2 ( 6.4%) 2 : 5 (16.1%) 3 : 5 (16.1%) 4 : 6 (19.4%) 5 : 6 (19.4%) 6 : 2 ( 6.4%) 7 : 2 ( 6.4%) 8 : 2 ( 6.4%) 9 : 1 ( 3.2%)</td>
-</tr>
-<tr class="odd">
-<td align="left">wink_ind [numeric]</td>
-<td align="left">Mean (sd) : 11.8 (2.3) min &lt; med &lt; max: 7 &lt; 12 &lt; 15 IQR (CV) : 2 (0.2)</td>
-<td align="left">7 : 3 ( 9.7%) 8 : 1 ( 3.2%) 9 : 1 ( 3.2%) 10 : 1 ( 3.2%) 11 : 6 (19.4%) 12 : 5 (16.1%) 13 : 7 (22.6%) 14 : 5 (16.1%) 15 : 2 ( 6.4%)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="session-info" class="section level1">
-<h1>Session info</h1>
-<!-- Provide session info  -->
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Get session info</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
-<pre><code>R version 4.0.2 (2020-06-22)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 18362)
-
-Matrix products: default
-
-locale:
-[1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
-[3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
-[5] LC_TIME=German_Germany.1252    
-
-attached base packages:
-[1] stats     graphics  grDevices utils     datasets  methods   base     
-
-other attached packages:
-[1] summarytools_0.9.6 miceadds_3.10-28   mice_3.11.0        rmdformats_0.3.7  
-[5] XLConnect_1.0.1    kableExtra_1.1.0  
-
-loaded via a namespace (and not attached):
- [1] tidyselect_1.1.0   xfun_0.16          pander_0.6.3       purrr_0.3.4       
- [5] mitools_2.4        rJava_0.9-13       lattice_0.20-41    tcltk_4.0.2       
- [9] colorspace_1.4-1   vctrs_0.3.2        generics_0.0.2     htmltools_0.5.0   
-[13] viridisLite_0.3.0  yaml_2.2.1         base64enc_0.1-3    rlang_0.4.7       
-[17] pillar_1.4.6       glue_1.4.1         DBI_1.1.0          pryr_0.1.4        
-[21] plyr_1.8.6         matrixStats_0.56.0 lifecycle_0.2.0    stringr_1.4.0     
-[25] munsell_0.5.0      gtable_0.3.0       rvest_0.3.6        codetools_0.2-16  
-[29] evaluate_0.14      knitr_1.29         highr_0.8          broom_0.7.0       
-[33] Rcpp_1.0.5         readr_1.3.1        scales_1.1.1       backports_1.1.8   
-[37] checkmate_2.0.0    formatR_1.7        webshot_0.5.2      magick_2.4.0      
-[41] rapportools_1.0    ggplot2_3.3.2      hms_0.5.3          digest_0.6.25     
-[45] stringi_1.4.6      bookdown_0.20      dplyr_1.0.1        grid_4.0.2        
-[49] tools_4.0.2        magrittr_1.5       tibble_3.0.3       crayon_1.3.4      
-[53] tidyr_1.1.1        pkgconfig_2.0.3    ellipsis_0.3.1     xml2_1.3.2        
-[57] lubridate_1.7.9    rmarkdown_2.3      httr_1.4.2         rstudioapi_0.11   
-[61] R6_2.4.1           compiler_4.0.2    </code></pre>
-</div>
-
-    </div>
-    <div class="col-xs-2">
-        <div class="btn-toolbar">
-    <div class="btn-group">
-    <a href="#" class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="text-muted">Code</span> <span class="text-muted caret"></span></a>
-    <ul class="dropdown-menu" style="min-width: 50px;">
-    <li><a id="rmd-show-all-code" href="#">Show All</a></li>
-    <li><a id="rmd-hide-all-code" href="#">Hide All</a></li>
-    </ul>
-    </div>
-    </div>
-        </div>
-  </div>
-  </div>
-  </div>
-  <div class="row">
-    </div>
-  </div>
-
-<script>
-$(document).ready(function () {
-  // add bootstrap table styles to pandoc tables
-  $('tr.header').parent('thead').parent('table').addClass('table table-striped table-hover');
-
-  
-    $('.pages img')
- 	  .addClass("image-lb");
-  $('.pages').magnificPopup({
-	      type:'image',
-	      closeOnContentClick: false,
-	      closeBtnInside: false,
-        delegate: 'img',
-	      gallery: {enabled: true },
-          removalDelay: 500,
-          callbacks: {
-              beforeOpen: function() {
-                // just a hack that adds mfp-anim class to markup
-                this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
-              }
-          },
-          mainClass: 'mfp-move-from-top',
-	      image: {
-	        verticalFit: true,
-            titleSrc: 'alt'
-	      }
- 	    });
- 	
-    
-    $('#toc ul li').first().addClass("active");
-    $('#toc ul li').attr("data-target", function() {
-        return($(this).children("a").attr("href"));
-    })
-    $('body .section.level1').first().addClass("active");
-    $('body .section.level1').not('.active').hide();
-    
-    $('#toc a[href*="#"]').click(function() {
-
-      var id = $(this).attr("href");
-      if (id === "#") return;
-      if (id.substring(0, 8) === "#dyntab-") return;
-      toggle_page(id);
-
-      // Menu
-      var menu_entry = $(".menu li[data-target='"+id+"']");
-      menu_entry.addClass("active");
-      $(".menu li").not(menu_entry).removeClass("active"); 
       
+      <div class="pages col-xs-9">
 
-    });
+            
+    <div class="row">
+	    	    
+          <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+            <div class="container">
+              <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                  <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="index.html">Naumann et al.</a>
+              </div>
+              <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                  <li>
+            <a href="index.html">
+              <span class="glyphicon glyphicon-info-sign"></span>
+               
+              Data description
+            </a>
+          </li>
+          <li>
+            <a href="R_Script_1_Sample_descr.html">
+              <span class="glyphicon glyphicon-user"></span>
+               
+              Sample description
+            </a>
+          </li>
+          <li>
+            <a href="R_Script_2_EEG_task_measures.html">
+              <span class="glyphicon glyphicon-hand-up"></span>
+               
+              Del. match-to-sample task
+            </a>
+          </li>
+          <li>
+            <a href="R_Script_3_ERP_measures.html">
+              <span class="glyphicon glyphicon-flash"></span>
+               
+              ERP measures
+            </a>
+          </li>
+          <li>
+            <a href="R_Script_4_Emotion_empathy_measures.html">
+              <span class="glyphicon glyphicon-link"></span>
+               
+              Emotion &amp; Empathy measures
+            </a>
+          </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                  <li>
+            <a href="https://osf.io/nas48/">
+              <span class="ai ai ai ai-osf ai-lg"></span>
+               
+            </a>
+          </li>
+          <li>
+            <a href="mailto:sandra.naumann@hu-berlin.de">
+              <span class="fas fa-envelope fa-lg"></span>
+               
+            </a>
+          </li>
+                </ul>
+              </div><!--/.nav-collapse -->
+            </div><!--/.container -->
+          </div><!--/.navbar -->
+	    	    <link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
+	        </div>
+    
+    
+	<div class="row">
 
-    function toggle_page(id) {
-      $(".page").not(page).removeClass("active").hide();
-      window.page = id;
-      var page = $(window.page);
-      window.location.hash = window.page;
-      //$(this).addClass("active");
+	  <div class="col-xs-10">
+	    <!-- Set up workspace -->
+     <!-- How to calculate Winkler index -->
+     <div id="demographics" class="section level1">
+     <h1>Demographics</h1>
+     <!-- Load data -->
+     <!-- Create demographic table -->
+     <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># descriptive statistics</span></span>
+     <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">dfSummary</span>(qn_data[<span class="kw">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;PPVT_Perc&quot;</span>, <span class="st">&quot;CMM_Perc&quot;</span>, <span class="st">&quot;SRS&quot;</span>, <span class="st">&quot;SCQ&quot;</span>, <span class="st">&quot;wink_ind&quot;</span>)], </span>
+     <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>    <span class="dt">varnumbers =</span> <span class="ot">FALSE</span>, <span class="dt">valid.col =</span> <span class="ot">FALSE</span>, <span class="dt">na.col =</span> <span class="ot">FALSE</span>, <span class="dt">graph.col =</span> <span class="ot">FALSE</span>, <span class="dt">display.labels =</span> <span class="ot">FALSE</span>, </span>
+     <span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    <span class="dt">labels.col =</span> <span class="ot">FALSE</span>, <span class="dt">headings =</span> <span class="ot">FALSE</span>, <span class="dt">graph.magnif =</span> <span class="fl">0.75</span>)</span></code></pre></div>
+     <table style="width:86%;">
+     <colgroup>
+     <col width="19%" />
+     <col width="37%" />
+     <col width="29%" />
+     </colgroup>
+     <thead>
+     <tr class="header">
+     <th align="left">Variable</th>
+     <th align="left">Stats / Values</th>
+     <th align="left">Freqs (% of Valid)</th>
+     </tr>
+     </thead>
+     <tbody>
+     <tr class="odd">
+     <td align="left">sex [character]</td>
+     <td align="left">1. female 2. male</td>
+     <td align="left">15 (48.4%) 16 (51.6%)</td>
+     </tr>
+     <tr class="even">
+     <td align="left">age [numeric]</td>
+     <td align="left">Mean (sd) : 5.1 (0.7) min &lt; med &lt; max: 4.1 &lt; 5.1 &lt; 6.3 IQR (CV) : 1.2 (0.1)</td>
+     <td align="left">31 distinct values</td>
+     </tr>
+     <tr class="odd">
+     <td align="left">PPVT_Perc [numeric]</td>
+     <td align="left">Mean (sd) : 58.5 (27.4) min &lt; med &lt; max: 6.7 &lt; 65.5 &lt; 98.6 IQR (CV) : 46.4 (0.5)</td>
+     <td align="left">21 distinct values</td>
+     </tr>
+     <tr class="even">
+     <td align="left">CMM_Perc [numeric]</td>
+     <td align="left">Mean (sd) : 60.1 (36.3) min &lt; med &lt; max: 1 &lt; 79 &lt; 99 IQR (CV) : 71.5 (0.6)</td>
+     <td align="left">19 distinct values</td>
+     </tr>
+     <tr class="odd">
+     <td align="left">SRS [numeric]</td>
+     <td align="left">Mean (sd) : 35 (12.7) min &lt; med &lt; max: 16 &lt; 35 &lt; 69 IQR (CV) : 14 (0.4)</td>
+     <td align="left">22 distinct values</td>
+     </tr>
+     <tr class="even">
+     <td align="left">SCQ [numeric]</td>
+     <td align="left">Mean (sd) : 4.3 (2.1) min &lt; med &lt; max: 1 &lt; 4 &lt; 9 IQR (CV) : 2 (0.5)</td>
+     <td align="left">1 : 2 ( 6.4%) 2 : 5 (16.1%) 3 : 5 (16.1%) 4 : 6 (19.4%) 5 : 6 (19.4%) 6 : 2 ( 6.4%) 7 : 2 ( 6.4%) 8 : 2 ( 6.4%) 9 : 1 ( 3.2%)</td>
+     </tr>
+     <tr class="odd">
+     <td align="left">wink_ind [numeric]</td>
+     <td align="left">Mean (sd) : 11.8 (2.3) min &lt; med &lt; max: 7 &lt; 12 &lt; 15 IQR (CV) : 2 (0.2)</td>
+     <td align="left">7 : 3 ( 9.7%) 8 : 1 ( 3.2%) 9 : 1 ( 3.2%) 10 : 1 ( 3.2%) 11 : 6 (19.4%) 12 : 5 (16.1%) 13 : 7 (22.6%) 14 : 5 (16.1%) 15 : 2 ( 6.4%)</td>
+     </tr>
+     </tbody>
+     </table>
+     </div>
+     <div id="session-info" class="section level1">
+     <h1>Session info</h1>
+     <!-- Provide session info  -->
+     <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Get session info</span></span>
+     <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+     <pre><code>R version 4.0.2 (2020-06-22)
+     Platform: x86_64-w64-mingw32/x64 (64-bit)
+     Running under: Windows 10 x64 (build 18362)
 
-      page.show();
+     Matrix products: default
 
-      var totop = setInterval(function () {
-        $(".pages").animate({scrollTop: 0}, 0);
-      }, 10);
+     locale:
+     [1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
+     [3] LC_MONETARY=German_Germany.1252 LC_NUMERIC=C                   
+     [5] LC_TIME=German_Germany.1252    
 
-      setTimeout(function () {
-        page.addClass("active");
-        setTimeout(function () {
-          clearInterval(totop);
-        }, 1000);
-      }, 100);
+     attached base packages:
+     [1] stats     graphics  grDevices utils     datasets  methods   base     
 
-      window.dispatchEvent(new Event('resize'));
+     other attached packages:
+     [1] summarytools_0.9.6 miceadds_3.10-28   mice_3.11.0        rmdformats_1.0.0  
+     [5] XLConnect_1.0.1    kableExtra_1.1.0  
 
-    }
+     loaded via a namespace (and not attached):
+      [1] tidyselect_1.1.0   xfun_0.22          pander_0.6.3       purrr_0.3.4       
+      [5] mitools_2.4        rJava_0.9-13       lattice_0.20-41    tcltk_4.0.2       
+      [9] colorspace_1.4-1   vctrs_0.3.2        generics_0.1.0     htmltools_0.5.0   
+     [13] viridisLite_0.3.0  yaml_2.2.1         base64enc_0.1-3    rlang_0.4.7       
+     [17] pillar_1.4.7       glue_1.4.1         DBI_1.1.0          pryr_0.1.4        
+     [21] plyr_1.8.6         matrixStats_0.56.0 lifecycle_0.2.0    stringr_1.4.0     
+     [25] munsell_0.5.0      rvest_0.3.6        codetools_0.2-18   evaluate_0.14     
+     [29] knitr_1.30         highr_0.8          broom_0.7.0        Rcpp_1.0.5        
+     [33] readr_1.3.1        scales_1.1.1       backports_1.1.8    checkmate_2.0.0   
+     [37] formatR_1.7        webshot_0.5.2      magick_2.4.0       rapportools_1.0   
+     [41] hms_0.5.3          digest_0.6.25      stringi_1.4.6      bookdown_0.21     
+     [45] dplyr_1.0.1        grid_4.0.2         tools_4.0.2        magrittr_2.0.1    
+     [49] tibble_3.0.3       crayon_1.3.4       tidyr_1.1.1        pkgconfig_2.0.3   
+     [53] ellipsis_0.3.1     xml2_1.3.2         lubridate_1.7.9    rmarkdown_2.6     
+     [57] httr_1.4.2         rstudioapi_0.13    R6_2.5.0           compiler_4.0.2    </code></pre>
+     </div>
+	  </div>
 
+	  <div class="col-xs-2">
 
-    $(".menu li").click(function () {
-
-      toggle_page($(this).data("target"));
-
-      // Menu
-      if (!$(this).data("target")) return;
-      if ($(this).is(".active")) return;
-      $(".menu li").not($(this)).removeClass("active");
-      $(this).addClass("active");
-
-    });
-  
+	    	    <div class = "btn-toolbar">
+	    <div class="btn-group">
+	      <a class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#"><span>Code</span> <span class="caret"></span></a>
+	      <ul class="dropdown-menu" style="min-width: 50px;">
+				<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+		<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+							      </ul>
+	    </div>
+	    </div>
+	    
+	    </div>
+    </div>
+	
     
 
+    </div>
+  </div>
 
-    window.page = window.location.hash;
-    if (window.page != "") {
-      $(".menu").find("li[data-target=" + window.page + "]").trigger("click");
-    }
+ <script>
+    $(document).ready(function () {
+	// add bootstrap table styles to pandoc tables
+	$('tr.header').parent('thead').parent('table').addClass('table table-striped table-hover');
+	
+	
+		$('.pages img').addClass("image-lb");
+	$('.pages').magnificPopup({
+	    type:'image',
+	    closeOnContentClick: false,
+	    closeBtnInside: false,
+            delegate: 'img',
+	    gallery: {enabled: true },
+            removalDelay: 500,
+            callbacks: {
+		beforeOpen: function() {
+                    // just a hack that adds mfp-anim class to markup
+                    this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+		}
+            },
+            mainClass: 'mfp-move-from-top',
+	    image: {
+	        verticalFit: true,
+		titleSrc: 'alt'
+	    }
+ 	});
+ 	
+	  
+	$('#toc ul li').first().addClass("active");
+	$('#toc ul li').attr("data-target", function() {
+            return($(this).children("a").attr("href"));
+	})
+	$('body .section.level1').first().addClass("active");
+	$('body .section.level1').not('.active').hide();
+	
+	$('#toc a[href*="#"], a[href^="#"]').click(function() {
+	    var id = $(this).attr("href");
+	    if (id === "#") return;
+	    if (id.substring(0, 8) === "#dyntab-") return;
+	    // Menu
+	    var menu_entry = $(".menu li[data-target='"+id+"']");
+	    if (menu_entry.length == 0) {
+		window.location.hash = id;
+		return;
+	    }
+	    menu_entry.addClass("active");
+	    $(".menu li").not(menu_entry).removeClass("active"); 
+	    toggle_page(id);
+	});
 
-    /* init material bootstrap js */
-    $.material.init();
-});
-</script>
+	function toggle_page(id) {
+	    $(".page").not(page).removeClass("active").hide();
+	    window.page = id;
+	    var page = $(window.page);
+	    window.location.hash = window.page;
+	    //$(this).addClass("active");
+	    page.show();
+
+	    var totop = setInterval(function () {
+		$(".pages").animate({scrollTop: 0}, 0);
+	    }, 10);
+
+	    setTimeout(function () {
+		page.addClass("active");
+		setTimeout(function () {
+		    clearInterval(totop);
+		}, 1000);
+	    }, 100);
+	    
+	    window.dispatchEvent(new Event('resize'));
+	}
 
 
+	$(".menu li").click(function () {
+	    toggle_page($(this).data("target"));
+	    // Menu
+	    if (!$(this).data("target")) return;
+	    if ($(this).is(".active")) return;
+	    $(".menu li").not($(this)).removeClass("active");
+	    $(this).addClass("active");
+	});
+  
+	  
+	window.page = window.location.hash;
+	if (window.page != "") {
+	    $(".menu").find("li[data-target=" + window.page + "]").trigger("click");
+	}
+	/* init material bootstrap js */
+	$.material.init();
+    });
+ </script>
 
 
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
-
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+ <script>
+   (function () {
+       var script = document.createElement("script");
+       script.type = "text/javascript";
+       script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+       document.getElementsByTagName("head")[0].appendChild(script);
+   })();
+ </script>
+ 
 </body>
 </html>
