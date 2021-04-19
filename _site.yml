@@ -10,7 +10,7 @@ navbar:
     - text: "Sample description"
       icon: glyphicon-user
       href: R_Script_1_Sample_descr.html
-    - text: "Del. matched-to-sample task"
+    - text: "Del. match-to-sample task"
       icon: glyphicon-hand-up
       href: R_Script_2_EEG_task_measures.html
     - text: "ERP measures"

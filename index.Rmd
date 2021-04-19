@@ -49,9 +49,9 @@ In 'Overview of data sets', we created a tab for every data set used within this
   + ERP_data
   + ERPs_Topo_Face1
   + ERPs_Topo_Face2
-  + ERP_Traj_Face_1 (ROI_P1_P3_Face1, left_ROI_N170_Face1, right_ROI_N170_Face1)
-  + ERP_Traj_Face_2 (ROI_P1_P3_Face2, left_ROI_N170_Face2, right_ROI_N170_Face2)
-  + EMT
+  + XX_ROI_XX_Face_1 (ROI_P1_P3_Face1, left_ROI_N170_Face1, right_ROI_N170_Face1)
+  + XX_ROI_XX_Face_2 (ROI_P1_P3_Face2, left_ROI_N170_Face2, right_ROI_N170_Face2)
+  + EMT_data
   
 # Overview of data sets {.tabset .tabset-pills}
 
@@ -73,8 +73,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 ```
   
-
-
+  
 ## EEG task data
 
 <!-- Display EEG task descriptions -->  
@@ -122,7 +121,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_Topo_Face1",
+                               sheet = "ERPs_Topo_Face1",
                                startCol = 1,
                                endCol = 0)
 
@@ -133,7 +132,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 ```
 
 
-## ERP_Topo_Face2
+## ERPs_Topo_Face2
 
 <!-- Display ERP data descriptions -->  
 
@@ -142,7 +141,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_Topo_Face2",
+                               sheet = "ERPs_Topo_Face2",
                                startCol = 1,
                                endCol = 0)
 
@@ -153,7 +152,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 ```
 
 
-## ERP_Traj_Face1
+## XX_ROI_XX_Face_1
 
 <!-- Display ERP data descriptions -->  
 
@@ -162,7 +161,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_Traj_Face1",
+                               sheet = "XX_ROI_XX_Face1",
                                startCol = 1,
                                endCol = 0)
 
@@ -173,7 +172,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 ```
 
 
-## ERP_Traj_Face2
+## XX_ROI_XX_Face_2
 
 <!-- Display ERP data descriptions -->  
 
@@ -182,7 +181,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_Traj_Face2",
+                               sheet = "XX_ROI_XX_Face2",
                                startCol = 1,
                                endCol = 0)
 
@@ -193,7 +192,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 ```
 
 
-## EMT
+## EMT data
 
 <!-- Display EMT task data descriptions -->  
 
