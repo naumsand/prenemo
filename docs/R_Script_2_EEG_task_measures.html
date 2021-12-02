@@ -12,7 +12,11 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
+<<<<<<< HEAD
+        <script src="site_libs/header-attrs-2.7/header-attrs.js"></script>
+=======
         <script src="site_libs/header-attrs-2.6/header-attrs.js"></script>
+>>>>>>> master
         <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link href="site_libs/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,6 +33,10 @@
         <link href="site_libs/material-0.1/material.css" rel="stylesheet" />
         <script src="site_libs/material-0.1/material.js"></script>
         <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<<<<<<< HEAD
+        <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+=======
+>>>>>>> master
         <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
         <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
     
@@ -210,6 +218,399 @@
   <div class="container-fluid main-container">
     <div class="row">
 
+<<<<<<< HEAD
+<nav class="col-xs-3 menu">
+<div id="toc">
+<ul>
+<li><a href="#task-description">Task description</a></li>
+<li><a href="#accuracy-reaction-times">Accuracy &amp; Reaction times</a></li>
+<li><a href="#session-info">Session info</a></li>
+</ul>
+</div>
+</nav>
+      
+<div class="pages col-xs-9">
+
+        
+<div class="row">
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Naumann et al.</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">
+    <span class="glyphicon glyphicon-info-sign"></span>
+     
+    Data description
+  </a>
+</li>
+<li>
+  <a href="R_Script_1_Sample_descr.html">
+    <span class="glyphicon glyphicon-user"></span>
+     
+    Sample description
+  </a>
+</li>
+<li>
+  <a href="R_Script_2_EEG_task_measures.html">
+    <span class="glyphicon glyphicon-hand-up"></span>
+     
+    Del. match-to-sample task
+  </a>
+</li>
+<li>
+  <a href="R_Script_3_ERP_measures.html">
+    <span class="glyphicon glyphicon-flash"></span>
+     
+    ERP measures
+  </a>
+</li>
+<li>
+  <a href="R_Script_4_Emotion_empathy_measures.html">
+    <span class="glyphicon glyphicon-link"></span>
+     
+    Emotion &amp; Empathy measures
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://osf.io/nas48/">
+    <span class="ai ai ai ai-osf ai-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="mailto:sandra.naumann@hu-berlin.de">
+    <span class="fas fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+<link rel="stylesheet" href="https://cdn.rawgit.com/jpswalsh/academicons/master/css/academicons.min.css">
+</div>
+
+    
+<div class="row">
+
+<div class="col-xs-10">
+<!-- Set up workspace -->
+<!-- Load data set-->
+<div id="task-description" class="section level1">
+<h1>Task description</h1>
+<p>Our EEG paradigm was comprised of a delayed match-to-sample task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). Besides their EEG, we measured participants’ accuracy rates and reaction times.</p>
+<p>We excluded reaction times &lt; 250 ms and incorrect trials. Subsequently, we calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. As fixed factors, all models included treatment contrasts for <em>facial expressions</em> (<code>emotional [average of happy/angry] vs. neutral faces (Emo_Neu)</code>, <code>happy vs. angry faces (Hap_Ang)</code>), <em>repetition</em> (<code>novel vs. repeated emotion trials (Rep_Nov)</code>) as well as their interaction (<code>Emo_NeuxRep_Nov, Hap_AngxRep_Nov</code>). Due to the high cognitive task demands, working memory (<code>WM_scal</code>) was entered as scaled covariate in all (general) linear mixed model analyses.</p>
+<p>The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).</p>
+<p>We expected children to be faster and more accurate when Face 1 and Face 2 showed different emotions. Additionally, we expected the highest accuracy rates and fastest reaction times for pairings with happy facial expressions.</p>
+</div>
+<div id="accuracy-reaction-times" class="section level1">
+<h1>Accuracy &amp; Reaction times</h1>
+<div id="descriptive-statistics" class="section level4">
+<h4><strong>Descriptive statistics</strong></h4>
+<p>Accuracy rates (left side) and reaction times (right side) of the delayed match-to-sample task. Error bars indicate standard errors (SE).</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">## Plot accuracy rates</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Response <span class="op">==</span><span class="st"> </span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="st">    </span><span class="dv">1</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co"># Rename variables</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Cong[EEG_task_Acc_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Cong[EEG_task_Acc_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">4</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">5</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">6</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">7</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">8</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a>EEG_task_Acc_plot<span class="op">$</span>Target[EEG_task_Acc_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">9</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="co"># Get accuracy for novel and repeated Target</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a>acc_all =<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">xtabs</span>(<span class="op">~</span>ID <span class="op">+</span><span class="st"> </span>Cong <span class="op">+</span><span class="st"> </span>Target, EEG_task_Acc_plot))</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="co"># Recode to accuracy in percent (72 novel trials, 72 repeated trials, divided by</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="co"># three for three emotion conditions)</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a>acc_all<span class="op">$</span>Freq =<span class="st"> </span>(acc_all<span class="op">$</span>Freq<span class="op">/</span><span class="dv">24</span>) <span class="op">*</span><span class="st"> </span><span class="dv">100</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="co"># Factor Target</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a>acc_all<span class="op">$</span>Cong =<span class="st"> </span><span class="kw">as.factor</span>(acc_all<span class="op">$</span>Cong)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a>acc_all<span class="op">$</span>Target =<span class="st"> </span><span class="kw">as.factor</span>(acc_all<span class="op">$</span>Target)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="co"># Calculate descriptives on accuracy</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a>stats_acc_all =<span class="st"> </span><span class="kw">summarySEwithin</span>(acc_all, <span class="dt">measurevar =</span> <span class="st">&quot;Freq&quot;</span>, <span class="dt">withinvars =</span> <span class="kw">c</span>(<span class="st">&quot;Cong&quot;</span>, </span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a>    <span class="st">&quot;Target&quot;</span>), <span class="dt">idvar =</span> <span class="st">&quot;ID&quot;</span>)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="co"># Plot accuracy</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a>EEG_acc_plot =<span class="st"> </span><span class="kw">ggplot</span>(stats_acc_all, <span class="kw">aes</span>(<span class="dt">x =</span> Target, <span class="dt">y =</span> Freq, <span class="dt">fill =</span> Cong)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">position =</span> <span class="kw">position_dodge</span>(), </span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="fl">0.4</span>, <span class="dt">width =</span> <span class="fl">0.9</span>) <span class="op">+</span><span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> Freq <span class="op">-</span><span class="st"> </span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a><span class="st">    </span>se, <span class="dt">ymax =</span> Freq <span class="op">+</span><span class="st"> </span>se), <span class="dt">size =</span> <span class="fl">0.4</span>, <span class="dt">width =</span> <span class="fl">0.2</span>, <span class="dt">position =</span> <span class="kw">position_dodge</span>(<span class="fl">0.9</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Accuracy [%]&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_manual</span>(<span class="dt">name =</span> <span class="st">&quot;Repetition&quot;</span>, <span class="dt">values =</span> nov_col) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="st">    </span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">80</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, <span class="dv">100</span>, <span class="dv">20</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a><span class="st">    </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span>theme_SN <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;top&quot;</span>, <span class="dt">legend.direction =</span> <span class="st">&quot;vertical&quot;</span>, </span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a>    <span class="dt">legend.key.size =</span> <span class="kw">unit</span>(<span class="dv">1</span>, <span class="st">&quot;cm&quot;</span>), <span class="dt">legend.key.width =</span> <span class="kw">unit</span>(<span class="fl">0.5</span>, <span class="st">&quot;cm&quot;</span>))</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true"></a><span class="co">## RT plot</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true"></a><span class="co"># Choose outlier-free and correct trial data</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true"></a>EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true"></a></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true"></a>EEG_task_RT_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_RT_plot, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true"></a><span class="co"># Rename variables</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Cong[EEG_task_RT_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Cong[EEG_task_RT_plot<span class="op">$</span>Cong <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true"></a></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">4</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">5</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">6</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">7</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">8</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true"></a>EEG_task_RT_plot<span class="op">$</span>Target[EEG_task_RT_plot<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">9</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true"></a></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true"></a>stats_RT_all =<span class="st"> </span><span class="kw">summarySEwithin</span>(EEG_task_RT_plot, <span class="dt">measurevar =</span> <span class="st">&quot;RTs&quot;</span>, <span class="dt">withinvars =</span> <span class="kw">c</span>(<span class="st">&quot;Cong&quot;</span>, </span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true"></a>    <span class="st">&quot;Target&quot;</span>), <span class="dt">idvar =</span> <span class="st">&quot;ID&quot;</span>)</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true"></a><span class="co"># Plot RTs</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true"></a>EEG_RT_plot =<span class="st"> </span><span class="kw">ggplot</span>(stats_RT_all, <span class="kw">aes</span>(<span class="dt">x =</span> Target, <span class="dt">y =</span> RTs, <span class="dt">fill =</span> Cong)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_bar</span>(<span class="dt">position =</span> <span class="kw">position_dodge</span>(), </span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true"></a>    <span class="dt">stat =</span> <span class="st">&quot;identity&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>, <span class="dt">size =</span> <span class="fl">0.4</span>, <span class="dt">width =</span> <span class="fl">0.9</span>) <span class="op">+</span><span class="st"> </span><span class="kw">geom_errorbar</span>(<span class="kw">aes</span>(<span class="dt">ymin =</span> RTs <span class="op">-</span><span class="st"> </span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true"></a><span class="st">    </span>se, <span class="dt">ymax =</span> RTs <span class="op">+</span><span class="st"> </span>se), <span class="dt">size =</span> <span class="fl">0.4</span>, <span class="dt">width =</span> <span class="fl">0.2</span>, <span class="dt">position =</span> <span class="kw">position_dodge</span>(<span class="fl">0.9</span>)) <span class="op">+</span><span class="st"> </span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true"></a><span class="st">    </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;RT [ms]&quot;</span>) <span class="op">+</span><span class="st"> </span><span class="kw">coord_cartesian</span>(<span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">3000</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">scale_y_continuous</span>(<span class="dt">breaks =</span> <span class="kw">seq</span>(<span class="dv">0</span>, </span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true"></a>    <span class="dv">3000</span>, <span class="dv">500</span>)) <span class="op">+</span><span class="st"> </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> nov_col) <span class="op">+</span><span class="st"> </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span>theme_SN <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>, </span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true"></a>    <span class="dt">legend.title =</span> <span class="kw">element_blank</span>())</span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true"></a><span class="co"># Put plots together</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true"></a>plots_Acc_RT =<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(EEG_acc_plot <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>), </span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true"></a>    EEG_RT_plot <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;none&quot;</span>), <span class="dt">align =</span> <span class="st">&quot;vh&quot;</span>, <span class="dt">hjust =</span> <span class="dv">-1</span>, <span class="dt">nrow =</span> <span class="dv">1</span>)</span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true"></a></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true"></a><span class="co"># Get legend</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true"></a>legend_Acc_RT =<span class="st"> </span><span class="kw">get_legend</span>(EEG_acc_plot <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.box.margin =</span> <span class="kw">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, </span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true"></a>    <span class="dv">0</span>, <span class="dv">2</span>)))</span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true"></a></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true"></a><span class="co"># Display plot https://wilkelab.org/cowplot/articles/shared_legends.html</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true"></a>fig_EEG_Acc_RT =<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(plots_Acc_RT, legend_Acc_RT, <span class="dt">rel_widths =</span> <span class="kw">c</span>(<span class="dv">1</span>, </span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true"></a>    <span class="fl">0.2</span>))</span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true"></a>fig_EEG_Acc_RT</span></code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_Acc_RT_plots-1.png" width="768" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Save figure for publication ggsave(&#39;Figure_X_DMTST_perf.tiff&#39;, plot =</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co"># last_plot(), dpi = 300)</span></span></code></pre></div>
+</div>
+<div id="model-specifications" class="section level4">
+<h4><strong>Model specifications</strong></h4>
+<div id="accuray-rate-glmm" class="section level5 tabset tabset-pills">
+<h5 class="tabset tabset-pills">Accuray rate GLMM:</h5>
+<!-- GLMM model specifications -->
+<div id="random-effect-structure" class="section level6">
+<h6>Random effect structure</h6>
+<p>We fitted single-trial data to the following model:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># Select outlier-free data</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>EEG_task_Acc_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="co"># Factor random effects</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>ID =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_glmm<span class="op">$</span>ID)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Stim_Type =<span class="st"> </span><span class="kw">as.factor</span>(EEG_task_Acc_glmm<span class="op">$</span>Stim_Type)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="co"># Define novel vs repeated trials</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">4</span>] =<span class="st"> &quot;c_happy&quot;</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">5</span>] =<span class="st"> &quot;c_neutral&quot;</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">6</span>] =<span class="st"> &quot;c_angry&quot;</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">7</span>] =<span class="st"> &quot;ic_happy&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">8</span>] =<span class="st"> &quot;ic_neutral&quot;</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>Target[EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">9</span>] =<span class="st"> &quot;ic_angry&quot;</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true"></a><span class="co"># Create one variable for emotion and one for repetition</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true"></a><span class="st">    &quot;ic_happy&quot;</span>)] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true"></a><span class="st">    &quot;ic_angry&quot;</span>)] =<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_neutral&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true"></a><span class="st">    &quot;ic_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">3</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>rep[(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true"></a><span class="st">    &quot;c_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>rep[(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;ic_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true"></a><span class="st">    &quot;ic_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_Acc_glmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;ic_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true"></a><span class="co"># Rename variables</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[EEG_task_Acc_glmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[EEG_task_Acc_glmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot[EEG_task_Acc_glmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">3</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>rep[EEG_task_Acc_glmm<span class="op">$</span>rep <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>rep[EEG_task_Acc_glmm<span class="op">$</span>rep <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true"></a></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true"></a><span class="co"># Factor emotion and repetition variable</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>rep =<span class="st"> </span><span class="kw">factor</span>(EEG_task_Acc_glmm<span class="op">$</span>rep)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true"></a>EEG_task_Acc_glmm<span class="op">$</span>emot =<span class="st"> </span><span class="kw">factor</span>(EEG_task_Acc_glmm<span class="op">$</span>emot)</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true"></a></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true"></a><span class="co"># Create contrasts</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_Acc_glmm<span class="op">$</span>rep) =<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>)  <span class="co"># intercept is the mean of happy and angry</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_Acc_glmm<span class="op">$</span>emot) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>, <span class="dt">base =</span> <span class="dv">3</span>)</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true"></a></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true"></a><span class="co"># A = angry, N = neutral, H = happy</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true"></a>HvsA =<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">-0.5</span>, <span class="dv">0</span>)  <span class="co"># compare: happy vs. angry</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true"></a>EvsN =<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.25</span>, <span class="fl">-0.25</span>, <span class="fl">0.5</span>)  <span class="co"># compare happy/angry to neutral </span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true"></a></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true"></a><span class="co"># for contrast coding: when variable set to 0 = will be ignored intercept = mean</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true"></a><span class="co"># of full data including variable which was set to 0 based on:</span></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true"></a><span class="co"># https://pagepiccinini.com/2016/03/18/contrast-coding-with-three-level-variables/#toc_3</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true"></a></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_Acc_glmm<span class="op">$</span>emot) =<span class="st"> </span><span class="kw">cbind</span>(EvsN, HvsA)</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true"></a></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true"></a></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true"></a><span class="co"># Build full model</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true"></a>mod_Acc_EEG.glmm =<span class="st"> </span><span class="kw">glmer</span>(Response <span class="op">~</span><span class="st"> </span>emot <span class="op">*</span><span class="st"> </span>rep <span class="op">+</span><span class="st"> </span>WM_scal <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>Stim_Type), </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true"></a>    <span class="dt">data =</span> EEG_task_Acc_glmm, <span class="dt">control =</span> <span class="kw">glmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>), <span class="dt">family =</span> binomial)</span></code></pre></div>
+<p><code>Response ~ emot * rep + WM_scal + (1 | ID) + (1 | Stim_Type)</code></p>
+<hr />
+</div>
+<div id="overdispersion" class="section level6">
+<h6>Overdispersion</h6>
+<p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">overdisp_fun</span>(mod_Acc_EEG.glmm)</span></code></pre></div>
+<pre><code>  chisq   ratio     rdf       p 
+3675.27    0.95 3866.00    0.99 </code></pre>
+<hr />
+</div>
+</div>
+<div id="reaction-time-lmm" class="section level5 tabset tabset-pills">
+<h5 class="tabset tabset-pills">Reaction time LMM:</h5>
+<div id="random-effect-structure-1" class="section level6">
+<h6>Random effect structure</h6>
+<!-- LMM model specifications -->
+<p>The final model was:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co"># Choose outlier-free data and correct answers</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a>EEG_task_RT_lmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Response <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">&amp;</span><span class="st"> </span>Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="st">    </span><span class="ot">FALSE</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="co"># Define novel vs repeated trials</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">4</span>] =<span class="st"> &quot;c_happy&quot;</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">5</span>] =<span class="st"> &quot;c_neutral&quot;</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">6</span>] =<span class="st"> &quot;c_angry&quot;</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">7</span>] =<span class="st"> &quot;ic_happy&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">8</span>] =<span class="st"> &quot;ic_neutral&quot;</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>Target[EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span><span class="dv">9</span>] =<span class="st"> &quot;ic_angry&quot;</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true"></a><span class="co"># Create one variable for emotion and one for repetition</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true"></a><span class="st">    &quot;ic_happy&quot;</span>)] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true"></a><span class="st">    &quot;ic_angry&quot;</span>)] =<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_neutral&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true"></a><span class="st">    &quot;ic_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">3</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>rep[(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true"></a><span class="st">    &quot;c_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;c_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">1</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>rep[(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;ic_happy&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> </span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true"></a><span class="st">    &quot;ic_angry&quot;</span>) <span class="op">|</span><span class="st"> </span>(EEG_task_RT_lmm<span class="op">$</span>Target <span class="op">==</span><span class="st"> &quot;ic_neutral&quot;</span>)] =<span class="st"> </span><span class="dv">2</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true"></a><span class="co"># Rename variables</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[EEG_task_RT_lmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;happy&quot;</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[EEG_task_RT_lmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;angry&quot;</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot[EEG_task_RT_lmm<span class="op">$</span>emot <span class="op">==</span><span class="st"> </span><span class="dv">3</span>] =<span class="st"> &quot;neutral&quot;</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>rep[EEG_task_RT_lmm<span class="op">$</span>rep <span class="op">==</span><span class="st"> </span><span class="dv">1</span>] =<span class="st"> &quot;repeated&quot;</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>rep[EEG_task_RT_lmm<span class="op">$</span>rep <span class="op">==</span><span class="st"> </span><span class="dv">2</span>] =<span class="st"> &quot;novel&quot;</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true"></a></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true"></a><span class="co"># Factor variables</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>rep =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_lmm<span class="op">$</span>rep)</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>emot =<span class="st"> </span><span class="kw">factor</span>(EEG_task_RT_lmm<span class="op">$</span>emot)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true"></a></span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true"></a><span class="co"># Create contrasts</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_RT_lmm<span class="op">$</span>emot) =<span class="st"> </span><span class="kw">contr.treatment</span>(<span class="dv">3</span>, <span class="dt">base =</span> <span class="dv">3</span>)</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_RT_lmm<span class="op">$</span>rep) =<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.5</span>, <span class="fl">0.5</span>)</span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true"></a></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true"></a><span class="co"># A = angry, N = neutral, H = happy</span></span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true"></a>HvsA =<span class="st"> </span><span class="kw">c</span>(<span class="fl">0.5</span>, <span class="fl">-0.5</span>, <span class="dv">0</span>)  <span class="co"># compare: happy vs. angry</span></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true"></a>EvsN =<span class="st"> </span><span class="kw">c</span>(<span class="op">-</span><span class="fl">0.25</span>, <span class="fl">-0.25</span>, <span class="fl">0.5</span>)  <span class="co"># compare happy/angry to neutral </span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true"></a><span class="kw">contrasts</span>(EEG_task_RT_lmm<span class="op">$</span>emot) =<span class="st"> </span><span class="kw">cbind</span>(EvsN, HvsA)</span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true"></a></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true"></a>mod_RT_EEG.lmer =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>emot <span class="op">*</span><span class="st"> </span>rep <span class="op">+</span><span class="st"> </span>WM_scal <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>Stim_Type), </span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true"></a>    <span class="dt">data =</span> EEG_task_RT_lmm, <span class="dt">control =</span> <span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))</span></code></pre></div>
+<p><code>log(RTs) ~ emot * rep + WM_scal + (1 | ID) + (1 | Stim_Type)</code></p>
+</div>
+<div id="normality-of-residuals" class="section level6">
+<h6>Normality of residuals</h6>
+<p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co">## Check properties of DV / residuals</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="co"># Visualize normality assumption of residuals (without log transform)</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a>mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data =</span> EEG_task_RT_lmm)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a>res.mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_no_log)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a>qqpl_RT_lmm_no_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_no_log, <span class="dt">main =</span> <span class="st">&quot;QQplot before transformation&quot;</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a>norm_RT_lmm_no_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_no_log), <span class="dt">main =</span> <span class="st">&quot;Density plot before transformation&quot;</span>)</span></code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-1.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="co"># Check which transformation of DV is suitable</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="co"># Calculate box-cox plot</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>mod_RT_targ =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data =</span> EEG_task_RT_lmm)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="kw">boxcox</span>(mod_RT_targ)</span></code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-2.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="co"># Visualize normality assumption of residuals (with log transform)</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a>mod_RT_lmm_log =<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data =</span> EEG_task_RT_lmm)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a>res.mod_RT_lmm_log =<span class="st"> </span><span class="kw">residuals</span>(mod_RT_lmm_log)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a>qqpl_RT_lmm_log =<span class="st"> </span><span class="kw">qqPlot</span>(res.mod_RT_lmm_log, <span class="dt">main =</span> <span class="st">&quot;QQplot after transformation&quot;</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a>norm_RT_lmm_log =<span class="st"> </span><span class="kw">plot</span>(<span class="kw">density</span>(res.mod_RT_lmm_log), <span class="dt">main =</span> <span class="st">&quot;Density plot after transformation&quot;</span>)</span></code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_normres-3.png" width="576" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
+<hr />
+</div>
+<div id="homoscedasticity" class="section level6">
+<h6>Homoscedasticity</h6>
+<p>We assume homoscedasticity based on visual inspection.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co"># Check homoscedasticity</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">plot</span>(<span class="kw">fitted</span>(mod_RT_EEG.lmer), <span class="kw">residuals</span>(mod_RT_EEG.lmer))</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true"></a><span class="kw">abline</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span></code></pre></div>
+<p><img src="R_Script_2_EEG_task_measures_files/figure-html/EEG_RT_LMM1_homosk-1.png" width="480" style="display: block; margin: auto;" /></p>
+<hr />
+</div>
+</div>
+</div>
+<div id="results" class="section level4">
+<h4><strong>Results</strong></h4>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co">### Reaction time</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a><span class="co"># Calculate post-hoc tests</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>interaction =<span class="st"> </span><span class="kw">interaction</span>(EEG_task_RT_lmm<span class="op">$</span>rep, EEG_task_RT_lmm<span class="op">$</span>emot)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true"></a>mod_RT_EEG.lmer_model =<span class="st"> </span><span class="kw">lmer</span>(<span class="kw">log</span>(RTs) <span class="op">~</span><span class="st"> </span>interaction <span class="op">+</span><span class="st"> </span>WM_scal <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>ID) <span class="op">+</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">|</span><span class="st"> </span>Stim_Type), </span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true"></a>    <span class="dt">data =</span> EEG_task_RT_lmm, <span class="dt">control =</span> <span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true"></a><span class="co"># Choose contrasts of interest / add fdr-correction</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true"></a><span class="co"># Choose contrasts of interest / add fdr-correction</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true"></a>mod_RT_EEG.lmer_model_posthoc =<span class="st"> </span><span class="kw">summary</span>(<span class="kw">glht</span>(mod_RT_EEG.lmer_model, <span class="dt">linfct =</span> <span class="kw">mcp</span>(<span class="dt">interaction =</span> <span class="kw">c</span>(<span class="st">&quot;repeated.neutral - repeated.angry = 0&quot;</span>, </span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true"></a>    <span class="st">&quot;novel.neutral - novel.angry = 0&quot;</span>, <span class="st">&quot;novel.neutral - novel.happy = 0&quot;</span>, <span class="st">&quot;repeated.neutral - repeated.happy = 0&quot;</span>)), </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true"></a>    <span class="dt">test =</span> <span class="kw">adjusted</span>(<span class="dt">type =</span> <span class="st">&quot;fdr&quot;</span>)))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true"></a><span class="co"># Get ready for presentation in RMarkdown</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true"></a>tab1 =<span class="st"> </span><span class="kw">merge</span>(<span class="kw">as.data.frame</span>(mod_RT_EEG.lmer_model_posthoc<span class="op">$</span>test<span class="op">$</span>coefficients), <span class="kw">as.data.frame</span>(mod_RT_EEG.lmer_model_posthoc<span class="op">$</span>test<span class="op">$</span>sigma), </span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true"></a>    <span class="dt">by =</span> <span class="dv">0</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true"></a>tab2 =<span class="st"> </span><span class="kw">as.data.frame</span>(mod_RT_EEG.lmer_model_posthoc<span class="op">$</span>test<span class="op">$</span>pvalues)</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a><span class="kw">rownames</span>(tab2) =<span class="st"> </span><span class="kw">rownames</span>(<span class="kw">as.data.frame</span>(mod_RT_EEG.lmer_model_posthoc<span class="op">$</span>test<span class="op">$</span>tstat))</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true"></a>tab2 =<span class="st"> </span><span class="kw">merge</span>(<span class="kw">as.data.frame</span>(mod_RT_EEG.lmer_model_posthoc<span class="op">$</span>test<span class="op">$</span>tstat), tab2, <span class="dt">by =</span> <span class="dv">0</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true"></a>post_hoc_tests_EEG_RT =<span class="st"> </span><span class="kw">merge</span>(tab1, tab2, <span class="dt">by =</span> <span class="st">&quot;Row.names&quot;</span>)</span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true"></a><span class="kw">colnames</span>(post_hoc_tests_EEG_RT) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Contrast&quot;</span>, <span class="st">&quot;Est.&quot;</span>, <span class="st">&quot;Std. Error&quot;</span>, <span class="st">&quot;z value&quot;</span>, </span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true"></a>    <span class="st">&quot;p value&quot;</span>)</span></code></pre></div>
+<p>There were no accuracy differences for facial expression contrasts (emotional vs. neutral expressions: <span class="math inline">\(\beta\)</span> = -0.17, <em>p</em> = 0.07, <em>OR</em> = 0.85 [95% CI: -0.55, 2.24]; happy vs. angry expressions: <span class="math inline">\(\beta\)</span> = -0.01, <em>p</em> = 0.95, <em>OR</em> = 0.99 [95% CI: -0.64, 2.63]) or repetition (<span class="math inline">\(\beta\)</span> &lt; 0.01, <em>p</em> = 0.97, <em>OR</em> = 1.00 [95% CI: -0.65, 2.65]). Interactions between facial expression contrasts and repetition yielded no significant results (emotional vs. neutral facial expressions: <span class="math inline">\(\beta\)</span> = 0.23, <em>p</em> = 0.29, <em>OR</em> = 1.25 [95% CI: -0.81, 3.32]; happy vs. angry expressions: <span class="math inline">\(\beta\)</span> = 0.26, <em>p</em> = 0.17, <em>OR</em> = 1.30 [95% CI: -0.84, 3.43]). For reaction times, the emotional vs. neutral facial expression contrast yielded no significant results (<span class="math inline">\(\beta\)</span> = 0.09, <em>p</em> = 0.03). In line with our hypothesis, happy faces were detected faster than angry faces (<span class="math inline">\(\beta\)</span> = -0.02, <em>p</em> = 0.59). The main effect for repetition was not significant (<span class="math inline">\(\beta\)</span> = 0.05, <em>p</em> = 0.31). The interaction of emotional vs. neutral expressions with repetition, however, was significant (<span class="math inline">\(\beta\)</span> = -0.20, <em>p</em> = 0.03). Novel happy faces were detected faster than novel neutral faces (<em>p</em> = 0.01). None of the other post-hoc tests were significant (all <em>p</em> &gt; 0.75). Similarly, the interaction of happy vs. angry expressions with repetition was not significant (<span class="math inline">\(\beta\)</span> = -0.11, <em>p</em> = 0.19).</p>
+<div align="center">
+=======
       <nav class="col-xs-3 menu">
 	<div id="toc">
           <ul>
@@ -295,6 +696,7 @@
     
     
 	<div class="row">
+>>>>>>> master
 
 	  <div class="col-xs-10">
 	    <!-- Set up workspace -->
@@ -749,6 +1151,416 @@
      <p>Regarding reaction times, the emotional vs. neutral facial expression contrast was significant (<span class="math inline">\(\beta\)</span> = -0.17, <em>p</em> = 0.04), however, none of the post-hoc tests indicated significant differences (happy vs. neutral: <em>p</em> = 0.08; angry vs. neutral: <em>p</em> = 0.20). We detected no reaction time differences between happy vs. angry facial expressions (<span class="math inline">\(\beta\)</span> &lt; 0.01, <em>p</em> = 0.88). Neither the main effect of repetition (<span class="math inline">\(\beta\)</span> = -0.08, <em>p</em> = 0.14), nor its interaction with the facial expression contrasts (emotional vs. neutral: <span class="math inline">\(\beta\)</span> = 0.08, <em>p</em> = 0.50; angry vs. happy: <span class="math inline">\(\beta\)</span> = 0.05, <em>p</em> = 0.41) was significant.</p>
      <div align="center">
 
+<<<<<<< HEAD
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a><span class="co"># Create labels</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emotion vs. Neutral&quot;</span>, <span class="st">&quot;Happy vs. Angry&quot;</span>, <span class="st">&quot;Repetition&quot;</span>, <span class="st">&quot;Working Memory&quot;</span>, </span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a>    <span class="st">&quot;E vs. N x Repetition &quot;</span>, <span class="st">&quot;H vs. A x Repetition&quot;</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a><span class="co"># Create table</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a><span class="kw">tab_model</span>(mod_Acc_EEG.glmm, mod_RT_EEG.lmer, <span class="dt">show.intercept =</span> <span class="ot">FALSE</span>, <span class="dt">pred.labels =</span> labels, </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a>    <span class="dt">show.ci =</span> <span class="ot">FALSE</span>, <span class="dt">show.se =</span> <span class="ot">TRUE</span>, <span class="dt">string.se =</span> <span class="st">&quot;SE&quot;</span>, <span class="dt">show.stat =</span> <span class="ot">TRUE</span>, <span class="dt">string.stat =</span> <span class="st">&quot;t&quot;</span>, </span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true"></a>    <span class="dt">show.re.var =</span> <span class="ot">TRUE</span>, <span class="dt">show.obs =</span> <span class="ot">FALSE</span>, <span class="dt">emph.p =</span> <span class="ot">TRUE</span>, <span class="dt">dv.labels =</span> <span class="kw">c</span>(<span class="st">&quot;Accuracy&quot;</span>, </span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true"></a>        <span class="st">&quot;Reaction time&quot;</span>), <span class="dt">show.icc =</span> <span class="ot">TRUE</span>)</span></code></pre></div>
+<table style="border-collapse:collapse; border:none;">
+<tr>
+<th style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm;  text-align:left; ">
+ 
+</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+Accuracy
+</th>
+<th colspan="4" style="border-top: double; text-align:center; font-style:normal; font-weight:bold; padding:0.2cm; ">
+Reaction time
+</th>
+</tr>
+<tr>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  text-align:left; ">
+Predictors
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Odds Ratios
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+SE
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+t
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+p
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  ">
+Estimates
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col7">
+SE
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col8">
+t
+</td>
+<td style=" text-align:center; border-bottom:1px solid; font-style:italic; font-weight:normal;  col9">
+p
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Emotion vs. Neutral
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.11
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.03
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.974
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+1.01
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+0.311
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Happy vs. Angry
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.85
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.08
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.79
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.074
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.09
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.04
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+2.14
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+<strong>0.032</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Repetition
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.99
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.08
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.07
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.946
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.02
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.03
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+-0.55
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+0.586
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+Working Memory
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.84
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.13
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-1.14
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.255
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.06
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+1.00
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+0.319
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+E vs. N x Repetition
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.25
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.27
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.05
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.294
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.20
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.09
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+-2.18
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+<strong>0.030</strong>
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; ">
+H vs. A x Repetition
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.30
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.24
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+1.38
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+0.169
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  ">
+-0.11
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col7">
+0.08
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col8">
+-1.31
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:center;  col9">
+0.189
+</td>
+</tr>
+<tr>
+<td colspan="9" style="font-weight:bold; text-align:left; padding-top:.8em;">
+Random Effects
+</td>
+</tr>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+σ<sup>2</sup>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+3.29
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.71
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+τ<sub>00</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.03 <sub>Stim_Type</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.01 <sub>Stim_Type</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.60 <sub>ID</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.10 <sub>ID</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+ICC
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.16
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+0.14
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+N
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+28 <sub>ID</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+28 <sub>ID</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm;">
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+72 <sub>Stim_Type</sub>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left;" colspan="4">
+72 <sub>Stim_Type</sub>
+</td>
+<tr>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; text-align:left; padding-top:0.1cm; padding-bottom:0.1cm; border-top:1px solid;">
+Marginal R<sup>2</sup> / Conditional R<sup>2</sup>
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.010 / 0.169
+</td>
+<td style=" padding:0.2cm; text-align:left; vertical-align:top; padding-top:0.1cm; padding-bottom:0.1cm; text-align:left; border-top:1px solid;" colspan="4">
+0.009 / 0.144
+</td>
+</tr>
+</table>
+</div>
+<p><br></p>
+<p><em>Note:</em> p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. <em>SE</em>: standard error; <em>t</em>: test statistic coefficient; <em>p</em>: p-value; <em>σ2</em>: within-group variance; <em>τ00</em>: between-group variance; <em>ICC</em>: interclass correlation (ratio of between-cluster variance to total variance); <em>N</em>: number of random effects.</p>
+<p><br></p>
+<p><strong>Post-hoc tests for Reaction time: Repetition with emotional vs. neutral facial expressions contrast</strong></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true"></a><span class="co"># Create table</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true"></a><span class="kw">kable</span>(post_hoc_tests_EEG_RT) <span class="op">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true"></a><span class="st">    </span><span class="kw">kable_styling</span>(<span class="dt">bootstrap_options =</span> <span class="kw">c</span>(<span class="st">&quot;hover&quot;</span>), <span class="dt">font_size =</span> <span class="dv">14</span>, <span class="dt">fixed_thead =</span> T)</span></code></pre></div>
+<table class="table table-hover" style="font-size: 14px; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Contrast
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Est.
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+Std. Error
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+z value
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+p value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+novel.neutral - novel.angry
+</td>
+<td style="text-align:right;">
+0.04
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+0.72
+</td>
+<td style="text-align:right;">
+0.90
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+novel.neutral - novel.happy
+</td>
+<td style="text-align:right;">
+0.18
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+3.21
+</td>
+<td style="text-align:right;">
+0.01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+repeated.neutral - repeated.angry
+</td>
+<td style="text-align:right;">
+-0.06
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+-1.00
+</td>
+<td style="text-align:right;">
+0.75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+repeated.neutral - repeated.happy
+</td>
+<td style="text-align:right;">
+-0.02
+</td>
+<td style="text-align:right;">
+0.06
+</td>
+<td style="text-align:right;">
+-0.43
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
+<!-- Provide session info  -->
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true"></a><span class="co"># Get session info</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
+<pre><code>R version 4.0.2 (2020-06-22)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 10 x64 (build 18362)
+=======
 
      <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co"># Create labels</span></span>
      <span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>labels =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Emotion vs. Neutral&quot;</span>, <span class="st">&quot;Happy vs. Angry&quot;</span>, <span class="st">&quot;Repetition&quot;</span>, <span class="st">&quot;Repetition x E vs. N&quot;</span>, </span>
@@ -1240,6 +2052,7 @@
      Running under: Windows 10 x64 (build 18362)
 
      Matrix products: default
+>>>>>>> master
 
      locale:
      [1] LC_COLLATE=German_Germany.1252  LC_CTYPE=German_Germany.1252   
@@ -1261,6 +2074,145 @@
      [33] summarytools_0.9.6 miceadds_3.10-28   mice_3.11.0        rmdformats_1.0.0  
      [37] XLConnect_1.0.1    kableExtra_1.1.0  
 
+<<<<<<< HEAD
+other attached packages:
+ [1] forcats_0.5.1      stringr_1.4.0      purrr_0.3.4        readr_1.4.0       
+ [5] tidyr_1.1.3        tibble_3.1.1       tidyverse_1.3.1    sjlabelled_1.1.7  
+ [9] sjmisc_2.8.6       sjPlot_2.8.7       Rmisc_1.5          plyr_1.8.6        
+[13] reshape2_1.4.4     psych_2.1.3        multcomp_1.4-16    TH.data_1.0-10    
+[17] mvtnorm_1.1-1      MASS_7.3-53.1      lmerTest_3.1-3     lme4_1.1-26       
+[21] Matrix_1.3-2       Hmisc_4.5-0        Formula_1.2-4      survival_3.2-10   
+[25] lattice_0.20-41    ggstatsplot_0.7.2  ez_4.4-0           EnvStats_2.4.0    
+[29] eeptools_1.2.4     ggplot2_3.3.3      dplyr_1.0.5        cowplot_1.1.1     
+[33] summarytools_0.9.9 miceadds_3.11-6    mice_3.13.0        rmdformats_1.0.2  
+[37] XLConnect_1.0.3    kableExtra_1.3.4  
+
+loaded via a namespace (and not attached):
+ [1] estimability_1.3       R.methodsS3_1.8.1      coda_0.19-4           
+ [4] knitr_1.32             R.utils_2.10.1         data.table_1.14.0     
+ [7] rpart_4.1-15           generics_0.1.0         future_1.21.0         
+[10] correlation_0.6.1      webshot_0.5.2          xml2_1.3.2            
+[13] lubridate_1.7.10       httpuv_1.5.5           assertthat_0.2.1      
+[16] viridis_0.6.0          WRS2_1.1-1             xfun_0.22             
+[19] hms_1.0.0              jquerylib_0.1.3        rJava_0.9-13          
+[22] evaluate_0.14          promises_1.2.0.1       fansi_0.4.2           
+[25] dbplyr_2.1.1           readxl_1.3.1           DBI_1.1.1             
+[28] tmvnsim_1.0-2          htmlwidgets_1.5.3      reshape_0.8.8         
+[31] kSamples_1.2-9         Rmpfr_0.8-4            paletteer_1.3.0       
+[34] ellipsis_0.3.1         backports_1.2.1        signal_0.7-6          
+[37] bookdown_0.21          insight_0.13.2         ggcorrplot_0.1.3      
+[40] rapportools_1.0        vctrs_0.3.7            abind_1.4-5           
+[43] cachem_1.0.4           withr_2.4.2            pryr_0.1.4            
+[46] checkmate_2.0.0        emmeans_1.5.5-1        vcd_1.4-8             
+[49] mnormt_2.0.2           svglite_2.0.0          cluster_2.1.2         
+[52] lazyeval_0.2.2         crayon_1.4.1           pkgconfig_2.0.3       
+[55] SuppDists_1.1-9.5      nlme_3.1-152           statsExpressions_1.0.1
+[58] nnet_7.3-15            rlang_0.4.10           globals_0.14.0        
+[61] lifecycle_1.0.0        miniUI_0.1.1.1         MatrixModels_0.5-0    
+[64] sandwich_3.0-0         modelr_0.1.8           cellranger_1.1.0      
+[67] tcltk_4.0.2            matrixStats_0.58.0     lmtest_0.9-38         
+[70] mc2d_0.1-19            carData_3.0-4          boot_1.3-27           
+[73] zoo_1.8-9              reprex_2.0.0           base64enc_0.1-3       
+ [ reached getOption(&quot;max.print&quot;) -- omitted 97 entries ]</code></pre>
+</div>
+</div>
+
+<div class="col-xs-2">
+
+<div class = "btn-toolbar">
+<div class="btn-group">
+<a class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#"><span>Code</span> <span class="caret"></span></a>
+<ul class="dropdown-menu" style="min-width: 50px;">
+
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+
+</ul>
+</div>
+</div>
+
+</div>
+</div>
+	
+
+
+</div>
+</div>
+
+ <script>
+    $(document).ready(function () {
+	// add bootstrap table styles to pandoc tables
+	$('tr.header').parent('thead').parent('table').addClass('table table-striped table-hover');
+	
+	
+		$('.pages img').addClass("image-lb");
+	$('.pages').magnificPopup({
+	    type:'image',
+	    closeOnContentClick: false,
+	    closeBtnInside: false,
+            delegate: '.image-lb',
+	    gallery: {enabled: true },
+            removalDelay: 500,
+            callbacks: {
+		beforeOpen: function() {
+                    // just a hack that adds mfp-anim class to markup
+                    this.st.image.markup = this.st.image.markup.replace('mfp-figure', 'mfp-figure mfp-with-anim');
+		}
+            },
+            mainClass: 'mfp-move-from-top',
+	    image: {
+	        verticalFit: true,
+		titleSrc: 'alt'
+	    }
+ 	});
+ 	
+	  
+	$('#toc ul li').first().addClass("active");
+	$('#toc ul li').attr("data-target", function() {
+            return($(this).children("a").attr("href"));
+	})
+	$('body .section.level1').first().addClass("active");
+	$('body .section.level1').not('.active').hide();
+	
+	$('#toc a[href*="#"], a[href^="#"]').click(function() {
+	    var id = $(this).attr("href");
+	    if (id === "#") return;
+	    if (id.substring(0, 8) === "#dyntab-") return;
+	    // Menu
+	    var menu_entry = $(".menu li[data-target='"+id+"']");
+	    if (menu_entry.length == 0) {
+		window.location.hash = id;
+		return;
+	    }
+	    menu_entry.addClass("active");
+	    $(".menu li").not(menu_entry).removeClass("active"); 
+	    toggle_page(id);
+	});
+
+	function toggle_page(id) {
+	    $(".page").not(page).removeClass("active").hide();
+	    window.page = id;
+	    var page = $(window.page);
+	    window.location.hash = window.page;
+	    //$(this).addClass("active");
+	    page.show();
+
+	    var totop = setInterval(function () {
+		$(".pages").animate({scrollTop: 0}, 0);
+	    }, 10);
+
+	    setTimeout(function () {
+		page.addClass("active");
+		setTimeout(function () {
+		    clearInterval(totop);
+		}, 1000);
+	    }, 100);
+	    
+	    window.dispatchEvent(new Event('resize'));
+	}
+
+
+=======
      loaded via a namespace (and not attached):
       [1] estimability_1.3       coda_0.19-4            knitr_1.30            
       [4] data.table_1.13.0      rpart_4.1-15           inline_0.3.17         
@@ -1384,6 +2336,7 @@
 	}
 
 
+>>>>>>> master
 	$(".menu li").click(function () {
 	    toggle_page($(this).data("target"));
 	    // Menu

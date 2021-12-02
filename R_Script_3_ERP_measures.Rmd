@@ -88,7 +88,11 @@ output:
       result = sprintf("*p* = %.2f", pValue) # inserts a float into a string and simultaneously do rounding
     }
     return(result)
+<<<<<<< HEAD
+  }
+=======
   }  
+>>>>>>> master
   
 # Beta values
   reportbe = function(pValue){
@@ -120,22 +124,172 @@ output:
   
 ```
 
-<!-- Load data set -->
+```{r ERP_traj_prep_3rd_rev, include = FALSE, eval = FALSE}
+# Load Face 2 data
+#   #Face2_data = read.csv("./data/ROI_P1_P3_Face2.csv",header = TRUE)
+#   Face2_data = read.delim("./data/P1_all_traj.txt", header = TRUE, sep = " ", dec = ".", stringsAsFactors=FALSE)
+# 
+# # De-select participants
+#   Face2_data = Face2_data[with(Face2_data, !(Face2_data$ID==5)), ]
+# 
+# # Select time window of interest
+#   Face2_data = Face2_data[(Face2_data$time >= -200)& (Face2_data$time <= 600),]
+#   
+# # Exclude incorrect trials / trials < 250 ms
+#   
+#   # Load EEG task data
+#     load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")  
+#     
+#     
+#   # Replace trial variable  
+#     trials = 1:144
+#     new_trials = rep(trials,31)
+#     EEG_task_data$Trial = new_trials
+#     
+#     behav_task_IDs = unique(EEG_task_data$ID)
+#     ERP_traj_IDs = unique(Face2_data$ID)
+#     
+#     
+# for (i in 1:31) {  
+#   
+#   # Get participant of interest
+#     Face2_data_subj = subset(Face2_data, ID == ERP_traj_IDs[i])
+#     EEG_task_data_subj = subset (EEG_task_data, ID == behav_task_IDs[i])
+#   
+#   # Match with RT trial
+#     Face2_data_subj$Response = EEG_task_data_subj$Response[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+#     Face2_data_subj$Exclude_smaller_250ms = EEG_task_data_subj$Exclude_smaller_250ms[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+#     
+#     Face2_data_subj$time =  round(Face2_data_subj$time, 0)
+#     
+#  # Combine all subject data 
+# 
+#   if (i==1) {
+#     All_Subj = Face2_data_subj # first round: create all_subj data frame
+#   } else {
+#     All_Subj = rbind(All_Subj,Face2_data_subj) # add to all_subj data frame
+#   }
+#   
+# }
+#   
+#     Face2_data = All_Subj
+# 
+# # Rename values of Face2 condition
+#   Face2_data$Condition[Face2_data$Condition == 'B4(c_happy)']='rep_happy';
+#   Face2_data$Condition[Face2_data$Condition == 'B5(c_neutral)']='rep_neutral';
+#   Face2_data$Condition[Face2_data$Condition == 'B6(c_angry)']='rep_angry';
+#   Face2_data$Condition[Face2_data$Condition == 'B7(ic_happy)']='nov_happy';
+#   Face2_data$Condition[Face2_data$Condition == 'B8(ic_neutral)']='nov_neutral';
+#   Face2_data$Condition[Face2_data$Condition == 'B9(ic_angry)']='nov_angry';
+# 
+# # Plot ERP trajectory for P1/P3
+#   Face2_data_icc = Face2_data[(Face2_data$Condition == 'rep_happy')  | (Face2_data$Condition == 'rep_neutral')
+#                                | (Face2_data$Condition == 'rep_angry')  | (Face2_data$Condition == 'nov_happy')
+#                                | (Face2_data$Condition == 'nov_angry')  | (Face2_data$Condition == 'nov_neutral'),]
+#   
+# # Exclude data  
+#   Face2_data_icc = subset(Face2_data_icc, Exclude_smaller_250ms == FALSE & Response == 1)
+#   
+#   save(Face2_data_icc, file = "./data/F2_ERP_traj.RData")
+```
+
+
+<!-- Load and prepare data set -->
 
 ```{r load_data, include = FALSE}
 
 # Load ERP data
   load.Rdata(filename="./data/ERP_data.Rdata", "ERP_data")
+<<<<<<< HEAD
+  load.Rdata(filename="./data/F2_ERP_traj.Rdata", "Face2_data_icc")
+
+=======
+>>>>>>> master
 
 # Scale WM / stimulus contrast values
   ERP_data$WM_scal = scale(ERP_data$WM)
   ERP_data$contr_F1_scal = scale(as.numeric(ERP_data$contr_F1))
   ERP_data$contr_F2_scal = scale(as.numeric(ERP_data$contr_F2))
+<<<<<<< HEAD
 ```
+
+
+```{r, results = "asis", include = FALSE}
+
+# Load questionnaire data
+  load.Rdata(filename="./data/ERP_data.Rdata", "All_Subj")
+  
+  All_Subj$Response[All_Subj$Response==1] = "correct"
+  All_Subj$Response[All_Subj$Response==0] = "incorrect"
+
+# Trials per emotion condition -----------------------------------------
+  
+# Only choose primes
+  All_Subj_p = subset(All_Subj,Group_pt == 1)
+  
+  All_Subj_p$Condition[All_Subj_p$Condition==1] = "happy"
+  All_Subj_p$Condition[All_Subj_p$Condition==2] = "neutral"
+  All_Subj_p$Condition[All_Subj_p$Condition==3] = "angry"
+  
+# Get trial counts   
+  emo_trials=data.frame(xtabs(~ID+Condition, All_Subj_p))
+  emo_trials = subset(emo_trials, ID!= '05')
+
+# Calculate mean and SD   
+  tr_mean_emo = tapply(emo_trials$Freq,emo_trials$Condition,mean)
+  tr_sd_emo = tapply(emo_trials$Freq,emo_trials$Condition,sd)
+
+# Calculate one-way ANOVA to test equality of trial numbers
+  emo.aov = aov(Freq ~ Condition, data = emo_trials)
+
+# Extract values to present 
+  emo.aov.sum = summary(emo.aov)
+  emo.aov.sum = data.frame(emo.aov.sum[[1]])
+  
+  emo.aov.sum
+  
+  
+# Trials per repetition condition -----------------------------------------
+  
+# Load questionnaire data
+  load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")
+  
+  EEG_trial_count = EEG_task_data
+  
+# Select outlier-free data and correct trials
+  EEG_trial_count = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Response ==1)
+                     
+# Get trial counts
+  rep_trials = data.frame(xtabs(~ID+Cong,EEG_trial_count))
+  rep_trials = subset(rep_trials, ID!= '05') 
+  
+# Recode variable
+ # rep_trials$Cong[rep_trials$Cong == 1] = "repeated"
+ # rep_trials$Cong[rep_trials$Cong == 2] = "novel"
+  
+# Calculate mean and SD   
+  tr_mean_rep = tapply(rep_trials$Freq,rep_trials$Cong,mean)
+  tr_sd_rep = tapply(rep_trials$Freq,rep_trials$Cong,sd)
+  
+# Paired-samples t-test
+  t_test_res = t.test(rep_trials$Freq[rep_trials$Cong==2],
+                      rep_trials$Freq[rep_trials$Cong==1],
+                      paired = TRUE, alternative = "two.sided")
+
+=======
+>>>>>>> master
+```
+
 
 # Task description 
 
 We developed an emotion priming paradigm combined with a delayed-match-to-sample-task to examine categorical differences in facial expression processing in young children. In particular, EEG was recorded while preschoolers observed pairs of faces presented sequentially. In some trials, the two sequential facial stimuli (hereafter: ‘Face 1’ and ‘Face 2’) were identical, while in other trials they differed with regards to the facial expression displayed (happy, angry, or neutral). 
+<<<<<<< HEAD
+
+We calculated linear mixed models (LMM) separately for each ERP component. As fixed factors, all models included treatment contrasts for *facial expressions* (`emotional [average of happy/angry] vs. neutral faces (Emo_Neu)`, `happy vs. angry faces (Hap_Ang)`), *repetition* (`novel vs. repeated emotion trials (Rep_Nov)`) as well as their interaction (`Emo_NeuxRep_Nov, Hap_AngxRep_Nov`). Working memory (`WM_scal`) was entered as a scaled covariate in all LMM analyses to control for cognitive task demands. Additionally, we entered stimulus contrast (`contr_F2_scal`) as a scaled covariate to control for low-level differences.
+
+The random effects structure included random intercepts for participants (`(1|ID)`), stimulus (`(1|Stim_Type)`) and electrodes (`(1|Elect_site)`). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).
+=======
 
 We calculated linear mixed models (LMM) separately for each ERP component. As fixed factors, all models included treatment contrasts for *facial expressions* (`emotional [average of happy/angry] vs. neutral faces (Emo_Neu)`, `happy vs. angry faces (Hap_Ang)`), *repetition* (`novel vs. repeated emotion trials (Rep_Nov)`) as well as their interaction (`Emo_NeuxRep_Nov, Hap_AngxRep_Nov`). We analyzed effects for Face 1 and Face 2 separately. For Face 1, we only used the facial expression contrasts. As hemispheric differences were previously reported for the N170 component, we included hemisphere as additional fixed factor for the N170 analysis (treatment contrast: `left vs. right ROI`). Working memory (`WM_scal`) was entered as a scaled covariate in all LMM analyses to control for cognitive task demands. Additionally, we entered stimulus contrast (`contr_F1_scal`,`contr_F2_scal`) as a scaled covariate to control for low-level differences.
 
@@ -143,6 +297,7 @@ We calculated linear mixed models (LMM) separately for each ERP component. As fi
 The random effects structure included random intercepts for participants (`(1|ID)`) and stimulus (`(1|Stim_Type)`). For each model, we commenced with the maximal random effect structure. Random intercepts were defined for participants and stimuli. Random slopes were defined for all predictors, but not covariates. We set correlations of random terms to zero and performed a principal component analysis on the random-effects variance-covariance estimates to determine the number of components supported by the data. We removed random effects explaining zero variance, in order to prevent over-parametrization. Afterwards, we checked whether all random intercepts improved the model using likelihood-ratio-testing.
 
 Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).
+>>>>>>> master
 
 We predicted that amplitudes would be larger for emotional compared to neutral facial expressions. We expected happy facial expressions to elicit the largest amplitudes, followed by angry and neutral facial expressions. Assuming that comprehensive facial expression representations are in place for young children, we expected an amplitude decrease in response to identical facial expressions. Again, we predicted that happy facial expressions would elicit the largest amplitude reduction compared to angry or neutral expressions because they are the most readily processed.
 
@@ -151,10 +306,13 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 <br>
 
 ### **Descriptive statistics**
+<<<<<<< HEAD
+=======
 
 *ERP waveforms and topographies at Face 1.* Top row: Grand-averaged P1 and P3 (left side) and N170 (right side) waveforms for happy, angry and neutral facial expressions. Shadowed areas indicate the time windows used to identify participants\' individual peaks and mean amplitudes. Bottom row: Topographies of the averaged P1 activity (90-130 ms) displaying difference waves for facial expression contrasts (from the left): angry–neutral, happy–neutral and happy–angry.
+>>>>>>> master
 
-```{r ERP_val_plot}
+```{r ERP_plot_legend, include = FALSE}
 
 ## P1/P3 trajectories
 
@@ -177,7 +335,7 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
   
   
 # Factor and level emotion
-  Face1_data_all_emo_sep$Condition = factor(Face1_data_all_emo_sep$Condition, levels=c("neutral","happy","angry"))
+  Face1_data_all_emo_sep$Condition = factor(Face1_data_all_emo_sep$Condition, levels=c("happy","neutral","angry"))
 
 
 # Plot data
@@ -201,35 +359,117 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
     annotate("rect", xmin = 90, xmax = 130, ymin = -2.5, ymax = 14.5, alpha = .3)+
     annotate("rect", xmin = 300, xmax = 500, ymin = -2.5, ymax = 14.5, alpha = .3)
 
-
-## N170 trajectories
-
-# Load data
-  Face1_data_l = read.csv("./data/left_ROI_N170_Face1.csv",header = TRUE)
-  Face1_data_r = read.csv("./data/right_ROI_N170_Face1.csv",header = TRUE)
-
-# Select time windows
-  Face1_data_l = Face1_data_l[(Face1_data_l$Time >= -200)& (Face1_data_l$Time <= 600),]
-  Face1_data_r = Face1_data_r[(Face1_data_r$Time >= -200)& (Face1_data_r$Time <= 600),]
-
-# De-select participants
-  Face1_data_l = Face1_data_l[with(Face1_data_l, !(Face1_data_l$ID=="05")), ]
-  Face1_data_r = Face1_data_r[with(Face1_data_r, !(Face1_data_r$ID=="05")), ]
-
-# Rename conditions
-  Face1_data_l$Condition[Face1_data_l$Condition == 1]='happy';
-  Face1_data_l$Condition[Face1_data_l$Condition == 2]='neutral';
-  Face1_data_l$Condition[Face1_data_l$Condition == 3]='angry';
+ # Get legend
+    legend_ERP = get_legend(P1_P3_val_traj  +
+     theme(legend.box.margin = margin(0, 0, 0, 0)))
   
-  Face1_data_r$Condition[Face1_data_r$Condition == 1]='happy';
-  Face1_data_r$Condition[Face1_data_r$Condition == 2]='neutral';
-  Face1_data_r$Condition[Face1_data_r$Condition == 3]='angry';
 
-# Select conditions of interest
-  Face1_data_all_emo_sep_l = Face1_data_l[(Face1_data_l$Condition == 'happy')  | (Face1_data_l$Condition == 'angry') | (Face1_data_l$Condition == 'neutral'),]
+```
+
+<br><br>
+
+*ERP waveforms and topographies at Face 2.*  ERP waveforms and topographies at Face 2. Top left: Grand-averaged P1 and P3 waveforms for novel and repeated happy, angry and neutral facial expressions. Shadowed areas indicate the time windows used to identify participants\' individual peaks and mean amplitudes. Top right: Grand-averaged P1 amplitudes at Face 2 for repeated andbnovel happy, angry and neutral facial expressions. Error bars indicate standard errors (SE). Bottom: Topographies of the averaged P1 activity (90-130 ms) displaying difference waves for significant contrasts of the Repetition x Facial Expression interaction (from the left): novel happy–repeated happy and novel happy–novel angry.
+
+```{r ERP_rep_plot, fig.width=8, fig.height=4}
   
-  Face1_data_all_emo_sep_r = Face1_data_r[(Face1_data_r$Condition == 'happy')  | (Face1_data_r$Condition == 'angry') | (Face1_data_r$Condition == 'neutral'),]
+  # Calculate condtional mean 
+   Face2_data_cond =  aggregate(Face2_data_icc$data, FUN=mean, 
+          by=list(time=Face2_data_icc$time, Condition=Face2_data_icc$Condition))  
   
+  P1_rep_all_traj = ggplot(Face2_data_cond, aes(time,x))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.text=element_text(size=8),
+          legend.position="none",legend.title=element_blank())+
+    stat_summary(fun.y = mean,geom = "line", size = 0.4, aes(linetype = Condition, colour = Condition))+
+    scale_linetype_manual(values=c("dotted","longdash","solid","dotted","longdash","solid"))+
+    scale_colour_manual(values = c ("#134462","#134462","#134462","#2FA9F5","#2FA9F5","#2FA9F5"))+
+    #ggtitle("P1 & P3") +
+    labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-2, 18),xlim=c(-100,600)) +
+    scale_y_continuous(breaks=seq(-2,18,4))+
+    scale_x_continuous(breaks=seq(-100,600,200))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    annotate("rect", xmin = 90, xmax = 130, ymin = -2.5, ymax = 18.5, alpha = .3)+
+    annotate("rect", xmin = 300, xmax = 500, ymin = -2.5, ymax = 18.5, alpha = .3)
+  
+  load.Rdata(filename="./data/ERP_data.Rdata", "ERPs")
+
+
+## Select data
+  ERPs_sel = subset(ERPs, Exclude_smaller_250ms == FALSE
+                             & Response == 1
+                             & Group_pcic == 2 | Group_pcic == 3)
+
+# Rename values of Face2 condition
+  ERPs_sel$Condition[ERPs_sel$Condition == 4]='angry';
+  ERPs_sel$Condition[ERPs_sel$Condition == 5]='happy';
+  ERPs_sel$Condition[ERPs_sel$Condition == 6]='neutral';
+  ERPs_sel$Condition[ERPs_sel$Condition == 7]='angry';
+  ERPs_sel$Condition[ERPs_sel$Condition == 8]='happy';
+  ERPs_sel$Condition[ERPs_sel$Condition == 9]='neutral';
+
+# Rename variables
+  ERPs_sel$Group_pcic[ERPs_sel$Group_pcic == 2] = "novel"
+  ERPs_sel$Group_pcic[ERPs_sel$Group_pcic == 3] = "repeated"
+
+
+# Summarize data
+  stats_P1_all = summarySEwithin(ERPs_sel, measurevar="mean_ROI_P1", withinvars=c("Group_pcic","Condition"), idvar = "ID")
+
+
+# Plot
+  P1_plot = ggplot(stats_P1_all, aes(x=Condition, y=mean_ROI_P1, fill = Group_pcic)) +
+    geom_bar(position=position_dodge(), stat="identity", color = "black", size=0.5,width=0.9)+
+    geom_errorbar(aes(ymin=mean_ROI_P1-se, ymax=mean_ROI_P1+se),
+                  size=0.5, width=0.2, position=position_dodge(.9)) +
+    labs (x= "", y = expression(paste("Amplitude [",mu,"V]")),colour = "") +
+    scale_fill_manual(values=nov_col)+
+    coord_cartesian(ylim = c(0, 20)) +
+    scale_y_continuous(breaks=seq(0,25,5))+
+    theme_bw()+
+    theme_SN +
+    theme(legend.position = "left", legend.direction = "vertical",
+           legend.key.size = unit(1, "cm"),
+           legend.key.width = unit(0.5,"cm"),
+           legend.text=element_text(size=7), text=element_text(size = 8), legend.title = element_blank(),
+           axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 20, b = 0, l = 0)))
+  
+  legend_behav = get_legend(P1_plot)
+    
+  
+  
+# Put plots together
+  plots_EEG_F2 = cowplot::plot_grid(
+    P1_rep_all_traj + theme(legend.position="none"),
+    legend_ERP, legend_behav,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, .3, .3))
+  
+
+  plots_EEG_F2_2 = cowplot::plot_grid(
+   # legend_behav,
+    P1_plot + theme(legend.position="none"),
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(.4, 1))
+  
+# Display plot
+# https://wilkelab.org/cowplot/articles/shared_legends.html
+  fig_rep_ERP = cowplot::plot_grid(plots_EEG_F2, plots_EEG_F2_2,rel_widths = c(.7,.6))
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+  
+<<<<<<< HEAD
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+=======
 # Factor and level emotion
   Face1_data_all_emo_sep_l$Condition = factor(Face1_data_all_emo_sep_l$Condition, levels=c("neutral","happy","angry"))
 
@@ -276,35 +516,49 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 
 # Exclude participant
   Topo_Emo = Topo_Emo[with(Topo_Emo, !(Topo_Emo$ID==5)), ]
+>>>>>>> master
 
 # Re-name to fit topoplot function
-  names(Topo_Emo)[names(Topo_Emo) == "Time"] = "time"
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
 
 # Change from wide to long format for electrodes
-  Topo_Emo = gather(Topo_Emo, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
 
 # Rename A1/A2
-  names(Topo_Emo)[names(Topo_Emo) == "A1"] <- "TP9"
-  names(Topo_Emo)[names(Topo_Emo) == "A2"] <- "TP10"
+  names(Topo_Cat)[names(Topo_Cat) == "A1"] = "TP9"
+  names(Topo_Cat)[names(Topo_Cat) == "A2"] = "TP10"
 
-# Plot topoplots for happy
-  Topo_Emo_Hap = subset(Topo_Emo, Condition == 1)
-  
-# Plot topoplots for neutral
-  Topo_Emo_Neu = subset(Topo_Emo, Condition == 2)
+# Plot topoplots for repeated / novel emotion trials
+  Topo_rep_hap = subset(Topo_Cat, Condition == 4)
+  Topo_nov_hap = subset(Topo_Cat, Condition == 7)
+  Topo_nov_ang = subset(Topo_Cat, Condition == 9)
 
-# Plot topoplots for angry
-  Topo_Emo_Ang = subset(Topo_Emo, Condition == 3)
+
+# Calculate difference scores for different contrasts
+  Topo_Diff_nov_hap_rep_hap = data.frame(ID = Topo_rep_hap[,1], time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4], amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
   
-# Calculate difference score angry-neutral
-  Topo_Diff_Ang_Neu = data.frame(ID = Topo_Emo_Hap[,1], time = Topo_Emo_Hap[,3],
-                                  electrode = Topo_Emo_Hap[,4], amplitude = Topo_Emo_Ang$amplitude - Topo_Emo_Neu$amplitude)
+  Topo_Diff_nov_hap_nov_ang = data.frame(ID = Topo_nov_hap[,1], time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4], amplitude = Topo_nov_hap$amplitude - Topo_nov_ang$amplitude)
   
   
-# Calculate difference score happy-neutral
-  Topo_Diff_Hap_Neu = data.frame(ID = Topo_Emo_Hap[,1], time = Topo_Emo_Hap[,3],
-                                  electrode = Topo_Emo_Hap[,4], amplitude = Topo_Emo_Hap$amplitude - Topo_Emo_Neu$amplitude)  
+<<<<<<< HEAD
+## P1
+
+# Select time windows
+  Topo_Diff_nov_hap_rep_hap_P1 = subset(Topo_Diff_nov_hap_rep_hap, time >= 90 & time <= 130)
+  Topo_Diff_nov_hap_nov_ang_P1 = subset(Topo_Diff_nov_hap_nov_ang, time >= 90 & time <= 130)
   
+# Add electrode information  
+  Topo_Diff_nov_hap_rep_hap_P1 = electrode_locations(Topo_Diff_nov_hap_rep_hap_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_Diff_nov_hap_nov_ang_P1 = electrode_locations(Topo_Diff_nov_hap_nov_ang_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  
+
+# Create topographies  
+  topo_diff_nov_hap_rep_hap_P1 = ggplot(Topo_Diff_nov_hap_rep_hap_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("nov. hap. \u2013 rep. hap.")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+=======
   
 # Calculate difference score happy-angry
   Topo_Diff_Hap_Ang = data.frame(ID = Topo_Emo_Hap[,1], time = Topo_Emo_Hap[,3],
@@ -326,23 +580,64 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
   topo_diff_ang_neu_P1 = ggplot(Topo_Diff_Ang_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     ggtitle("angry \u2013 neutral")+
                     geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+>>>>>>> master
                               head_size = 0.9) +
-                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
                     theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
   
+<<<<<<< HEAD
+  
+  topo_diff_nov_hap_nov_ang_P1 = ggplot(Topo_Diff_nov_hap_nov_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("nov. hap. \u2013 nov. ang.")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+=======
 
 # Draw topographies
   topo_diff_hap_neu_P1 = ggplot(Topo_Diff_Hap_Neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                    ggtitle("  happy \u2013 neutral")+
                     geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.5,
+>>>>>>> master
                               head_size = 0.9) +
-                    scale_fill_distiller(palette = "RdBu" , limits = c(-2,2)) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+<<<<<<< HEAD
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+
+# Get topography legend 
+  topo_diff_nov_hap_P1_leg = ggplot(Topo_Diff_nov_hap_rep_hap_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    ggtitle("P1 (90-130 ms)")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm"))  
+     
+
+## Display plots
+  # https://wilkelab.org/cowplot/articles/shared_legends.html
+  topo_leg = get_legend(topo_diff_nov_hap_P1_leg)  
+  
+  fig_Face_2_topo = cowplot::plot_grid(topo_diff_nov_hap_rep_hap_P1, topo_diff_nov_hap_nov_ang_P1, topo_leg, ncol=3)
+  
+  fig_Face2_cat = cowplot::plot_grid(fig_rep_ERP, fig_Face_2_topo, nrow = 2, rel_heights = c(2, 1), align = "v")
+  
+  #fig_Face2_cat = cowplot::plot_grid(plots_EEG_F2, fig_Face_2_topo, nrow = 2, rel_heights = c(2, 1), align = "v")
+  
+  fig_Face2_cat
+  
+  
+  # Save figure for publication   
+  #ggsave("Figure_X_DMTST_ERPs.tiff", plot = last_plot(), dpi = 300)
+=======
                     theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
 
   
@@ -616,6 +911,7 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
   fig_Face2_cat = cowplot::plot_grid(fig_rep_ERP, fig_Face_2_topo, nrow = 2, rel_heights = c(2, 1), align = "v")
 
   fig_Face2_cat
+>>>>>>> master
 
   
 ```
@@ -624,6 +920,15 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 ---
 
 ### **Model specification** {.tabset .tabset-pills}
+<<<<<<< HEAD
+
+#### LMM P1: Random effect structure
+<br>
+
+The final model was: 
+
+```{r P1_rep_build_mod}
+=======
 
   * _val = ERP LMMs for Face 1
   * _rep = ERP LMMs for Face 2
@@ -634,8 +939,80 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 
 # Select Face 1
   P1_Val = subset(ERP_data,Group_pt == 1) 
+>>>>>>> master
 
+# Select correct responses and outlier-free data 
+  P1_Rep = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+                
 # Prepare fixed factors 
+<<<<<<< HEAD
+  P1_Rep$ID = as.factor(P1_Rep$ID)
+  P1_Rep$Stim_Type = as.factor(P1_Rep$Stim_Type)
+
+# Define novel vs repeated trials
+  P1_Rep$rep[P1_Rep$Group_cic == 1]='repeated'
+  P1_Rep$rep[P1_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  P1_Rep$PT[P1_Rep$Group_pt == 1]='prime'
+  P1_Rep$PT[P1_Rep$Group_pt == 2]='target'
+  
+  # Rename variables   
+  P1_Rep$Response[P1_Rep$Response == 0]='false'
+  P1_Rep$Response[P1_Rep$Response == 1]='correct'
+  
+# Define emotions
+  P1_Rep$Condition[P1_Rep$Condition == 1]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 2]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 3]='angry'
+  P1_Rep$Condition[P1_Rep$Condition == 4]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 5]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 6]='angry'
+  P1_Rep$Condition[P1_Rep$Condition == 7]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 8]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  P1_Rep$rep = factor(P1_Rep$rep)
+  P1_Rep$PT = factor(P1_Rep$PT)
+  P1_Rep$Response = factor(P1_Rep$Response)
+  
+  contrasts(P1_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  contrasts(P1_Rep$PT) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  #contrasts(P1_Rep$Response) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+
+  P1_Rep$Condition = factor(P1_Rep$Condition)
+  contrasts(P1_Rep$Condition) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(P1_Rep$Condition) = cbind(EvsN,HvsA)
+  
+# Bring electrodes in one variable
+  P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO3:P1_Oz, factor_key = TRUE)
+  
+  P1_Rep$Elect_site = factor(P1_Rep$Elect_site)
+  P1_Rep = subset(P1_Rep, PT == "target")
+  
+# Build full model 
+  mod_P1_Rep.lmer = lmer(P1_Amplitude ~ Condition*rep + contr_F2_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P1_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+
+  tab_model(mod_P1_Rep.lmer) 
+  
+```
+
+  ``r format(formula(mod_P1_Rep.lmer))``
+
+---
+
+#### LMM P1: Normality of residuals 
+=======
   P1_Val$ID = as.factor(P1_Val$ID)
   P1_Val$Stim_Type = as.factor(P1_Val$Stim_Type)
 
@@ -740,61 +1117,72 @@ The final model was comprised of:
 #### LMM_P1_val: Normality of residuals 
 
 ```{r P1_val_res_box, fig.width = 6, fig.asp = .62}
+>>>>>>> master
 
-# Set treatment contrast
-  contrasts(P1_Val$Condition) = contr.treatment(3)
+```{r P1_rep_res_box, fig.width = 6, fig.asp = .62}
 
 ## Check properties of DV / residuals 
-  P1_Val$Trans_P1 = P1_Val$mean_ROI_P1 + 1 - min(P1_Val$mean_ROI_P1)
+  P1_Rep$Trans_P1 = P1_Rep$mean_ROI_P1 + 1 - min(P1_Rep$mean_ROI_P1)
 
 # To make sure residuals follow ND: Calculate box-cox plot
-  boxcox(P1_Val$Trans_P1 ~ P1_Val$Condition)   
+  boxcox(P1_Rep$Trans_P1 ~ P1_Rep$Group_pcic)   
 
 ```
 
 P1 amplitudes met the assumption of normally distributed residuals.
 
-```{r P1_val_res_plot, fig.width = 6, fig.asp = .62}
+```{r P1_rep_res_plot, fig.width = 6, fig.asp = .62}
+
 # Visualize normality assumption of residuals (without log transform)
-  mod_P1_val = lm(Trans_P1 ~ Condition, data=P1_Val)
-  res.mod_P1_val = residuals(mod_P1_val)
-  
+  mod_P1_Rep = lm(Trans_P1 ~ Group_pcic, data=P1_Rep)
+  res.mod_P1_Rep = residuals(mod_P1_Rep)
+
   par(mfrow=c(1,2))
-  qqpl_mod_P1_val = qqPlot(res.mod_P1_val, main="QQplot before transformation")    
-  norm_mod_P1_val = plot(density(res.mod_P1_val), main="Density plot before transformation")  
+  qqpl_mod_P1_Rep = qqPlot(res.mod_P1_Rep, main="QQplot before transformation")    
+  norm_mod_P1_Rep = plot(density(res.mod_P1_Rep), main="Density plot before transformation")  
   par(mfrow=c(1,1))
         
 ```
 
 ---
 
+#### LMM P1: Homoscedasticity 
 
+<<<<<<< HEAD
+Based on visual inspection, we assumed homoscedasticity. 
+
+```{r P1_rep_homosk, fig.width = 6, fig.asp = .62}
+=======
 #### LMM_P1_val: Homoscedasticity 
+>>>>>>> master
 
-```{r P1_val_homosk, fig.width = 6, fig.asp = .62}
 # Check homoscedasticity  
-  plot(fitted(mod_P1_val.lmer4), residuals(mod_P1_val.lmer4))
-  abline(0, 0)   
+  plot(fitted(mod_P1_Rep.lmer), residuals(mod_P1_Rep.lmer))
+  abline(0, 0)     
   
 ```
 
-Based on visual inspection, we assumed homoscedasticity. 
-
 ---
 
+<<<<<<< HEAD
+#### LMM N170: Random effect structure
+<br>
+=======
 #### LMM_N170_val: Random effect structure
+>>>>>>> master
 
-```{r N170_val_build_mod}
+The final model was: 
 
-# Transform dataset so that left/right hemisphere are accounted for 
-  N170_Val = gather (ERP_data, Elect_site, N170_Amplitude, mean_ROI_N170l:mean_ROI_N170r, factor_key = TRUE)
+```{r N170_rep_build_mod}
 
-# Add variable name
-  N170_Val$Elect_site = as.character(N170_Val$Elect_site)
-  N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170l"] = 'left'
-  N170_Val$Elect_site[N170_Val$Elect_site == "mean_ROI_N170r"] = "right"
+# Select correct responses and outlier-free data 
+  N170_Rep = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1) 
 
 # Prepare fixed factors 
+<<<<<<< HEAD
+  N170_Rep$ID = as.factor(N170_Rep$ID)
+  N170_Rep$Stim_Type = as.factor(N170_Rep$Stim_Type)
+=======
   N170_Val$ID = as.factor(N170_Val$ID)
   N170_Val$Stim_Type = as.factor(N170_Val$Stim_Type)
   N170_Val$Elect_site = factor(N170_Val$Elect_site)
@@ -882,59 +1270,124 @@ Based on visual inspection, we assumed homoscedasticity.
                             control=lmerControl(calc.derivs = FALSE))
     
   
+>>>>>>> master
   
-```
+# Single electrodes  
+   N170_Rep = gather(N170_Rep, Elect_site, N170_Amplitude, N170l_TP7:N170r_P8, factor_key = TRUE)
+   N170_Rep$Elect_site = factor(N170_Rep$Elect_site)
+  
+# Define novel vs repeated trials
+  N170_Rep$rep[N170_Rep$Group_cic == 1]='repeated'
+  N170_Rep$rep[N170_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  N170_Rep$PT[N170_Rep$Group_pt == 1]='prime'
+  N170_Rep$PT[N170_Rep$Group_pt == 2]='target'
+  
+# Define emotions
+  N170_Rep$Condition[N170_Rep$Condition == 1]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 2]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 3]='angry'
+  N170_Rep$Condition[N170_Rep$Condition == 4]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 5]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 6]='angry'
+  N170_Rep$Condition[N170_Rep$Condition == 7]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 8]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  N170_Rep$rep = factor(N170_Rep$rep)
+  N170_Rep$PT = factor(N170_Rep$PT) 
+  N170_Rep$Response = factor(N170_Rep$Response) 
+  
+  contrasts(N170_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  contrasts(N170_Rep$PT) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  
+  N170_Rep$Condition = factor(N170_Rep$Condition)
+  contrasts(N170_Rep$Condition) = contr.treatment(3,  base = 3)
 
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(N170_Rep$Condition) = cbind(EvsN,HvsA)
+  
+  N170_Rep = subset(N170_Rep, PT == "target")
+
+# Build full model 
+  mod_N170_Rep.lmer = lmer(N170_Amplitude ~  Condition*rep + contr_F2_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = N170_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+
+<<<<<<< HEAD
+```
+=======
 <br>
 The final model was comprised of: 
+>>>>>>> master
 
-  ``r format(formula(mod_N170_val.lmer2))``
+  ``r format(formula(mod_N170_Rep.lmer))``
 
 ---
 
 
+<<<<<<< HEAD
+#### LMM N170: Normality of residuals 
+=======
 #### LMM_N170_val: Normality of residuals 
+>>>>>>> master
 
-```{r N170_val_res_box, fig.width = 6, fig.asp = .62}
+```{r N170_rep_res_box, fig.width = 6, fig.asp = .62}
 
 ## Check properties of DV / residuals 
-  N170_Val$Trans_N170 = N170_Val$N170_Amplitude + 1 - min(N170_Val$N170_Amplitude)
-
+  N170_Rep$Trans_N170 = N170_Rep$N170_Amplitude + 1 - min(N170_Rep$N170_Amplitude)
+  
 # To make sure residuals follow ND: Calculate box-cox plot
-  boxcox(N170_Val$Trans_N170 ~ N170_Val$Condition)   
-            
+  boxcox(N170_Rep$Trans_N170 ~ N170_Rep$Group_pcic)   
+         
 ```
 
 N170 amplitudes met the assumption of normally distributed residuals.
 
-```{r N170_val_res_plot, fig.width = 6, fig.asp = .62}
+```{r N170_rep_res_plot, fig.width = 6, fig.asp = .62}
 # Visualize normality assumption of residuals (without log transform)
-  mod_N170_val = lm(Trans_N170 ~ Condition, data=N170_Val)
-  res.mod_N170_val = residuals(mod_N170_val)
-  
+  mod_N170_Rep = lm(Trans_N170 ~ Group_pcic, data=N170_Rep)
+  res.mod_N170_Rep = residuals(mod_N170_Rep)
+
   par(mfrow=c(1,2))
-  qqpl_mod_N170_val = qqPlot(res.mod_N170_val, main="QQplot before transformation")    
-  norm_mod_N170_val = plot(density(res.mod_N170_val), main="Density plot before transformation")  
+  qqpl_mod_N170_Rep = qqPlot(res.mod_N170_Rep, main="QQplot before transformation")    
+  norm_mod_N170_Rep = plot(density(res.mod_N170_Rep), main="Density plot before transformation")  
   par(mfrow=c(1,1))  
 ```
 
 
 ---
 
+<<<<<<< HEAD
+#### LMM N170: Homoscedasticity 
+=======
 #### LMM_N170_val: Homoscedasticity 
 
 ```{r N170_val_homosk, fig.width = 6, fig.asp = .62}
+>>>>>>> master
 
+```{r N170_rep_homosk, fig.width = 6, fig.asp = .62}
 # Check homoscedasticity  
-  plot(fitted(mod_N170_val.lmer2), residuals(mod_N170_val.lmer2))
-  abline(0, 0) 
-  
+  plot(fitted(mod_N170_Rep.lmer), residuals(mod_N170_Rep.lmer))
+  abline(0, 0)         
+         
 ```
 
 Based on visual inspection, we assumed homoscedasticity. 
 
 ---
 
+<<<<<<< HEAD
+#### LMM P3: Random effect structure
+<br>
+=======
 #### LMM_P3_val: Random effect structure
 
 ```{r P3_val_build_mod}
@@ -994,9 +1447,13 @@ Based on visual inspection, we assumed homoscedasticity.
   summary(rePCA(mod_P3_val.lmer2))
   print(VarCorr(mod_P3_val.lmer2),comp = "Variance")
 
+>>>>>>> master
 
-# Likelihood ratio testing 
+The final model was: 
 
+<<<<<<< HEAD
+```{r P3_rep_build_mod}
+=======
 # Stimulus type 
   mod_P3_val.lmer3 = lmer(mean_ROI_P3 ~ 
                             Emo_Neu + Hap_Ang + WM_scal + contr_F1_scal +
@@ -1004,11 +1461,67 @@ Based on visual inspection, we assumed homoscedasticity.
                             (1 |Stim_Type),
                           data = P3_Val,
                           control=lmerControl(calc.derivs = FALSE))
+>>>>>>> master
 
-# Calculate ANOVA 
-  anova(mod_P3_val.lmer2, mod_P3_val.lmer3)
+# Select correct responses and outlier-free data 
+ P3_Rep = subset(ERP_data,  Exclude_smaller_250ms == FALSE & Response == 1)
+                
+# Prepare fixed factors 
+  P3_Rep$ID = as.factor(P3_Rep$ID)
+  P3_Rep$Stim_Type = as.factor(P3_Rep$Stim_Type)
 
+# Define novel vs repeated trials
+  P3_Rep$rep[P3_Rep$Group_cic == 1]='repeated'
+  P3_Rep$rep[P3_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  P3_Rep$PT[P3_Rep$Group_pt == 1]='prime'
+  P3_Rep$PT[P3_Rep$Group_pt == 2]='target'
 
+# Define emotions
+  P3_Rep$Condition[P3_Rep$Condition == 1]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 2]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 3]='angry'
+  P3_Rep$Condition[P3_Rep$Condition == 4]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 5]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 6]='angry'
+  P3_Rep$Condition[P3_Rep$Condition == 7]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 8]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  P3_Rep$rep = factor(P3_Rep$rep)
+  P3_Rep$PT = factor(P3_Rep$PT)
+  
+  contrasts(P3_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  contrasts(P3_Rep$PT) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+
+  P3_Rep$Condition = factor(P3_Rep$Condition)
+  contrasts(P3_Rep$Condition) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(P3_Rep$Condition) = cbind(EvsN,HvsA)
+  
+# Bring electrodes in one variable
+  P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO3:P3_Oz, factor_key = TRUE)
+  
+  P3_Rep$Elect_site = factor(P3_Rep$Elect_site)
+  
+  P3_Rep = subset(P3_Rep, PT == "target")
+  #P3_Rep = subset(P3_Rep, Response == "false")
+  
+# Build full model 
+  mod_P3_Rep.lmer = lmer(P3_Amplitude ~  Condition*rep + contr_F2_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P3_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+
+<<<<<<< HEAD
+=======
 # Final model
   mod_P3_val.lmer4 = lmer(mean_ROI_P3 ~ 
                             Emo_Neu + Hap_Ang + WM_scal + contr_F1_scal +
@@ -1016,60 +1529,177 @@ Based on visual inspection, we assumed homoscedasticity.
                             (1 |Stim_Type),
                           data = P3_Val,
                           control=lmerControl(calc.derivs = FALSE))
+>>>>>>> master
 ```
 <br>
 
+<<<<<<< HEAD
+``r format(formula(mod_P3_Rep.lmer))``
+=======
 The final model was comprised of: 
 
   ``r format(formula(mod_P3_val.lmer4))``
+>>>>>>> master
 
 ---
 
+#### LMM P3: Normality of residuals 
 
+<<<<<<< HEAD
+```{r P3_rep_res_box, fig.width = 6, fig.asp = .62}
+=======
 
 #### LMM_P3_val: Normality of residuals 
 
 ```{r P3_val_res_box, fig.width = 6, fig.asp = .62}
+>>>>>>> master
 
 ## Check properties of DV / residuals 
-  P3_Val$Trans_P3 = P3_Val$mean_ROI_P3 + 1 - min(P3_Val$mean_ROI_P3)
+  P3_Rep$Trans_P3 = P3_Rep$mean_ROI_P3 + 1 - min(P3_Rep$mean_ROI_P3)
 
 # To make sure residuals follow ND: Calculate box-cox plot
-  boxcox(P3_Val$Trans_P3 ~ P3_Val$Condition)   
+  boxcox(P3_Rep$Trans_P3 ~ P3_Rep$Group_pcic)   
 
 ```
 
 P3 amplitudes met the assumption of normally distributed residuals.
 
-```{r P3_val_res_plot, fig.width = 6, fig.asp = .62}
+```{r P3_rep_res_plot, fig.width = 6, fig.asp = .62}
 
 # Visualize normality assumption of residuals (without log transform)
-  mod_P3_val = lm(Trans_P3 ~ Condition, data=P3_Val)
-  res.mod_P3_val = residuals(mod_P3_val)
-  
+  mod_P3_Rep = lm(Trans_P3 ~ Group_pcic, data=P3_Rep)
+  res.mod_P3_Rep = residuals(mod_P3_Rep)
+
   par(mfrow=c(1,2))
-  qqpl_mod_P3_val = qqPlot(res.mod_P3_val, main="QQplot before transformation")    
-  norm_mod_P3_val = plot(density(res.mod_P3_val), main="Density plot before transformation")  
+  qqpl_mod_P3_Rep = qqPlot(res.mod_P3_Rep, main="QQplot before transformation")    
+  norm_mod_P3_Rep = plot(density(res.mod_P3_Rep), main="Density plot before transformation")  
   par(mfrow=c(1,1))
-  
 ```
 
 ---
 
+<<<<<<< HEAD
+#### LMM P3: Homoscedasticity 
+=======
 #### LMM_P3_val: Homoscedasticity 
+>>>>>>> master
 
-```{r P3_val_homosk, fig.width = 6, fig.asp = .62}
+```{r P3_rep_homosk, fig.width = 6, fig.asp = .62}
 
 # Check homoscedasticity  
-  plot(fitted(mod_P3_val.lmer4), residuals(mod_P3_val.lmer4))
-  abline(0, 0)    
-
+  plot(fitted(mod_P3_Rep.lmer), residuals(mod_P3_Rep.lmer))
+  abline(0, 0)  
+  
 ```
 
 Based on visual inspection, we assumed homoscedasticity. 
 
 ---
 
+<<<<<<< HEAD
+
+
+### **Results**
+
+#### **P1**
+
+```{r post_hoc_P1_tests}
+
+### Calculate post-hoc tests P1 valence
+  P1_Rep$interaction = interaction(P1_Rep$rep, P1_Rep$Condition)
+
+
+  mod_P1_Rep.lmer2 = lmer(P1_Amplitude ~ contr_F2_scal + WM_scal + Condition*rep +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P1_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+  
+# Choose contrasts of interest / add fdr-correction
+  P1_Rep_lmm_model_posthoc =  summary(glht(mod_P1_Rep.lmer2, 
+                                           linfct=mcp(Condition = c(
+                                           "neutral - happy = 0",
+                                           "neutral - angry = 0")),
+                                           test = adjusted(type = "fdr")))
+  
+  
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P1_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P1_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P1_Rep_posthoc1 = merge(tab1,tab2,by='Row.names')
+  colnames(P1_Rep_posthoc1) = c("Contrast","Est.","Std. Error", "z value", "p value")
+
+  
+### Calculate post-hoc tests P1 valence
+  P1_Rep$interaction = interaction(P1_Rep$rep, P1_Rep$Condition)
+
+
+  mod_P1_Rep.lmer3 = lmer(P1_Amplitude ~ contr_F2_scal + 
+                           WM_scal + interaction +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P1_Rep,
+                          control=lmerControl(calc.derivs = FALSE))   
+
+  
+  P1_Rep_lmm_model_posthoc =  summary(glht(mod_P1_Rep.lmer3, 
+                                           linfct=mcp(interaction = c(
+                                           "novel.happy - novel.angry = 0",
+                                           "novel.happy - repeated.angry = 0",
+                                           "repeated.angry - novel.angry = 0",
+                                           "repeated.happy - novel.angry = 0",
+                                           "repeated.happy - novel.happy = 0",
+                                           "repeated.happy - repeated.angry	= 0")),
+                                           test = adjusted(type = "fdr")))
+ 
+
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P1_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P1_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P1_Rep_posthoc2 = merge(tab1,tab2,by='Row.names')
+  colnames(P1_Rep_posthoc2) = c("Contrast","Est.","Std. Error", "z value", "p value")
+
+
+```
+
+ 
+In line with our hypothesis, we found larger P1 amplitudes for emotional vs. neutral expressions ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[2,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[2,5])`). Both happy (`r reportP(P1_Rep_posthoc1[1,5])`) and angry expressions (`r reportP(P1_Rep_posthoc1[2,5])`) elicited larger P1 amplitudes compared to neutral expressions. No amplitude differences were detected between happy and angry expressions ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[3,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[3,5])`). There was no main effect of repetition ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[4,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[4,5])`). Similarly, no interaction of emotional vs. neutral expressions with repetition was found ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[7,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[7,5])`). We did, however, detect a significant interaction of happy vs. angry expressions with repetition ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[8,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[8,5])`): Post-hoc tests indicated that, in line with our hypothesis, P1 amplitudes for repeated happy expressions were smaller than for novel happy expressions (`r reportP(P1_Rep_posthoc2[5,5])`). Novel happy expressions also elicited larger P1 amplitudes than novel angry expressions (`r reportP(P1_Rep_posthoc2[1,5])`; all other *p* > `r reportci(P1_Rep_posthoc2[6,5])`).
+
+#### **N170**
+
+We did not find significant main effects for facial expression contrasts (emotion vs. neutral expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[2,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[2,5])`; happy vs. angry expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[3,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[3,5])`) or repetition  ($\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[4,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[4,5])`) None of the interactions of facial expressions with repetition were significant (emotion vs. neutral expressions: β = 0.87, p = 0.43; happy vs. angry expressions: β = 1.16, p = 0.08). None of the interactions of facial expressions with repetition were significant (emotion vs. neutral expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[7,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[7,5])`; happy vs. angry expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[8,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[8,5])`).
+
+#### **P3**
+
+```{r post_hoc_P3_tests}
+
+### Calculate post-hoc tests P3 valence
+  P3_Rep$interaction = interaction(P3_Rep$rep, P3_Rep$Condition)
+
+
+  mod_P3_Rep.lmer2 = lmer(P3_Amplitude ~ contr_F2_scal + WM_scal + Condition*rep +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P3_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+  
+# Choose contrasts of interest / add fdr-correction
+  P3_Rep_lmm_model_posthoc =  summary(glht(mod_P3_Rep.lmer2, 
+                                           linfct=mcp(Condition = c(
+                                           "neutral - happy = 0",
+                                           "neutral - angry = 0")),
+                                           test = adjusted(type = "fdr")))
+  
+=======
 #### LMM_P1_rep: Random effect structure
 <br>
 
@@ -1400,37 +2030,54 @@ The final model was comprised of:
 
 ## Check properties of DV / residuals 
   N170_Cat$Trans_N170 = N170_Cat$N170_Amplitude + 1 - min(N170_Cat$N170_Amplitude)
+>>>>>>> master
   
-# To make sure residuals follow ND: Calculate box-cox plot
-  boxcox(N170_Cat$Trans_N170 ~ N170_Cat$Group_pcic)   
-         
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P3_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P3_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P3_Rep_posthoc = merge(tab1,tab2,by='Row.names')
+  colnames(P3_Rep_posthoc) = c("Contrast","Est.","Std. Error", "z value", "p value")
+  
 ```
 
-N170 amplitudes met the assumption of normally distributed residuals.
+In line with our hypothesis, we detected differences for emotional vs. neutral facial expressions ($\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[2,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[2,5])`). Angry expressions elicited larger P3 amplitudes than neutral expressions (`r reportP(P3_Rep_posthoc[1,5])`). No significant difference was found for happy vs. neutral expressions (`r reportP(P3_Rep_posthoc[2,5])`). Angry expressions also elicited larger P3 amplitudes compared to happy expressions ($\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[3,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[3,5])`). P3 amplitudes did not show significant modulations by repetition ($\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[4,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[4,5])`). Interactions of repetition with facial expression contrasts were not significant (emotional vs. neutral facial expressions: $\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[7,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[7,5])`; happy vs. angry facial expressions: $\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[8,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[8,5])`). Additionally, we detected that stimulus\' contrast was a significant predictor, with larger contrast eliciting larger P3 amplitudes ($\beta$ `r reportbe(coef(summary(mod_P3_Rep.lmer))[5,1])`, `r reportP(coef(summary(mod_P3_Rep.lmer))[5,5])`).
 
-```{r N170_cat_res_plot, fig.width = 6, fig.asp = .62}
-# Visualize normality assumption of residuals (without log transform)
-  mod_N170_Cat = lm(Trans_N170 ~ Group_pcic, data=N170_Cat)
-  res.mod_N170_Cat = residuals(mod_N170_Cat)
+**Table: Face 2 results**
 
-  par(mfrow=c(1,2))
-  qqpl_mod_N170_Cat = qqPlot(res.mod_N170_Cat, main="QQplot before transformation")    
-  norm_mod_N170_Cat = plot(density(res.mod_N170_Cat), main="Density plot before transformation")  
-  par(mfrow=c(1,1))  
-```
+<div align="center">
 
+```{r ERP_rep_results_table, results = 'asis'}
 
----
+# Define labels
+  labels = c ("Emotion vs. Neutral", "Happy vs. Angry", "Repetition", "Stimulus' contrast", "Working memory",
+              "Repetition x E vs. N", "Repetition x H vs. A")
 
+<<<<<<< HEAD
+# Create table
+  tab_model(mod_P1_Rep.lmer, mod_N170_Rep.lmer, mod_P3_Rep.lmer, 
+            show.intercept = FALSE,
+            pred.labels=labels,
+            string.est = "b",
+            show.se=TRUE, string.se = "SE",
+            show.stat=TRUE, string.stat = "t",
+            show.ci = FALSE, 
+            show.re.var = TRUE, show.obs = FALSE,
+            emph.p = TRUE, dv.labels=c("P1 Amplitude","N170 Amplitude","P3 Amplitude"),
+            show.icc = TRUE)
+=======
 #### LMM_N170_rep: Homoscedasticity 
+>>>>>>> master
 
-```{r N170_cat_homosk, fig.width = 6, fig.asp = .62}
-# Check homoscedasticity  
-  plot(fitted(mod_N170_cat.lmer4), residuals(mod_N170_cat.lmer4))
-  abline(0, 0)         
-         
 ```
 
+<<<<<<< HEAD
+</div>
+
+<br>
+=======
 Based on visual inspection, we assumed homoscedasticity. 
 
 ---
@@ -1573,31 +2220,37 @@ The final model was comprised of:
 
 
 ```
+>>>>>>> master
 
-``r format(formula(mod_P3_cat.lmer4))``
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
 
----
+<br>
 
+<<<<<<< HEAD
+=======
 #### LMM_P3_rep: Normality of residuals 
+>>>>>>> master
 
-```{r P3_cat_res_box, fig.width = 6, fig.asp = .62}
+**Post-hoc test P1: Contrast Emotion vs. Neutral Facial Expressions**
 
-## Check properties of DV / residuals 
-  P3_Cat$Trans_P3 = P3_Cat$mean_ROI_P3 + 1 - min(P3_Cat$mean_ROI_P3)
+```{r post_hoc_tests_P1_1, results = 'asis'}
 
-# To make sure residuals follow ND: Calculate box-cox plot
-  boxcox(P3_Cat$Trans_P3 ~ P3_Cat$Group_pcic)   
+# Create table
+  kable(P1_Rep_posthoc1) %>% 
+    kable_styling(bootstrap_options = c("hover"), font_size = 14, fixed_thead = T) 
 
 ```
 
-P3 amplitudes met the assumption of normally distributed residuals.
 
-```{r P3_cat_res_plot, fig.width = 6, fig.asp = .62}
+**Post-hoc test P1: Contrast Emotion vs. Neutral with Repetition interaction**
 
-# Visualize normality assumption of residuals (without log transform)
-  mod_P3_Cat = lm(Trans_P3 ~ Group_pcic, data=P3_Cat)
-  res.mod_P3_Cat = residuals(mod_P3_Cat)
+```{r post_hoc_tests_P1_2, results = 'asis'}
 
+<<<<<<< HEAD
+# Create table
+  kable(P1_Rep_posthoc2) %>% 
+    kable_styling(bootstrap_options = c("hover"), font_size = 14, fixed_thead = T) 
+=======
   par(mfrow=c(1,2))
   qqpl_mod_P3_Cat = qqPlot(res.mod_P3_Cat, main="QQplot before transformation")    
   norm_mod_P3_Cat = plot(density(res.mod_P3_Cat), main="Density plot before transformation")  
@@ -1609,13 +2262,13 @@ P3 amplitudes met the assumption of normally distributed residuals.
 #### LMM_P3_rep: Homoscedasticity 
 
 ```{r P3_cat_homosk, fig.width = 6, fig.asp = .62}
+>>>>>>> master
 
-# Check homoscedasticity  
-  plot(fitted(mod_P3_cat.lmer4), residuals(mod_P3_cat.lmer4))
-  abline(0, 0)  
-  
 ```
 
+<<<<<<< HEAD
+<br>
+=======
 Based on visual inspection, we assumed homoscedasticity. 
 
 ---
@@ -1806,9 +2459,17 @@ labels = c("Emotion vs. Neutral", "Happy vs. Angry", "Working Memory", "Stimulus
 **Table: Face 2 results**
 
 <div align="center">
+>>>>>>> master
 
-```{r ERP_cat_results_table, results = 'asis'}
+**Post-hoc test P3: Contrast Emotion vs. Neutral**
 
+<<<<<<< HEAD
+```{r post_hoc_tests_P3_rep, results = 'asis'}
+
+# Create table
+  kable(P3_Rep_posthoc) %>% 
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T) 
+=======
 # Define labels
   labels = c("Emotion vs. Neutral", "Happy vs. Angry",  "Repetition", "E vs. N x Repetition", "H vs. A x Repetition", "Working Memory", "Stimulus' Contrast","Hemisphere")
 
@@ -1823,11 +2484,13 @@ labels = c("Emotion vs. Neutral", "Happy vs. Angry", "Working Memory", "Stimulus
             show.re.var = TRUE, show.obs = FALSE,
             emph.p = TRUE, dv.labels=c("P1 Amplitude","N170 Amplitude","P3 Amplitude"),
             show.icc = TRUE)
+>>>>>>> master
 
 ```
 
-</div>
 
+<<<<<<< HEAD
+=======
 <br>
 
 *Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
@@ -1869,15 +2532,17 @@ labels = c("Emotion vs. Neutral", "Happy vs. Angry", "Working Memory", "Stimulus
 ```
 
 
+>>>>>>> master
 ```{r save_models, include = FALSE, eval = FALSE}
 
 # Save data set in RData format
-  save(mod_P1_val.lmer4, file = "./data/mod_P1_val.lmer4.RData")
-  save(mod_N170_val.lmer2, file = "./data/mod_N170_val.lmer2.RData")
-  save(mod_P3_val.lmer4, file = "./data/mod_P3_val.lmer4.RData")
-  save(mod_P1_cat.lmer4, file = "./data/mod_P1_cat.lmer4.RData")
-  save(mod_N170_cat.lmer4, file = "./data/mod_N170_cat.lmer4.RData")
-  save(mod_P3_cat.lmer4, file = "./data/mod_P3_cat.lmer4.RData")
+  save(mod_P1_Rep.lmer, file = "./data/mod_P1_Rep.lmer.RData")
+  save(mod_N170_Rep.lmer, file = "./data/mod_N170_Rep.lmer.RData")
+  save(mod_P3_Rep.lmer, file = "./data/mod_P3_Rep.lmer.RData")
+  
+  save(P1_Rep_posthoc1, file = "./data/P1_Rep_posthoc.RData")
+  save(P1_Rep_posthoc2, file = "./data/N170_Rep_posthoc.RData")
+  save(P3_Rep_posthoc, file = "./data/P3_Rep_posthoc.RData")
   
   save(P1_Val_posthoc, file = "./data/P1_Val_posthoc.RData")
   
