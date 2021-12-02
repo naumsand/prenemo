@@ -145,11 +145,28 @@ output:
 
 # Task description
 
+<<<<<<< HEAD
 Our EEG paradigm was comprised of a delayed match-to-sample task in which children had do indicate whether Face 1 and Face 2 showed the same (`repeated`) or a different emotional facial expression (`novel`). Besides their EEG, we measured participants' accuracy rates and reaction times. 
+=======
+Our EEG paradigm included a delayed same-different matching task in which children had do indicate whether Face 1 and Face 2 showed the same (`repeated`) or a different emotional facial expression (`novel`). We measured participants' accuracy rates and reaction times. 
+
+We excluded: 
+
+  + Reaction times < 250 ms or >  7s
+  + Values </> 2.5 of the median absolute deviation (MAD) based on the individual participant
+  + Incorrect answers
+  + Rejected EEG trials
+  
+We calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually.  As fixed factors, all models included treatment contrasts for *facial expressions* (`emotional [average of happy/angry] vs. neutral faces (Emo_Neu)`, `happy vs. angry faces (Hap_Ang)`), *repetition* (`novel vs. repeated emotion trials (Rep_Nov)`) as well as their interaction (`Emo_NeuxRep_Nov, Hap_AngxRep_Nov`). Due to the high cognitive task demands, working memory  (`WM_scal`) was entered as scaled covariate in all (general) linear mixed model analyses.
+>>>>>>> master
 
 We excluded reaction times < 250 ms and incorrect trials. Subsequently, we calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually.  As fixed factors, all models included treatment contrasts for *facial expressions* (`emotional [average of happy/angry] vs. neutral faces (Emo_Neu)`, `happy vs. angry faces (Hap_Ang)`), *repetition* (`novel vs. repeated emotion trials (Rep_Nov)`) as well as their interaction (`Emo_NeuxRep_Nov, Hap_AngxRep_Nov`). Due to the high cognitive task demands, working memory  (`WM_scal`) was entered as scaled covariate in all (general) linear mixed model analyses.
 
+<<<<<<< HEAD
 The random effects structure included random intercepts for participants `(1|ID)` and stimulus `(1|Stim_Type)`. Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity). 
+=======
+Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity). 
+>>>>>>> master
 
 We expected children to be faster and more accurate when Face 1 and Face 2 showed different emotions. Additionally, we expected the highest accuracy rates and fastest reaction times for pairings with happy facial expressions.
 
@@ -158,12 +175,33 @@ We expected children to be faster and more accurate when Face 1 and Face 2 showe
 #### **Descriptive statistics** 
 
 Accuracy rates (left side) and reaction times (right side) of the delayed match-to-sample task. Error bars indicate standard errors (SE).
+<<<<<<< HEAD
 
 ```{r EEG_Acc_RT_plots, results = TRUE, fig.width = 8, fig.height = 4}
 
 ## Plot accuracy rates 
   EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Response == 1)
 
+=======
+
+```{r EEG_Acc_RT_plots, results = TRUE}
+
+## Plot accuracy rates 
+
+# Load EEG task data
+  load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")
+
+## Plot accuracy rates 
+
+# Select outlier-free data and correct trials
+  EEG_task_Acc_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE 
+                             & Exclude_larger_7s == FALSE 
+                             & Exclude_MAD == FALSE
+                             & EEG_trial_loss == 1)
+
+  EEG_task_Acc_plot = subset(EEG_task_Acc_plot, Response == 1)
+  
+>>>>>>> master
 # Rename variables
   EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 1] = "repeated"
   EEG_task_Acc_plot$Cong[EEG_task_Acc_plot$Cong == 2] = "novel"
@@ -175,6 +213,7 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
   EEG_task_Acc_plot$Target[EEG_task_Acc_plot$Target==7] = "happy"
   EEG_task_Acc_plot$Target[EEG_task_Acc_plot$Target==8] = "neutral"
   EEG_task_Acc_plot$Target[EEG_task_Acc_plot$Target==9] = "angry"
+<<<<<<< HEAD
 
 # Get accuracy for novel and repeated Target
   acc_all = data.frame(xtabs(~ID+Cong+Target, EEG_task_Acc_plot))
@@ -182,6 +221,15 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
 # Recode to accuracy in percent (72 novel trials, 72 repeated trials, divided by three for three emotion conditions)
   acc_all$Freq = (acc_all$Freq/24)*100
 
+=======
+
+# Get accuracy for novel and repeated Target
+  acc_all = data.frame(xtabs(~ID+Cong+Target, EEG_task_Acc_plot))
+
+# Recode to accuracy in percent (72 novel trials, 72 repeated trials, divided by three for three emotion conditions)
+  acc_all$Freq = (acc_all$Freq/24)*100
+
+>>>>>>> master
 # Factor Target
   acc_all$Cong = as.factor(acc_all$Cong)
   acc_all$Target = as.factor(acc_all$Target)
@@ -195,7 +243,11 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
     geom_errorbar(aes(ymin=Freq-se, ymax=Freq+se), size=0.4, width=0.2, position=position_dodge(.9)) +
     labs (x= "", y = "Accuracy [%]") +
     scale_fill_manual(name = "Repetition", values=nov_col)+
+<<<<<<< HEAD
     coord_cartesian(ylim = c(0, 80)) +
+=======
+    coord_cartesian(ylim = c(0, 65)) +
+>>>>>>> master
     scale_y_continuous(breaks=seq(0,100,20))+
     theme_bw()+
     theme_SN +
@@ -204,6 +256,7 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
            legend.key.width = unit(0.5,"cm"))
    
 ## RT plot
+<<<<<<< HEAD
 
 # Choose outlier-free and correct trial data
   EEG_task_RT_plot = subset(EEG_task_data, Exclude_smaller_250ms == FALSE)
@@ -257,6 +310,56 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
 # Save figure for publication   
   #ggsave("Figure_X_DMTST_perf.tiff", plot = last_plot(), dpi = 300)
   
+=======
+
+# Choose outlier-free and correct trial data
+  EEG_task_RT_plot = subset(EEG_task_data,Exclude_smaller_250ms == FALSE & Exclude_larger_7s == FALSE 
+                            & Exclude_MAD == FALSE)  
+  EEG_task_RT_plot = subset(EEG_task_RT_plot, Response == 1)
+
+# Rename variables
+  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==1] = "repeated"
+  EEG_task_RT_plot$Cong[EEG_task_RT_plot$Cong==2] = "novel"
+  
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==4] = "happy"
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==5] = "neutral"
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==6] = "angry"
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==7] = "happy"
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==8] = "neutral"
+  EEG_task_RT_plot$Target[EEG_task_RT_plot$Target==9] = "angry"
+  
+  stats_RT_all = summarySEwithin(EEG_task_RT_plot, measurevar="RTs", withinvars=c("Cong","Target"), idvar = "ID")
+  
+# Plot RTs
+  EEG_RT_plot =
+    ggplot(stats_RT_all, aes(x = Target, y = RTs, fill = Cong)) +
+    geom_bar(position=position_dodge(), stat="identity", colour="black", size=0.4, width=0.9) +
+    geom_errorbar(aes(ymin=RTs-se, ymax=RTs+se), size=0.4, width=0.2, position=position_dodge(.9)) +
+    labs (x= "", y = "RT [ms]") +
+    coord_cartesian(ylim = c(0, 1700)) +
+    scale_y_continuous(breaks=seq(0,2000,500))+
+    scale_fill_manual(values=nov_col)+
+    theme_bw()+
+    theme_SN+
+    theme(legend.position = "none", legend.title=element_blank())
+
+# Put plots together
+  plots_Acc_RT = cowplot::plot_grid(
+    EEG_acc_plot + theme(legend.position="none"),
+    EEG_RT_plot + theme(legend.position="none"),
+    align = 'vh',
+    hjust = -1,
+    nrow = 1)
+
+# Get legend
+  legend_Acc_RT = get_legend(EEG_acc_plot  +
+    theme(legend.box.margin = margin(0, 0, 0, 2)))
+
+# Display plot
+# https://wilkelab.org/cowplot/articles/shared_legends.html
+  fig_EEG_Acc_RT = cowplot::plot_grid(plots_Acc_RT, legend_Acc_RT, rel_widths = c(1, .2))
+  fig_EEG_Acc_RT
+>>>>>>> master
 
 ```
 
@@ -267,6 +370,7 @@ Accuracy rates (left side) and reaction times (right side) of the delayed match-
 <!-- GLMM model specifications -->
 
 ###### Random effect structure 
+<<<<<<< HEAD
 
 We fitted single-trial data to the following model:
 
@@ -274,6 +378,20 @@ We fitted single-trial data to the following model:
 
 # Select outlier-free data
   EEG_task_Acc_glmm = subset(EEG_task_data, Exclude_smaller_250ms == FALSE)
+=======
+
+We fitted single-trial data to the following model:
+
+```{r EEG_Acc_GLMM_res}
+
+# Scale working memory
+  EEG_task_data$WM_scal = scale(EEG_task_data$WM)
+
+# Select outlier-free data
+  EEG_task_Acc_glmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE 
+                             & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE 
+                             & EEG_trial_loss == 1)
+>>>>>>> master
 
 # Factor random effects
   EEG_task_Acc_glmm$ID = as.factor(EEG_task_Acc_glmm$ID)
@@ -291,6 +409,7 @@ We fitted single-trial data to the following model:
   EEG_task_Acc_glmm$emot[(EEG_task_Acc_glmm$Target == 'c_happy')  | (EEG_task_Acc_glmm$Target == 'ic_happy')] = 1
   EEG_task_Acc_glmm$emot[(EEG_task_Acc_glmm$Target == 'c_angry')  | (EEG_task_Acc_glmm$Target == 'ic_angry')] = 2
   EEG_task_Acc_glmm$emot[(EEG_task_Acc_glmm$Target == 'c_neutral')  | (EEG_task_Acc_glmm$Target == 'ic_neutral')] = 3
+<<<<<<< HEAD
   
   EEG_task_Acc_glmm$rep[(EEG_task_Acc_glmm$Target == 'c_happy')  
                         | (EEG_task_Acc_glmm$Target == 'c_angry') 
@@ -317,24 +436,112 @@ We fitted single-trial data to the following model:
 # A = angry, N = neutral, H = happy
   HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
   EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral 
+=======
+  
+  EEG_task_Acc_glmm$rep[(EEG_task_Acc_glmm$Target == 'c_happy')  
+                        | (EEG_task_Acc_glmm$Target == 'c_angry') 
+                        | (EEG_task_Acc_glmm$Target == 'c_neutral')] = 1
+  EEG_task_Acc_glmm$rep[(EEG_task_Acc_glmm$Target == 'ic_happy')  
+                        | (EEG_task_Acc_glmm$Target == 'ic_angry') 
+                        | (EEG_task_Acc_glmm$Target == 'ic_neutral')] = 2
+
+# Rename variables   
+  EEG_task_Acc_glmm$emot[EEG_task_Acc_glmm$emot == 1]='happy';
+  EEG_task_Acc_glmm$emot[EEG_task_Acc_glmm$emot == 2]='angry';
+  EEG_task_Acc_glmm$emot[EEG_task_Acc_glmm$emot == 3]='neutral';
+  EEG_task_Acc_glmm$rep[EEG_task_Acc_glmm$rep == 1]='repeated';
+  EEG_task_Acc_glmm$rep[EEG_task_Acc_glmm$rep == 2]='novel';
+
+# Factor emotion and repetition variable
+  EEG_task_Acc_glmm$rep = factor(EEG_task_Acc_glmm$rep)
+  EEG_task_Acc_glmm$emot = factor(EEG_task_Acc_glmm$emot) 
+
+# Create contrasts 
+  contrasts(EEG_task_Acc_glmm$rep) = contr.treatment(2,  base = 1)
+  contrasts(EEG_task_Acc_glmm$emot) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0)
+  EvsN = c(0.5,0.5,0)
+  contrasts(EEG_task_Acc_glmm$emot) = cbind(EvsN,HvsA)
+  
+# Add contrast columns
+  mm_EEG_task_Acc =  model.matrix( ~ emot*rep, EEG_task_Acc_glmm)   
+  
+# Attach to dataframe
+  EEG_task_Acc_glmm[,(ncol(EEG_task_Acc_glmm)+1):(ncol(EEG_task_Acc_glmm)+6)] = mm_EEG_task_Acc
+  names(EEG_task_Acc_glmm)[(ncol(EEG_task_Acc_glmm)-5):ncol(EEG_task_Acc_glmm)] = c("Mean","Emo_Neu", "Hap_Ang",
+                                                                                    "Rep_Nov", "Emo_NeuxRep_Nov",
+                                                                                    "Hap_AngxRep_Nov") 
+# Build full model
+  mod_Acc_EEG.glmm1 = glmer(Response ~ Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                            (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||ID) +
+                            (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                            data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                            family = binomial)
+
+## Check random effect structure (cut-off: 0.005 - 0.001)
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_Acc_EEG.glmm1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_Acc_EEG.glmm1),comp = "Variance")
+  
+
+# Adapt model
+  mod_Acc_EEG.glmm2 = glmer(Response ~ Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                            (1 + Hap_Ang + Rep_Nov ||ID) +
+                            (0 + Emo_Neu + Hap_Ang + Rep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                            data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                            family = binomial)
+>>>>>>> master
   
   # for contrast coding: when variable set to 0 = will be ignored 
   # intercept = mean of full data including variable which was set to 0
   # based on: https://pagepiccinini.com/2016/03/18/contrast-coding-with-three-level-variables/#toc_3
   
+<<<<<<< HEAD
   contrasts(EEG_task_Acc_glmm$emot) = cbind(EvsN,HvsA)
   
   
 # Build full model
   mod_Acc_EEG.glmm = glmer(Response ~ emot*rep + WM_scal +
                             (1|ID) +
+=======
+# ID   
+  mod_Acc_EEG.glmm3 = glmer(Response ~ Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                            (1 |ID) +
+                            (0 + Emo_Neu + Hap_Ang + Rep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                            data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                            family = binomial)
+
+# Stim Type
+  mod_Acc_EEG.glmm4 = glmer(Response ~ Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                            (1 + Hap_Ang + Rep_Nov ||ID) +
+                            (1|Stim_Type),
+                            data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                            family = binomial)
+# Calculate ANOVAs
+  anova(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm3)
+  anova(mod_Acc_EEG.glmm2,mod_Acc_EEG.glmm4)
+
+
+# Final model
+  mod_Acc_EEG.glmm4 = glmer(Response ~ Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                            (1 + Hap_Ang + Rep_Nov ||ID) +
+>>>>>>> master
                             (1|Stim_Type),
                             data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
                             family = binomial)
           
 ```
 
+<<<<<<< HEAD
  ``r format(formula(mod_Acc_EEG.glmm))``
+=======
+ ``r format(formula(mod_Acc_EEG.glmm4))``
+>>>>>>> master
  
 ---
 
@@ -345,7 +552,11 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 ```{r EEG_Acc_GLMM_overd_1, results = TRUE}
 
 # Assumption check: Appropriate estimation of variance - check for overdispersion
+<<<<<<< HEAD
   overdisp_fun(mod_Acc_EEG.glmm)
+=======
+  overdisp_fun(mod_Acc_EEG.glmm4)
+>>>>>>> master
 ```
 
 ---
@@ -359,10 +570,21 @@ If the p-value is < 0.05, data would be overdispersed. Here p > 0.05. Hence, ove
 
 The final model was: 
 
+<<<<<<< HEAD
 ```{r EEG_RT_LMM_build_res}
 
 # Choose outlier-free data and correct answers    
   EEG_task_RT_lmm = subset(EEG_task_data,  Response == 1 & Exclude_smaller_250ms == FALSE)
+=======
+```{r EEG_RT_LMM1_build_res}
+
+# Choose outlier-free data and correct answers    
+  EEG_task_RT_lmm = subset(EEG_task_data,Exclude_smaller_250ms == FALSE 
+                           & Exclude_larger_7s == FALSE & Exclude_MAD == FALSE 
+                           & EEG_trial_loss == 1)
+
+  EEG_task_RT_lmm = subset(EEG_task_RT_lmm, Response == 1)
+>>>>>>> master
 
 # Define novel vs repeated trials
   EEG_task_RT_lmm$Target[EEG_task_RT_lmm$Target == 4]='c_happy';
@@ -393,6 +615,7 @@ The final model was:
 
 # Create contrasts 
   contrasts(EEG_task_RT_lmm$emot) = contr.treatment(3,  base = 3)
+<<<<<<< HEAD
   contrasts(EEG_task_RT_lmm$rep) = c(-0.5,0.5)
 
 # A = angry, N = neutral, H = happy
@@ -409,6 +632,97 @@ The final model was:
 ```
 
   ``r format(formula(mod_RT_EEG.lmer))``
+=======
+  contrasts(EEG_task_RT_lmm$rep) = contr.treatment(2,  base = 1)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0)
+  EvsN = c(0.5,0.5,0)
+  contrasts(EEG_task_RT_lmm$emot) = cbind(EvsN,HvsA)
+
+# Add contrast columns
+  mm_EEG_task_RT =  model.matrix( ~ emot*rep, EEG_task_RT_lmm)   
+
+# Attach to dataframe
+  EEG_task_RT_lmm[,(ncol(EEG_task_RT_lmm)+1):(ncol(EEG_task_RT_lmm)+6)] = mm_EEG_task_RT
+  names(EEG_task_RT_lmm)[(ncol(EEG_task_RT_lmm)-5):ncol(EEG_task_RT_lmm)] = c("Mean","Emo_Neu", "Hap_Ang",
+                                                                              "Rep_Nov", "Emo_NeuxRep_Nov",
+                                                                              "Hap_AngxRep_Nov") 
+
+# Build full model 
+  mod_RT_EEG.lmer1 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||ID) +
+                                   (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+
+## PCA to check random effect structure (Cut-off: 0.005 - 0.001)
+
+# 1st: check how many zero variance terms you got in random effects
+  summary(rePCA(mod_RT_EEG.lmer1))
+
+# 2nd: check which random terms explain the least variance
+  print(VarCorr(mod_RT_EEG.lmer1),comp = "Variance")
+
+# 3rd: remove all terms with zero variance --> comprises final model 
+  mod_RT_EEG.lmer2 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 + Rep_Nov||ID) +
+                                   (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+
+# 4th: re-check the model PCA / variance of random factors
+  summary(rePCA(mod_RT_EEG.lmer2))
+  print(VarCorr(mod_RT_EEG.lmer2),comp = "Variance")
+
+# 5th: Do Likelihood Ratio Test (LRT) - to check whether all random slopes improve the model
+
+# LRT without random slope Nov_Rep for ID
+  mod_RT_EEG.lmer3 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 |ID) +
+                                   (1 + Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov||Stim_Type),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+
+# Calculate ANOVA
+  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)
+
+# LRT without random slope Nov_Rep for Stim_Type
+  mod_RT_EEG.lmer4 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 + Rep_Nov||ID) +
+                                   (1 |Stim_Type),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+  
+  
+# LRT without random slope Nov_Rep for Stim_Type
+  mod_RT_EEG.lmer2 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 + Rep_Nov||ID),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+  
+  
+# Calculate ANOVA
+  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer3)
+  anova(mod_RT_EEG.lmer2,mod_RT_EEG.lmer4)
+
+
+# 6th: remove random slopes which did not improve the model 
+  mod_RT_EEG.lmer5 = lmer(log(RTs) ~ 
+                                   Emo_Neu + Hap_Ang + Rep_Nov + Emo_NeuxRep_Nov + Hap_AngxRep_Nov + WM_scal +  
+                                   (1 + Rep_Nov||ID),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+  
+```
+
+  ``r format(formula(mod_RT_EEG.lmer5))``
+>>>>>>> master
 
 ###### Normality of residuals 
 
@@ -463,6 +777,7 @@ We assume homoscedasticity based on visual inspection.
 
 ```{r EEG_task_post_hoc_calc, results = "asis"}
 
+<<<<<<< HEAD
 ### Reaction time
 
 # Calculate post-hoc tests
@@ -523,6 +838,102 @@ There were no accuracy differences for facial expression contrasts (emotional vs
 <br>
 
 **Post-hoc tests for Reaction time: Repetition with emotional vs. neutral facial expressions contrast**
+=======
+### Accuracy
+
+# Calculate post-hoc tests
+  EEG_task_Acc_glmm$interaction = interaction(EEG_task_Acc_glmm$rep, EEG_task_Acc_glmm$emot)
+ 
+  EEG_task_Acc_glmm_model =  glmer(Response ~ interaction + WM_scal +  
+                            (1 + Hap_Ang + Rep_Nov ||ID) +
+                            (1|Stim_Type),
+                            data = EEG_task_Acc_glmm,control=glmerControl(calc.derivs = FALSE),
+                            family = binomial)
+  
+# Choose contrasts of interest / add fdr-correction
+  EEG_task_Acc_glmm_model_posthoc =  summary(glht(EEG_task_Acc_glmm_model, linfct=mcp(interaction = c(
+                                                        "repeated.neutral - repeated.angry = 0",
+                                                        "novel.neutral - novel.angry = 0",
+                                                        "novel.neutral - novel.happy = 0",
+                                                        "repeated.neutral - repeated.happy = 0")), test = adjusted(type = "fdr")))
+ 
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(EEG_task_Acc_glmm_model_posthoc$test$coefficients),as.data.frame(EEG_task_Acc_glmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(EEG_task_Acc_glmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(EEG_task_Acc_glmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(EEG_task_Acc_glmm_model_posthoc$test$tstat),tab2,by=0)
+  post_hoc_tests_EEG_acc = merge(tab1,tab2,by='Row.names')
+  colnames(post_hoc_tests_EEG_acc) = c("Contrast","Est.","Std. Error", "z value", "p value")
+
+### RTs  
+  
+# Calculate post-hoc tests
+  EEG_task_RT_lmm_model =   lmer(log(RTs) ~ 
+                                   emot*rep+ WM_scal +  
+                                   (1 + Rep_Nov||ID) +
+                                   (1 |Stim_Type),
+                                   data = EEG_task_RT_lmm,
+                                   control=lmerControl(calc.derivs = FALSE))  
+  
+# Choose contrasts of interest / add fdr-correction
+  EEG_task_RT_lmm_model_posthoc =  summary(glht(EEG_task_RT_lmm_model, linfct=mcp(emot = c(
+                                                        "neutral - happy = 0",
+                                                        "neutral - angry = 0")), test = adjusted(type = "fdr")))
+ 
+ 
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(EEG_task_RT_lmm_model_posthoc$test$coefficients),as.data.frame(EEG_task_RT_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(EEG_task_RT_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(EEG_task_RT_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(EEG_task_RT_lmm_model_posthoc$test$tstat),tab2,by=0)
+  post_hoc_tests_EEG_RT = merge(tab1,tab2,by='Row.names')
+  colnames(post_hoc_tests_EEG_RT) = c("Contrast","Est.","Std. Error", "z value", "p value")  
+  
+```
+
+We found larger accuracy rates for emotional vs. neutral facial expressions ($\beta$ `r reportbe(coef(summary(mod_Acc_EEG.glmm4))[2,1])`, `r reportP(coef(summary(mod_Acc_EEG.glmm4))[2,4])`, *OR* `r reportbe(exp(coef(summary(mod_Acc_EEG.glmm4))[2,1]))` [95% CI: `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[2,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[2,1]))[1])`, `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[2,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[2,1]))[3])`]), but no accuracy differences for happy vs. angry facial expressions ($\beta$ `r reportbe(coef(summary(mod_Acc_EEG.glmm4))[3,1])`, `r reportP(coef(summary(mod_Acc_EEG.glmm4))[3,4])`, *OR* `r reportbe(exp(coef(summary(mod_Acc_EEG.glmm4))[3,1]))` [95% CI: `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[3,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[3,1]))[1])`, `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[3,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[3,1]))[3])`]). There was no main effect of repetition ($\beta$ `r reportbe(coef(summary(mod_Acc_EEG.glmm4))[4,1])`, `r reportP(coef(summary(mod_Acc_EEG.glmm4))[4,4])`, *OR* `r reportbe(exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]))` [95% CI: `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]))[1])`, `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]))[3])`]). Instead, the emotional vs. neutral facial expression contrast was qualified by an interaction with repetition ($\beta$ `r reportbe(coef(summary(mod_Acc_EEG.glmm4))[5,1])`, `r reportP(coef(summary(mod_Acc_EEG.glmm4))[5,4])`, *OR* `r reportbe(exp(coef(summary(mod_Acc_EEG.glmm4))[5,1]))` [95% CI: `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[5,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[4,1]))[1])`, `r reportci((exp(coef(summary(mod_Acc_EEG.glmm4))[5,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_Acc_EEG.glmm4))[5,1]))[3])`]). Post-hoc tests indicated that children were more accurate when Face 2 yielded a novel happy compared to a novel neutral facial expression (`r reportP(post_hoc_tests_EEG_acc[2,5])`). None of the other post-hoc tests reached significance (all > `r post_hoc_tests_EEG_acc[order(post_hoc_tests_EEG_acc[,5]) == 2,5]`).
+
+   Regarding reaction times, the emotional vs. neutral facial expression contrast was significant ($\beta$ `r reportbe(coef(summary(mod_RT_EEG.lmer5))[2,1])`, `r reportP(coef(summary(mod_RT_EEG.lmer5))[2,5])`), however, none of the post-hoc tests indicated significant differences (happy vs. neutral: `r reportP(post_hoc_tests_EEG_RT[2,5])`; angry vs. neutral: `r reportP(post_hoc_tests_EEG_RT[1,5])`). We detected no reaction time differences between happy vs. angry facial expressions ($\beta$ `r reportbe(coef(summary(mod_RT_EEG.lmer5))[3,1])`, `r reportP(coef(summary(mod_RT_EEG.lmer5))[3,5])`). Neither the main effect of repetition ($\beta$ `r reportbe(coef(summary(mod_RT_EEG.lmer5))[4,1])`, `r reportP(coef(summary(mod_RT_EEG.lmer5))[4,5])`), nor its interaction with the facial expression contrasts (emotional vs. neutral: $\beta$ `r reportbe(coef(summary(mod_RT_EEG.lmer5))[5,1])`, `r reportP(coef(summary(mod_RT_EEG.lmer5))[5,5])`; angry vs. happy: $\beta$ `r reportbe(coef(summary(mod_RT_EEG.lmer5))[6,1])`, `r reportP(coef(summary(mod_RT_EEG.lmer5))[6,5])`) was significant. 
+
+<div align="center">
+
+```{r EEG_Acc_RT_GLMM_results, results = 'asis'}
+
+# Create labels
+  labels = c("Emotion vs. Neutral", "Happy vs. Angry", "Repetition", "Repetition x E vs. N", "Repetition x H vs. A", "Working Memory")
+
+# Create table
+  tab_model(mod_Acc_EEG.glmm4, mod_RT_EEG.lmer5, show.intercept = FALSE,
+          pred.labels=labels, show.ci = FALSE,
+          show.se = TRUE, string.se = "SE",
+          show.stat = TRUE, string.stat = "t",
+          show.re.var = TRUE, show.obs = FALSE,
+          emph.p = TRUE, dv.labels=c("Accuracy", "Reaction time") , show.icc = TRUE)
+  
+```
+
+</div>
+
+<br>
+
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects. 
+
+<br>
+
+**Post-hoc tests for Accuracy: Repetition x E vs. N contrast** 
+
+```{r EEG_Acc_post_hoc, results = "asis"}
+  
+# Create table
+  kable(post_hoc_tests_EEG_acc) %>% 
+    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
+  
+```
+
+<br>
+
+**Post-hoc tests for Reaction time: Emotional vs. Neutral faces contrast**
+>>>>>>> master
 
 ```{r EEG_RT_post_hoc, results = "asis"}
 
@@ -535,9 +946,16 @@ There were no accuracy differences for facial expression contrasts (emotional vs
 ```{r save_models, include = FALSE, eval = FALSE}
 
 # Save data set in RData format
+<<<<<<< HEAD
   save(mod_Acc_EEG.glmm, file = "./data/mod_Acc_EEG.glmm.RData")
   save(mod_RT_EEG.lmer, file = "./data/mod_RT_EEG.lmer.RData")
 
+=======
+  save(mod_Acc_EEG.glmm4, file = "./data/mod_Acc_EEG.glmm4.RData")
+  save(mod_RT_EEG.lmer5, file = "./data/mod_RT_EEG.lmer5.RData")
+  
+  save(post_hoc_tests_EEG_acc, file = "./data/post_hoc_tests_EEG_acc.RData")
+>>>>>>> master
   save(post_hoc_tests_EEG_RT, file = "./data/post_hoc_tests_EEG_RT.RData")
     
 ```
