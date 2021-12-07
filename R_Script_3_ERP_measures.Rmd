@@ -271,7 +271,7 @@ output:
 
 # Task description 
 
-We developed an emotion priming paradigm combined with a delayed-match-to-sample-task to examine categorical differences in facial expression processing in young children. In particular, EEG was recorded while preschoolers observed pairs of faces presented sequentially. In some trials, the two sequential facial stimuli (hereafter: ‘Face 1’ and ‘Face 2’) were identical, while in other trials they differed with regards to the facial expression displayed (happy, angry, or neutral). 
+We employed a delayed-match-to-sample-task to examine categorical differences in facial expression processing in young children. In particular, EEG was recorded while preschoolers observed pairs of faces presented sequentially. In some trials, the two sequential facial stimuli (hereafter: ‘Face 1’ and ‘Face 2’) were identical, while in other trials they differed with regards to the facial expression displayed (happy, angry, or neutral). 
 
 We calculated linear mixed models (LMM) separately for each ERP component. As fixed factors, all models included treatment contrasts for *facial expressions* (`emotional [average of happy/angry] vs. neutral faces (Emo_Neu)`, `happy vs. angry faces (Hap_Ang)`), *repetition* (`novel vs. repeated emotion trials (Rep_Nov)`) as well as their interaction (`Emo_NeuxRep_Nov, Hap_AngxRep_Nov`). Working memory (`WM_scal`) was entered as a scaled covariate in all LMM analyses to control for cognitive task demands. Additionally, we entered stimulus contrast (`contr_F2_scal`) as a scaled covariate to control for low-level differences. The random effects structure included random intercepts for participants (`(1|ID)`), stimulus (`(1|Stim_Type)`) and electrodes (`(1|Elect_site)`). Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).
 
@@ -758,7 +758,6 @@ Based on visual inspection, we assumed homoscedasticity.
 ---
 
 
-#### LMM P3: Random effect structure
 
 #### LMM_P3: Random effect structure
 
