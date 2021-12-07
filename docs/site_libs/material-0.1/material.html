@@ -8,7 +8,6 @@
     $for(author-meta)$
     <meta name="author" content="$author-meta$" />
     $endfor$
-<<<<<<< HEAD
 
     $if(date-meta)$
     <meta name="date" content="$date-meta$" />
@@ -19,254 +18,6 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
-    $for(header-includes)$
-    $header-includes$
-    $endfor$
-
-    $if(highlightjs)$
-    <style type="text/css">code{white-space: pre;}</style>
-    <link rel="stylesheet"
-	  href="$highlightjs$/$if(highlightjs-theme)$$highlightjs-theme$$else$default$endif$.css"
-	  $if(html5)$$else$type="text/css" $endif$/>
-    <script src="$highlightjs$/highlight.js"></script>
-    <style type="text/css">
-      pre:not([class]) {
-	  background-color: white;
-      }
-    </style>
-    <script type="text/javascript">
-      if (window.hljs && document.readyState && document.readyState === "complete") {
-	  window.setTimeout(function() {
-	      hljs.initHighlighting();
-	  }, 0);
-      }
-    </script>
-    $endif$
-
-    $if(highlighting-css)$
-    <style type="text/css">code{white-space: pre;}</style>
-    <style type="text/css">
-      $highlighting-css$
-    </style>
-    $endif$
-
-    $for(css)$
-    <link rel="stylesheet" href="$css$" $if(html5)$$else$type="text/css" $endif$/>
-    $endfor$
-
-    <!-- tabsets -->
-    <script>
-      $$(document).ready(function () {
-	  window.buildTabsets("toc");
-      });
-      $$(document).ready(function () {
-	  $$('.tabset-dropdown > .nav-tabs > li').click(function () {
-	      $$(this).parent().toggleClass('nav-tabs-open')
-	  });
-      });
-    </script>
-
-    <!-- code folding -->
-    $if(code_menu)$
-    <script>
-      $$(document).ready(function () {
-	  $if(source_embed)$
-	  window.initializeSourceEmbed("$source_embed$");
-	  $endif$
-	  $if(code_folding)$
-	  window.initializeCodeFolding("$code_folding$" === "show");
-	  $endif$
-      });
-    </script>
-    $endif$
-
-    <!-- code download -->
-    $if(source_embed)$
-    <style>
-      #rmd-source-code {
-	  display: none;
-      }
-    </style>
-    $endif$
-
-
-    <!-- tabsets dropdown -->
-
-    <style type="text/css">
-      .tabset-dropdown > .nav-tabs {
-	  display: inline-table;
-	  max-height: 500px;
-	  min-height: 44px;
-	  overflow-y: auto;
-	  background: white;
-	  border: 1px solid #ddd;
-	  border-radius: 4px;
-      }
-      
-      .tabset-dropdown > .nav-tabs > li.active:before {
-	  content: "";
-	  font-family: 'Glyphicons Halflings';
-	  display: inline-block;
-	  padding: 10px;
-	  border-right: 1px solid #ddd;
-      }
-      
-      .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-	  content: "&#xe258;";
-	  border: none;
-      }
-      
-      .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-	  content: "";
-	  font-family: 'Glyphicons Halflings';
-	  display: inline-block;
-	  padding: 10px;
-	  border-right: 1px solid #ddd;
-      }
-      
-      .pages .tabset-dropdown > .nav-tabs > li.active {
-	  display: block;
-      }
-
-      .pages .tabset-dropdown > .nav-tabs > li.active > a {
-	  background-color: transparent !important;
-	  color: #000000 !important;
-      }
-      
-      .tabset-dropdown > .nav-tabs > li > a,
-      .tabset-dropdown > .nav-tabs > li > a:focus,
-      .tabset-dropdown > .nav-tabs > li > a:hover {
-	  border: none;
-	  display: inline-block;
-	  border-radius: 4px;
-	  background-color: transparent;
-	  color: #00A698 !important;
-	  font-weight: 300 !important;
-	  font-size: 14px;
-      }
-      
-      .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
-	  display: block;
-	  float: none;
-      }
-      
-      .tabset-dropdown > .nav-tabs > li {
-	  display: none;
-      }
-    </style>
-    
-</head>
-=======
-
-    $if(date-meta)$
-    <meta name="date" content="$date-meta$" />
-    $endif$
->>>>>>> master
-
-    <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
-    <!-- Material Design fonts -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-
-<<<<<<< HEAD
-  <div class="header-panel shadow z-2">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-xs-3">
-	  $if(title)$
-	  <div id="$idprefix$header">
-	    <h1 class="title">$title$</h1>
-	    $if(subtitle)$
-	    <h1 class="subtitle">$subtitle$</h1>
-	    $endif$
-	    $for(author)$
-	    $if(author.name)$
-	    <h4 class="author">$author.name$</h4>
-	    $if(author.affiliation)$
-	    <address class="author_afil">
-	      $author.affiliation$<br>$endif$
-	      $if(author.email)$
-	      <a class="author_email" href="mailto:#">$author.email$</a>
-	    </address>
-	    $endif$
-	    $else$
-	    <h4 class="author">$author$</h4>
-	    $endif$
-	    $endfor$
-	    $if(date)$
-	    <h4 class="date">$date$</h4>
-	    $endif$
-	  </div>
-	  $endif$
-	</div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="container-fluid main-container">
-    <div class="row">
-
-<nav class="col-xs-3 menu">
-<div id="toc">
-$toc$
-</div>
-</nav>
-      
-<div class="pages col-xs-9">
-
-$if(include-before)$        
-<div class="row">
-$for(include-before)$
-$include-before$
-$endfor$
-</div>
-$endif$
-    
-<div class="row">
-
-<div class="col-xs-10">
-$body$
-</div>
-
-<div class="col-xs-2">
-
-$if(code_menu)$
-<div class = "btn-toolbar">
-<div class="btn-group">
-<a class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#"><span>Code</span> <span class="caret"></span></a>
-<ul class="dropdown-menu" style="min-width: 50px;">
-
-$if(code_folding)$
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-$if(source_embed)$
-<li role="separator" class="divider"></li>
-$endif$
-$endif$
-$if(source_embed)$
-<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
-$endif$
-
-</ul>
-</div>
-</div>
-$endif$
-
-</div>
-</div>
-	
-$if(include-after)$        
-<div id="include-after" class="row">
-$for(include-after)$
-$include-after$
-$endfor$
-</div>
-$endif$
-
-</div>
-</div>
-
-=======
     $for(header-includes)$
     $header-includes$
     $endfor$
@@ -444,65 +195,66 @@ $endif$
   <div class="container-fluid main-container">
     <div class="row">
 
-      <nav class="col-xs-3 menu">
-	<div id="toc">
-          $toc$
-	</div>
-      </nav>
+<nav class="col-xs-3 menu">
+<div id="toc">
+$toc$
+</div>
+</nav>
       
-      <div class="pages col-xs-9">
+<div class="pages col-xs-9">
 
-    $if(include-before)$        
-    <div class="row">
-	    $for(include-before)$
-	    $include-before$
-	    $endfor$
-    </div>
-    $endif$
+$if(include-before)$        
+<div class="row">
+$for(include-before)$
+$include-before$
+$endfor$
+</div>
+$endif$
     
-	<div class="row">
+<div class="row">
 
-	  <div class="col-xs-10">
-	    $body$
-	  </div>
+<div class="col-xs-10">
+$body$
+</div>
 
-	  <div class="col-xs-2">
+<div class="col-xs-2">
 
-	    $if(code_menu)$
-	    <div class = "btn-toolbar">
-	    <div class="btn-group">
-	      <a class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#"><span>Code</span> <span class="caret"></span></a>
-	      <ul class="dropdown-menu" style="min-width: 50px;">
-		$if(code_folding)$
-		<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-		<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-		$if(source_embed)$
-		<li role="separator" class="divider"></li>
-		$endif$
-		$endif$
-		$if(source_embed)$
-		<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
-		$endif$
-	      </ul>
-	    </div>
-	    </div>
-	    $endif$
+$if(code_menu)$
+<div class = "btn-toolbar">
+<div class="btn-group">
+<a class="btn btn-raised btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#"><span>Code</span> <span class="caret"></span></a>
+<ul class="dropdown-menu" style="min-width: 50px;">
 
-	    </div>
-    </div>
+$if(code_folding)$
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+$if(source_embed)$
+<li role="separator" class="divider"></li>
+$endif$
+$endif$
+$if(source_embed)$
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+$endif$
+
+</ul>
+</div>
+</div>
+$endif$
+
+</div>
+</div>
 	
-    $if(include-after)$        
-    <div id="include-after" class="row">
-	    $for(include-after)$
-	    $include-after$
-	    $endfor$
-    </div>
-    $endif$
+$if(include-after)$        
+<div id="include-after" class="row">
+$for(include-after)$
+$include-after$
+$endfor$
+</div>
+$endif$
 
-    </div>
-  </div>
+</div>
+</div>
 
->>>>>>> master
  <script>
     $$(document).ready(function () {
 	// add bootstrap table styles to pandoc tables
@@ -528,11 +280,7 @@ $endif$
 	    type:'image',
 	    closeOnContentClick: false,
 	    closeBtnInside: false,
-<<<<<<< HEAD
             delegate: '.image-lb',
-=======
-            delegate: 'img',
->>>>>>> master
 	    gallery: {enabled: $gallery$ },
             removalDelay: 500,
             callbacks: {
