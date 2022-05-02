@@ -302,14 +302,14 @@
 <!-- Load data set-->
 <div id="task-description" class="section level1">
 <h1>Task description</h1>
-<p>Our EEG paradigm was comprised of a delayed match-to-sample task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). Besides their EEG, we measured participants’ accuracy rates and reaction times.</p>
+<p>Our EEG paradigm was a delayed match-to-sample task in which children had do indicate whether Face 1 and Face 2 showed the same (<code>repeated</code>) or a different emotional facial expression (<code>novel</code>). Besides their EEG, we measured participants’ accuracy rates and reaction times.</p>
 <p>We excluded reaction times &lt; 250 ms and incorrect trials. Subsequently, we calculated general linear mixed models (GLMM) for accuracy rates and linear mixed models (LMM) for reaction times. Fixed effects are defined for each model individually. As fixed factors, all models included treatment contrasts for <em>facial expressions</em> (<code>emotional [average of happy/angry] vs. neutral faces (Emo_Neu)</code>, <code>happy vs. angry faces (Hap_Ang)</code>), <em>repetition</em> (<code>novel vs. repeated emotion trials (Rep_Nov)</code>) as well as their interaction (<code>Emo_NeuxRep_Nov, Hap_AngxRep_Nov</code>). Due to the high cognitive task demands, working memory (<code>WM_scal</code>) was entered as scaled covariate in all (general) linear mixed model analyses. The random effects structure included random intercepts for participants <code>(1|ID)</code> and stimulus <code>(1|Stim_Type)</code>. Assumptions for multiple regression were checked for all models (normality of the residuals, linearity, multicollinearity, homoscedasticity).</p>
 <p>We expected children to be faster and more accurate when Face 1 and Face 2 showed different emotions. Additionally, we expected the highest accuracy rates and fastest reaction times for pairings with happy facial expressions.</p>
 </div>
 <div id="accuracy-reaction-times" class="section level1">
 <h1>Accuracy &amp; Reaction times</h1>
-<div id="descriptive-statistics" class="section level4">
-<h4><strong>Descriptive statistics</strong></h4>
+<div id="descriptive-statistics" class="section level2">
+<h2><strong>Descriptive statistics</strong></h2>
 <p>Accuracy rates (left side) and reaction times (right side) of the delayed match-to-sample task. Error bars indicate standard errors (SE).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co">## Plot accuracy rates</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>EEG_task_Acc_plot =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span> <span class="op">&amp;</span><span class="st"> </span>Response <span class="op">==</span><span class="st"> </span></span>
@@ -387,7 +387,7 @@
 <span id="cb1-74"><a href="#cb1-74" aria-hidden="true"></a>legend_Acc_RT =<span class="st"> </span><span class="kw">get_legend</span>(EEG_acc_plot <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">legend.box.margin =</span> <span class="kw">margin</span>(<span class="dv">0</span>, <span class="dv">0</span>, </span>
 <span id="cb1-75"><a href="#cb1-75" aria-hidden="true"></a>    <span class="dv">0</span>, <span class="dv">2</span>)))</span>
 <span id="cb1-76"><a href="#cb1-76" aria-hidden="true"></a></span>
-<span id="cb1-77"><a href="#cb1-77" aria-hidden="true"></a><span class="co"># Display plot https://wilkelab.org/cowplot/articles/shared_legends.html</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true"></a><span class="co"># Display plot: https://wilkelab.org/cowplot/articles/shared_legends.html</span></span>
 <span id="cb1-78"><a href="#cb1-78" aria-hidden="true"></a>fig_EEG_Acc_RT =<span class="st"> </span>cowplot<span class="op">::</span><span class="kw">plot_grid</span>(plots_Acc_RT, legend_Acc_RT, <span class="dt">rel_widths =</span> <span class="kw">c</span>(<span class="dv">1</span>, </span>
 <span id="cb1-79"><a href="#cb1-79" aria-hidden="true"></a>    <span class="fl">0.2</span>))</span>
 <span id="cb1-80"><a href="#cb1-80" aria-hidden="true"></a>fig_EEG_Acc_RT</span></code></pre></div>
@@ -395,13 +395,13 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Save figure for publication ggsave(&#39;Figure_X_DMTST_perf.tiff&#39;, plot =</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co"># last_plot(), dpi = 300)</span></span></code></pre></div>
 </div>
-<div id="model-specifications" class="section level4">
-<h4><strong>Model specifications</strong></h4>
-<div id="accuray-rate-glmm" class="section level5 tabset tabset-pills">
-<h5 class="tabset tabset-pills">Accuray rate GLMM:</h5>
+<div id="model-specifications" class="section level2">
+<h2><strong>Model specifications</strong></h2>
+<div id="accuray-rate-glmm" class="section level3 tabset tabset-pills">
+<h3 class="tabset tabset-pills">Accuray rate GLMM:</h3>
 <!-- GLMM model specifications -->
-<div id="random-effect-structure" class="section level6">
-<h6>Random effect structure</h6>
+<div id="random-effect-structure" class="section level4">
+<h4>Random effect structure</h4>
 <p>We fitted single-trial data to the following model:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># Select outlier-free data</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a>EEG_task_Acc_glmm =<span class="st"> </span><span class="kw">subset</span>(EEG_task_data, Exclude_smaller_250ms <span class="op">==</span><span class="st"> </span><span class="ot">FALSE</span>)</span>
@@ -461,20 +461,20 @@
 <p><code>Response ~ emot * rep + WM_scal + (1 | ID) + (1 | Stim_Type)</code></p>
 <hr />
 </div>
-<div id="overdispersion" class="section level6">
-<h6>Overdispersion</h6>
+<div id="overdispersion" class="section level4">
+<h4>Overdispersion</h4>
 <p>If the p-value is &lt; 0.05, data would be overdispersed. Here p &gt; 0.05. Hence, overdispersion is not a problem.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># Assumption check: Appropriate estimation of variance - check for overdispersion</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">overdisp_fun</span>(mod_Acc_EEG.glmm)</span></code></pre></div>
-<pre><code>  chisq   ratio     rdf       p 
-3675.27    0.95 3866.00    0.99 </code></pre>
+<pre><code>   chisq    ratio      rdf        p 
+3675.268    0.951 3866.000    0.986 </code></pre>
 <hr />
 </div>
 </div>
-<div id="reaction-time-lmm" class="section level5 tabset tabset-pills">
-<h5 class="tabset tabset-pills">Reaction time LMM:</h5>
-<div id="random-effect-structure-1" class="section level6">
-<h6>Random effect structure</h6>
+<div id="reaction-time-lmm" class="section level3 tabset tabset-pills">
+<h3 class="tabset tabset-pills">Reaction time LMM:</h3>
+<div id="random-effect-structure-1" class="section level4">
+<h4>Random effect structure</h4>
 <!-- LMM model specifications -->
 <p>The final model was:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="co"># Choose outlier-free data and correct answers</span></span>
@@ -526,8 +526,8 @@
 <span id="cb6-47"><a href="#cb6-47" aria-hidden="true"></a>    <span class="dt">data =</span> EEG_task_RT_lmm, <span class="dt">control =</span> <span class="kw">lmerControl</span>(<span class="dt">calc.derivs =</span> <span class="ot">FALSE</span>))</span></code></pre></div>
 <p><code>log(RTs) ~ emot * rep + WM_scal + (1 | ID) + (1 | Stim_Type)</code></p>
 </div>
-<div id="normality-of-residuals" class="section level6">
-<h6>Normality of residuals</h6>
+<div id="normality-of-residuals" class="section level4">
+<h4>Normality of residuals</h4>
 <p>RTs were log-transformed (determined using the Box-Cox procedure) to meet the assumption of normally distributed residuals.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="co"># Visualize normality assumption of residuals (without log transform)</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a>mod_RT_lmm_no_log =<span class="st"> </span><span class="kw">lm</span>(RTs <span class="op">~</span><span class="st"> </span>Cong, <span class="dt">data =</span> EEG_task_RT_lmm)</span>
@@ -556,8 +556,8 @@
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">1</span>))</span></code></pre></div>
 <hr />
 </div>
-<div id="homoscedasticity" class="section level6">
-<h6>Homoscedasticity</h6>
+<div id="homoscedasticity" class="section level4">
+<h4>Homoscedasticity</h4>
 <p>We assume homoscedasticity based on visual inspection.</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="co"># Check homoscedasticity</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true"></a><span class="kw">plot</span>(<span class="kw">fitted</span>(mod_RT_EEG.lmer), <span class="kw">residuals</span>(mod_RT_EEG.lmer))</span>
@@ -567,8 +567,8 @@
 </div>
 </div>
 </div>
-<div id="results" class="section level4">
-<h4><strong>Results</strong></h4>
+<div id="results" class="section level2">
+<h2><strong>Results</strong></h2>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="co"># Calculate post-hoc tests</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a>EEG_task_RT_lmm<span class="op">$</span>interaction =<span class="st"> </span><span class="kw">interaction</span>(EEG_task_RT_lmm<span class="op">$</span>rep, EEG_task_RT_lmm<span class="op">$</span>emot)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true"></a></span>
@@ -592,7 +592,6 @@
 <span id="cb12-21"><a href="#cb12-21" aria-hidden="true"></a>post_hoc_tests_EEG_RT =<span class="st"> </span><span class="kw">merge</span>(tab1, tab2, <span class="dt">by =</span> <span class="st">&quot;Row.names&quot;</span>)</span>
 <span id="cb12-22"><a href="#cb12-22" aria-hidden="true"></a><span class="kw">colnames</span>(post_hoc_tests_EEG_RT) =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Contrast&quot;</span>, <span class="st">&quot;Est.&quot;</span>, <span class="st">&quot;Std. Error&quot;</span>, <span class="st">&quot;z value&quot;</span>, </span>
 <span id="cb12-23"><a href="#cb12-23" aria-hidden="true"></a>    <span class="st">&quot;p value&quot;</span>)</span></code></pre></div>
-<p>There were no accuracy differences for facial expression contrasts (emotional vs. neutral expressions: <span class="math inline">\(\beta\)</span> = -0.17, <em>p</em> = 0.07, <em>OR</em> = 0.85 [95% CI: -0.55, 2.24]; happy vs. angry expressions: <span class="math inline">\(\beta\)</span> = -0.01, <em>p</em> = 0.95, <em>OR</em> = 0.99 [95% CI: -0.64, 2.63]) or repetition (<span class="math inline">\(\beta\)</span> &lt; 0.01, <em>p</em> = 0.97, <em>OR</em> = 1.00 [95% CI: -0.65, 2.65]). Interactions between facial expression contrasts and repetition yielded no significant results (emotional vs. neutral facial expressions: <span class="math inline">\(\beta\)</span> = 0.23, <em>p</em> = 0.29, <em>OR</em> = 1.25 [95% CI: -0.81, 3.32]; happy vs. angry expressions: <span class="math inline">\(\beta\)</span> = 0.26, <em>p</em> = 0.17, <em>OR</em> = 1.30 [95% CI: -0.84, 3.43]). For reaction times, the emotional vs. neutral facial expression contrast yielded no significant results (<span class="math inline">\(\beta\)</span> = 0.09, <em>p</em> = 0.03). In line with our hypothesis, happy faces were detected faster than angry faces (<span class="math inline">\(\beta\)</span> = -0.02, <em>p</em> = 0.59). The main effect for repetition was not significant (<span class="math inline">\(\beta\)</span> = 0.05, <em>p</em> = 0.31). The interaction of emotional vs. neutral expressions with repetition, however, was significant (<span class="math inline">\(\beta\)</span> = -0.20, <em>p</em> = 0.03). Novel happy faces were detected faster than novel neutral faces (<em>p</em> = 0.01). None of the other post-hoc tests were significant (all <em>p</em> &gt; 0.75). Similarly, the interaction of happy vs. angry expressions with repetition was not significant (<span class="math inline">\(\beta\)</span> = -0.11, <em>p</em> = 0.19).</p>
 <div align="center">
 
 
@@ -929,16 +928,16 @@ p value
 novel.neutral - novel.angry
 </td>
 <td style="text-align:right;">
-0.04
+0.041
 </td>
 <td style="text-align:right;">
-0.06
+0.057
 </td>
 <td style="text-align:right;">
-0.72
+0.724
 </td>
 <td style="text-align:right;">
-0.90
+0.904
 </td>
 </tr>
 <tr>
@@ -946,16 +945,16 @@ novel.neutral - novel.angry
 novel.neutral - novel.happy
 </td>
 <td style="text-align:right;">
-0.18
+0.180
 </td>
 <td style="text-align:right;">
-0.06
+0.056
 </td>
 <td style="text-align:right;">
-3.21
+3.205
 </td>
 <td style="text-align:right;">
-0.01
+0.005
 </td>
 </tr>
 <tr>
@@ -963,16 +962,16 @@ novel.neutral - novel.happy
 repeated.neutral - repeated.angry
 </td>
 <td style="text-align:right;">
--0.06
+-0.057
 </td>
 <td style="text-align:right;">
-0.06
+0.057
 </td>
 <td style="text-align:right;">
--1.00
+-0.998
 </td>
 <td style="text-align:right;">
-0.75
+0.753
 </td>
 </tr>
 <tr>
@@ -980,16 +979,16 @@ repeated.neutral - repeated.angry
 repeated.neutral - repeated.happy
 </td>
 <td style="text-align:right;">
--0.02
+-0.024
 </td>
 <td style="text-align:right;">
-0.06
+0.056
 </td>
 <td style="text-align:right;">
--0.43
+-0.434
 </td>
 <td style="text-align:right;">
-0.98
+0.984
 </td>
 </tr>
 </tbody>
@@ -1003,7 +1002,7 @@ repeated.neutral - repeated.happy
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true"></a><span class="kw">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.0.2 (2020-06-22)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 18362)
+Running under: Windows 10 x64 (build 19042)
 
 Matrix products: default
 
@@ -1022,38 +1021,38 @@ other attached packages:
 [13] reshape2_1.4.4     psych_2.1.3        multcomp_1.4-16    TH.data_1.0-10    
 [17] mvtnorm_1.1-1      MASS_7.3-53.1      lmerTest_3.1-3     lme4_1.1-26       
 [21] Matrix_1.3-2       Hmisc_4.5-0        Formula_1.2-4      survival_3.2-10   
-[25] lattice_0.20-41    ggstatsplot_0.7.2  ez_4.4-0           EnvStats_2.4.0    
-[29] eeptools_1.2.4     ggplot2_3.3.3      dplyr_1.0.5        cowplot_1.1.1     
-[33] summarytools_0.9.9 miceadds_3.11-6    mice_3.13.0        rmdformats_1.0.2  
-[37] XLConnect_1.0.3    kableExtra_1.3.4  
+[25] lattice_0.20-41    ggstatsplot_0.7.2  ggplot2_3.3.3      ez_4.4-0          
+[29] EnvStats_2.4.0     dplyr_1.0.5        cowplot_1.1.1      summarytools_0.9.9
+[33] miceadds_3.11-6    mice_3.13.0        rmdformats_1.0.2   XLConnect_1.0.3   
+[37] kableExtra_1.3.4  
 
 loaded via a namespace (and not attached):
- [1] estimability_1.3       R.methodsS3_1.8.1      coda_0.19-4           
- [4] knitr_1.32             R.utils_2.10.1         data.table_1.14.0     
- [7] rpart_4.1-15           generics_0.1.0         future_1.21.0         
-[10] correlation_0.6.1      webshot_0.5.2          xml2_1.3.2            
-[13] lubridate_1.7.10       httpuv_1.5.5           assertthat_0.2.1      
-[16] viridis_0.6.0          WRS2_1.1-1             xfun_0.22             
-[19] hms_1.0.0              jquerylib_0.1.3        rJava_0.9-13          
-[22] evaluate_0.14          promises_1.2.0.1       fansi_0.4.2           
-[25] dbplyr_2.1.1           readxl_1.3.1           DBI_1.1.1             
-[28] tmvnsim_1.0-2          htmlwidgets_1.5.3      reshape_0.8.8         
-[31] kSamples_1.2-9         Rmpfr_0.8-4            paletteer_1.3.0       
-[34] ellipsis_0.3.1         backports_1.2.1        signal_0.7-6          
-[37] bookdown_0.21          insight_0.13.2         ggcorrplot_0.1.3      
-[40] rapportools_1.0        vctrs_0.3.7            abind_1.4-5           
-[43] cachem_1.0.4           withr_2.4.2            pryr_0.1.4            
-[46] checkmate_2.0.0        emmeans_1.5.5-1        vcd_1.4-8             
-[49] mnormt_2.0.2           svglite_2.0.0          cluster_2.1.2         
-[52] lazyeval_0.2.2         crayon_1.4.1           pkgconfig_2.0.3       
-[55] SuppDists_1.1-9.5      nlme_3.1-152           statsExpressions_1.0.1
-[58] nnet_7.3-15            rlang_0.4.10           globals_0.14.0        
-[61] lifecycle_1.0.0        miniUI_0.1.1.1         MatrixModels_0.5-0    
-[64] sandwich_3.0-0         modelr_0.1.8           cellranger_1.1.0      
-[67] tcltk_4.0.2            matrixStats_0.58.0     lmtest_0.9-38         
-[70] mc2d_0.1-19            carData_3.0-4          boot_1.3-27           
-[73] zoo_1.8-9              reprex_2.0.0           base64enc_0.1-3       
- [ reached getOption(&quot;max.print&quot;) -- omitted 97 entries ]</code></pre>
+ [1] utf8_1.2.1             tidyselect_1.1.0       htmlwidgets_1.5.3     
+ [4] grid_4.0.2             gmp_0.6-2              munsell_0.5.0         
+ [7] codetools_0.2-18       effectsize_0.4.4-1     statmod_1.4.35        
+[10] withr_2.4.2            colorspace_2.0-0       highr_0.9             
+[13] knitr_1.32             rstudioapi_0.13        ipmisc_6.0.0          
+[16] ggsignif_0.6.1         rJava_0.9-13           emmeans_1.5.5-1       
+[19] mnormt_2.0.2           farver_2.1.0           coda_0.19-4           
+[22] vctrs_0.3.7            generics_0.1.0         xfun_0.22             
+[25] BWStest_0.2.2          R6_2.5.0               BayesFactor_0.9.12-4.2
+[28] cachem_1.0.4           reshape_0.8.8          assertthat_0.2.1      
+[31] scales_1.1.1           nnet_7.3-15            gtable_0.3.0          
+[34] multcompView_0.1-8     sandwich_3.0-0         rlang_0.4.10          
+[37] MatrixModels_0.5-0     zeallot_0.1.0          systemfonts_1.0.1     
+[40] PMCMRplus_1.9.0        splines_4.0.2          broom_0.7.6           
+[43] rapportools_1.0        checkmate_2.0.0        modelr_0.1.8          
+[46] yaml_2.2.1             abind_1.4-5            backports_1.2.1       
+[49] tools_4.0.2            tcltk_4.0.2            bookdown_0.21         
+[52] ellipsis_0.3.1         jquerylib_0.1.3        RColorBrewer_1.1-2    
+[55] WRS2_1.1-1             Rcpp_1.0.6             base64enc_0.1-3       
+[58] rpart_4.1-15           pbapply_1.4-3          correlation_0.6.1     
+[61] zoo_1.8-9              haven_2.4.0            ggrepel_0.9.1         
+[64] cluster_2.1.2          fs_1.5.0               magrittr_2.0.1        
+[67] data.table_1.14.0      magick_2.7.1           openxlsx_4.2.3        
+[70] reprex_2.0.0           tmvnsim_1.0-2          matrixStats_0.58.0    
+[73] hms_1.0.0              patchwork_1.1.1        evaluate_0.14         
+ [ reached getOption(&quot;max.print&quot;) -- omitted 68 entries ]</code></pre>
 </div>
 </div>
 

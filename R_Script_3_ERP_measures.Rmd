@@ -39,7 +39,6 @@ output:
   library(cowplot)
   library(dplyr)
   library(eegUtils)
-  library(eeptools)
   library(EnvStats)
   library(ez)
   library(ggplot2)
@@ -50,6 +49,7 @@ output:
   library(lme4)
   library(lmerTest)
   library(MASS)
+  library(matrixStats)
   library(miceadds)
   library(multcomp)
   library(psych)
@@ -78,7 +78,7 @@ output:
   
 # Set figure color palettes
   emotion_col = c("#99bada","#3375b5","#003162")  # order: neutral, happy, angry
-  nov_col = c("#2FA9F5","#134462") # order: novel, repeated 
+  nov_col = c("#134462","#2FA9F5") # order: novel, repeated 
   
 # Round p-values   
   reportP = function(pValue){
@@ -121,98 +121,153 @@ output:
   
 ```
 
-```{r ERP_traj_prep_3rd_rev, include = FALSE, eval = FALSE}
+```{r P1_traj_prep_3rd_rev, include = FALSE, eval = FALSE}
 # Load Face 2 data
-#   #Face2_data = read.csv("./data/ROI_P1_P3_Face2.csv",header = TRUE)
-#   Face2_data = read.delim("./data/P1_all_traj.txt", header = TRUE, sep = " ", dec = ".", stringsAsFactors=FALSE)
-# 
-# # De-select participants
-#   Face2_data = Face2_data[with(Face2_data, !(Face2_data$ID==5)), ]
-# 
-# # Select time window of interest
-#   Face2_data = Face2_data[(Face2_data$time >= -200)& (Face2_data$time <= 600),]
-#   
-# # Exclude incorrect trials / trials < 250 ms
-#   
-#   # Load EEG task data
-#     load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")  
-#     
-#     
-#   # Replace trial variable  
-#     trials = 1:144
-#     new_trials = rep(trials,31)
-#     EEG_task_data$Trial = new_trials
-#     
-#     behav_task_IDs = unique(EEG_task_data$ID)
-#     ERP_traj_IDs = unique(Face2_data$ID)
-#     
-#     
-# for (i in 1:31) {  
-#   
-#   # Get participant of interest
-#     Face2_data_subj = subset(Face2_data, ID == ERP_traj_IDs[i])
-#     EEG_task_data_subj = subset (EEG_task_data, ID == behav_task_IDs[i])
-#   
-#   # Match with RT trial
-#     Face2_data_subj$Response = EEG_task_data_subj$Response[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
-#     Face2_data_subj$Exclude_smaller_250ms = EEG_task_data_subj$Exclude_smaller_250ms[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
-#     
-#     Face2_data_subj$time =  round(Face2_data_subj$time, 0)
-#     
-#  # Combine all subject data 
-# 
-#   if (i==1) {
-#     All_Subj = Face2_data_subj # first round: create all_subj data frame
-#   } else {
-#     All_Subj = rbind(All_Subj,Face2_data_subj) # add to all_subj data frame
-#   }
-#   
-# }
-#   
-#     Face2_data = All_Subj
-# 
-# # Rename values of Face2 condition
-#   Face2_data$Condition[Face2_data$Condition == 'B4(c_happy)']='rep_happy';
-#   Face2_data$Condition[Face2_data$Condition == 'B5(c_neutral)']='rep_neutral';
-#   Face2_data$Condition[Face2_data$Condition == 'B6(c_angry)']='rep_angry';
-#   Face2_data$Condition[Face2_data$Condition == 'B7(ic_happy)']='nov_happy';
-#   Face2_data$Condition[Face2_data$Condition == 'B8(ic_neutral)']='nov_neutral';
-#   Face2_data$Condition[Face2_data$Condition == 'B9(ic_angry)']='nov_angry';
-# 
-# # Plot ERP trajectory for P1/P3
-#   Face2_data_icc = Face2_data[(Face2_data$Condition == 'rep_happy')  | (Face2_data$Condition == 'rep_neutral')
-#                                | (Face2_data$Condition == 'rep_angry')  | (Face2_data$Condition == 'nov_happy')
-#                                | (Face2_data$Condition == 'nov_angry')  | (Face2_data$Condition == 'nov_neutral'),]
-#   
-# # Exclude data  
-#   Face2_data_icc = subset(Face2_data_icc, Exclude_smaller_250ms == FALSE & Response == 1)
-#   
-#   save(Face2_data_icc, file = "./data/F2_ERP_traj.RData")
+  #Face2_data = read.csv("./data/ROI_P1_P3_Face2.csv",header = TRUE)
+  Face2_data = read.delim("./data/P1_all_traj.txt", header = TRUE, sep = " ", dec = ".", stringsAsFactors=FALSE)
+
+# De-select participants
+  Face2_data = Face2_data[with(Face2_data, !(Face2_data$ID==5)), ]
+
+# Select time window of interest
+  Face2_data = Face2_data[(Face2_data$time >= -200)& (Face2_data$time <= 600),]
+
+# Exclude incorrect trials / trials < 250 ms
+
+  # Load EEG task data
+    load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")
+
+
+  # Replace trial variable
+    trials = 1:144
+    new_trials = rep(trials,31)
+    EEG_task_data$Trial = new_trials
+
+    behav_task_IDs = unique(EEG_task_data$ID)
+    ERP_traj_IDs = unique(Face2_data$ID)
+
+
+for (i in 1:31) {
+
+  # Get participant of interest
+    Face2_data_subj = subset(Face2_data, ID == ERP_traj_IDs[i])
+    EEG_task_data_subj = subset (EEG_task_data, ID == behav_task_IDs[i])
+
+  # Match with RT trial
+    Face2_data_subj$Response = EEG_task_data_subj$Response[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+    Face2_data_subj$Exclude_smaller_250ms = EEG_task_data_subj$Exclude_smaller_250ms[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+
+    Face2_data_subj$time =  round(Face2_data_subj$time, 0)
+
+ # Combine all subject data
+
+  if (i==1) {
+    All_Subj = Face2_data_subj # first round: create all_subj data frame
+  } else {
+    All_Subj = rbind(All_Subj,Face2_data_subj) # add to all_subj data frame
+  }
+
+}
+
+    Face2_data = All_Subj
+
+# Rename values of Face2 condition
+  Face2_data$Condition[Face2_data$Condition == 'B4(c_happy)']='rep_happy';
+  Face2_data$Condition[Face2_data$Condition == 'B5(c_neutral)']='rep_neutral';
+  Face2_data$Condition[Face2_data$Condition == 'B6(c_angry)']='rep_angry';
+  Face2_data$Condition[Face2_data$Condition == 'B7(ic_happy)']='nov_happy';
+  Face2_data$Condition[Face2_data$Condition == 'B8(ic_neutral)']='nov_neutral';
+  Face2_data$Condition[Face2_data$Condition == 'B9(ic_angry)']='nov_angry';
+
+# Plot ERP trajectory for P1/P3
+  Face2_data_icc = Face2_data[(Face2_data$Condition == 'rep_happy')  | (Face2_data$Condition == 'rep_neutral')
+                               | (Face2_data$Condition == 'rep_angry')  | (Face2_data$Condition == 'nov_happy')
+                               | (Face2_data$Condition == 'nov_angry')  | (Face2_data$Condition == 'nov_neutral'),]
+
+# Exclude data
+  Face2_data_icc = subset(Face2_data_icc, Exclude_smaller_250ms == FALSE & Response == 1)
+
+  save(Face2_data_icc, file = "./data/F2_ERP_traj.RData")
 ```
 
-<!-- Load and prepare data set -->
+```{r N170_traj_prep_3rd_rev, include = FALSE, eval = FALSE}
+# Load Face 2 data
+  #Face2_data = read.csv("./data/ROI_P1_P3_Face2.csv",header = TRUE)
+  Face2_data = read.delim("./data/N170_all_traj.txt", header = TRUE, sep = " ", dec = ".", stringsAsFactors=FALSE)
 
-```{r load_data, include = FALSE}
+# De-select participants
+  Face2_data = Face2_data[with(Face2_data, !(Face2_data$ID==5)), ]
 
-# Load ERP data
-  load.Rdata(filename="./data/ERP_data.Rdata", "ERP_data")
-  load.Rdata(filename="./data/F2_ERP_traj.Rdata", "Face2_data_icc")
+# Select time window of interest
+  Face2_data = Face2_data[(Face2_data$time >= -200)& (Face2_data$time <= 600),]
+
+# Exclude incorrect trials / trials < 250 ms
+
+  # Load EEG task data
+    load.Rdata(filename="./data/EEG_task_data.Rdata", "EEG_task_data")
 
 
-# Scale WM / stimulus contrast values
-  ERP_data$WM_scal = scale(ERP_data$WM)
-  ERP_data$contr_F1_scal = scale(as.numeric(ERP_data$contr_F1))
-  ERP_data$contr_F2_scal = scale(as.numeric(ERP_data$contr_F2))
+  # Replace trial variable
+    trials = 1:144
+    new_trials = rep(trials,31)
+    EEG_task_data$Trial = new_trials
 
+    behav_task_IDs = unique(EEG_task_data$ID)
+    ERP_traj_IDs = unique(Face2_data$ID)
+
+
+for (i in 1:31) {
+
+  # Get participant of interest
+    Face2_data_subj = subset(Face2_data, ID == ERP_traj_IDs[i])
+    EEG_task_data_subj = subset (EEG_task_data, ID == behav_task_IDs[i])
+
+  # Match with RT trial
+    Face2_data_subj$Response = EEG_task_data_subj$Response[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+    Face2_data_subj$Exclude_smaller_250ms = EEG_task_data_subj$Exclude_smaller_250ms[match(Face2_data_subj$rt_inf,EEG_task_data_subj$Trial,nomatch = NA)]
+
+    Face2_data_subj$time =  round(Face2_data_subj$time, 0)
+
+ # Combine all subject data
+
+  if (i==1) {
+    All_Subj = Face2_data_subj # first round: create all_subj data frame
+  } else {
+    All_Subj = rbind(All_Subj,Face2_data_subj) # add to all_subj data frame
+  }
+
+}
+
+    Face2_data = All_Subj
+
+# Rename values of Face2 condition
+  Face2_data$Condition[Face2_data$Condition == 'B4(c_happy)']='rep_happy';
+  Face2_data$Condition[Face2_data$Condition == 'B5(c_neutral)']='rep_neutral';
+  Face2_data$Condition[Face2_data$Condition == 'B6(c_angry)']='rep_angry';
+  Face2_data$Condition[Face2_data$Condition == 'B7(ic_happy)']='nov_happy';
+  Face2_data$Condition[Face2_data$Condition == 'B8(ic_neutral)']='nov_neutral';
+  Face2_data$Condition[Face2_data$Condition == 'B9(ic_angry)']='nov_angry';
+
+# Plot ERP trajectory for P1/P3
+  Face2_data_icc = Face2_data[(Face2_data$Condition == 'rep_happy')  | (Face2_data$Condition == 'rep_neutral')
+                               | (Face2_data$Condition == 'rep_angry')  | (Face2_data$Condition == 'nov_happy')
+                               | (Face2_data$Condition == 'nov_angry')  | (Face2_data$Condition == 'nov_neutral'),]
+
+# Exclude data
+  Face2_data_icc = subset(Face2_data_icc, Exclude_smaller_250ms == FALSE & Response == 1)
+
+  save(Face2_data_icc, file = "./data/F2_ERP_traj_N170.RData")
 ```
 
-```{r, results = "asis", include = FALSE}
+```{r trial_loss_calc_3rd_rev, results = "asis", eval = FALSE, include = FALSE}
 
 # Load questionnaire data
   load.Rdata(filename="./data/ERP_data.Rdata", "All_Subj")
   
   All_Subj$Response[All_Subj$Response==1] = "correct"
   All_Subj$Response[All_Subj$Response==0] = "incorrect"
+
+  All_Subj = subset(All_Subj, Exclude_smaller_250ms == FALSE)
 
 # Trials per emotion condition -----------------------------------------
   
@@ -249,15 +304,16 @@ output:
   EEG_trial_count = EEG_task_data
   
 # Select outlier-free data and correct trials
-  EEG_trial_count = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Response ==1)
-                     
+  EEG_trial_count = subset(EEG_task_data, Exclude_smaller_250ms == FALSE & Response == 1)
+  #EEG_trial_count = subset(EEG_task_data, EEG_trial_loss == 1)
+
 # Get trial counts
   rep_trials = data.frame(xtabs(~ID+Cong,EEG_trial_count))
   rep_trials = subset(rep_trials, ID!= '05') 
   
 # Recode variable
- # rep_trials$Cong[rep_trials$Cong == 1] = "repeated"
- # rep_trials$Cong[rep_trials$Cong == 2] = "novel"
+  #rep_trials$Cong[rep_trials$Cong == 1] = "repeated"
+  #rep_trials$Cong[rep_trials$Cong == 2] = "novel"
   
 # Calculate mean and SD   
   tr_mean_rep = tapply(rep_trials$Freq,rep_trials$Cong,mean)
@@ -267,6 +323,25 @@ output:
   t_test_res = t.test(rep_trials$Freq[rep_trials$Cong==2],
                       rep_trials$Freq[rep_trials$Cong==1],
                       paired = TRUE, alternative = "two.sided")
+  
+  t_test_res
+  
+```
+
+<!-- Load and prepare data set -->
+
+```{r load_data, include = FALSE}
+
+# Load ERP data
+  load.Rdata(filename="./data/ERP_data_PO7_PO8.Rdata", "ERP_data")
+  load.Rdata(filename="./data/F2_ERP_traj.Rdata", "Face2_data_icc")
+  load.Rdata(filename="./data/F2_ERP_traj_N170.Rdata", "Face2_data_icc_N170")
+  
+# Scale WM / stimulus contrast values
+  ERP_data$WM_scal = scale(ERP_data$WM)
+  ERP_data$contr_F1_scal = scale(as.numeric(ERP_data$contr_F1))
+  ERP_data$contr_F2_scal = scale(as.numeric(ERP_data$contr_F2))
+
 ```
 
 # Task description 
@@ -283,155 +358,349 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 
 ### **Descriptive statistics**
 
-```{r ERP_plot_legend, include = FALSE}
-
-## P1/P3 trajectories
-
-# Load data
-  Face1_data = read.csv("./data/ROI_P1_P3_Face1.csv",header = TRUE)
-
-# De-select participants
-  Face1_data = Face1_data[with(Face1_data, !(Face1_data$ID=="05")), ]
-
-# Select time window
-  Face1_data = Face1_data[(Face1_data$Time >= -200)& (Face1_data$Time <= 600),]
-
-# Rename conditions
-  Face1_data$Condition[Face1_data$Condition == 1]='happy';
-  Face1_data$Condition[Face1_data$Condition == 2]='neutral';
-  Face1_data$Condition[Face1_data$Condition == 3]='angry';
-
-# Select conditions of interest
-  Face1_data_all_emo_sep = Face1_data[(Face1_data$Condition == 'happy')  | (Face1_data$Condition == 'angry') | (Face1_data$Condition == 'neutral'),]
-  
-  
-# Factor and level emotion
-  Face1_data_all_emo_sep$Condition = factor(Face1_data_all_emo_sep$Condition, levels=c("happy","neutral","angry"))
-
-
-# Plot data
-  P1_P3_val_traj = ggplot(Face1_data_all_emo_sep,aes(Time,ROI_Average))+
-    theme(panel.background = element_blank(), panel.border = element_rect(colour = "grey", fill=NA, size=2),
-          axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 5, b = 0, l = 0)),
-          axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
-          legend.text=element_text(size=7),
-          legend.key = element_rect(fill = "white"),
-          text=element_text(size = 8))+
-    stat_summary(fun.y = mean,geom = "line", size = 0.6, aes(linetype = Condition))+
-    scale_linetype_manual(name = "Emotion",values=c("solid","longdash","dotted"))+
-    scale_color_discrete(guide = guide_legend(override.aes = list(color = "white")))+
-    labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
-    theme(legend.position="right") +
-    coord_cartesian(ylim=c(-2, 14),xlim=c(-100,600)) +
-    scale_y_continuous(breaks=seq(-2,14,4))+
-    scale_x_continuous(breaks=seq(-100,600,200))+
-    geom_vline(xintercept = 0, linetype = "dashed",colour="grey")+
-    geom_hline(yintercept = 0, linetype = "dashed",colour="grey")+
-    annotate("rect", xmin = 90, xmax = 130, ymin = -2.5, ymax = 14.5, alpha = .3)+
-    annotate("rect", xmin = 300, xmax = 500, ymin = -2.5, ymax = 14.5, alpha = .3)
-
- # Get legend
-    legend_ERP = get_legend(P1_P3_val_traj  +
-     theme(legend.box.margin = margin(0, 0, 0, 0)))
-  
-
-```
-
 <br><br>
 
-*ERP waveforms and topographies at Face 2.*  ERP waveforms and topographies at Face 2. Top left: Grand-averaged P1 and P3 waveforms for novel and repeated happy, angry and neutral facial expressions. Shadowed areas indicate the time windows used to identify participants\' individual peaks and mean amplitudes. Top right: Grand-averaged P1 amplitudes at Face 2 for repeated andbnovel happy, angry and neutral facial expressions. Error bars indicate standard errors (SE). Bottom: Topographies of the averaged P1 activity (90-130 ms) displaying difference waves for significant contrasts of the Repetition x Facial Expression interaction (from the left): novel happy–repeated happy and novel happy–novel angry.
+*ERP waveforms and mean amplitudes at Face 2.* A) Upper left: Grand-averaged P1 and P3 waveforms for repeated happy (black), angry (dark grey) and neutral (light grey) facial expressions (ROI: PO3, PO4, PO7, PO8, O1, O2, Oz). Upper right: Grand-averaged P1 and P3 waveforms for novel facial expressions. Bottom left: Grand-averaged N170 waveforms for repeated happy, angry and neutral facial expressions (ROI: P7, TP7, CP5, P8, TP8, CP6). Bottom right: Grand-averaged N170 waveforms for novel facial expressions. Shadowed areas indicate the time windows used to identify participants’ individual peaks and mean amplitudes.
 
-```{r ERP_rep_plot, fig.width=8, fig.height=4}
+```{r ERP_P1_P3_rebut3, fig.width=8, fig.height=4}
   
-  # Calculate condtional mean 
-   Face2_data_cond =  aggregate(Face2_data_icc$data, FUN=mean, 
-          by=list(time=Face2_data_icc$time, Condition=Face2_data_icc$Condition))  
+# P1/P3
+
+  Face2_data_rep = subset(Face2_data_icc, Condition == "rep_happy" | Condition == "rep_angry" | Condition == "rep_neutral")
+
+  Face2_data_cond =  aggregate(Face2_data_rep$data, FUN=mean, 
+          by=list(time=Face2_data_rep$time, Condition=Face2_data_rep$Condition))  
   
-  P1_rep_all_traj = ggplot(Face2_data_cond, aes(time,x))+
+  P1_rep = ggplot(Face2_data_cond, aes(time,x))+
     theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
           axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
           axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
           axis.text=element_text(size=8),
           legend.position="none",legend.title=element_blank())+
-    stat_summary(fun.y = mean,geom = "line", size = 0.4, aes(linetype = Condition, colour = Condition))+
-    scale_linetype_manual(values=c("dotted","longdash","solid","dotted","longdash","solid"))+
-    scale_colour_manual(values = c ("#134462","#134462","#134462","#2FA9F5","#2FA9F5","#2FA9F5"))+
+    stat_summary(fun.y = mean,geom = "line", size = .8, aes(colour = Condition))+
+    scale_colour_manual(values = c ("#43494e","#000000","#aaadb1"))+
     #ggtitle("P1 & P3") +
     labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
-    coord_cartesian(ylim=c(-2, 18),xlim=c(-100,600)) +
+    coord_cartesian(ylim=c(-2, 18),xlim=c(-100,500)) +
     scale_y_continuous(breaks=seq(-2,18,4))+
-    scale_x_continuous(breaks=seq(-100,600,200))+
+    scale_x_continuous(breaks=seq(-100,500,200))+
     geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
     geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
     annotate("rect", xmin = 90, xmax = 130, ymin = -2.5, ymax = 18.5, alpha = .3)+
     annotate("rect", xmin = 300, xmax = 500, ymin = -2.5, ymax = 18.5, alpha = .3)
   
-  load.Rdata(filename="./data/ERP_data.Rdata", "ERPs")
-
-
-## Select data
-  ERPs_sel = subset(ERPs, Exclude_smaller_250ms == FALSE
-                             & Response == 1
-                             & Group_pcic == 2 | Group_pcic == 3)
-
-# Rename values of Face2 condition
-  ERPs_sel$Condition[ERPs_sel$Condition == 4]='angry';
-  ERPs_sel$Condition[ERPs_sel$Condition == 5]='happy';
-  ERPs_sel$Condition[ERPs_sel$Condition == 6]='neutral';
-  ERPs_sel$Condition[ERPs_sel$Condition == 7]='angry';
-  ERPs_sel$Condition[ERPs_sel$Condition == 8]='happy';
-  ERPs_sel$Condition[ERPs_sel$Condition == 9]='neutral';
-
-# Rename variables
-  ERPs_sel$Group_pcic[ERPs_sel$Group_pcic == 2] = "novel"
-  ERPs_sel$Group_pcic[ERPs_sel$Group_pcic == 3] = "repeated"
-
-
-# Summarize data
-  stats_P1_all = summarySEwithin(ERPs_sel, measurevar="mean_ROI_P1", withinvars=c("Group_pcic","Condition"), idvar = "ID")
-
-
-# Plot
-  P1_plot = ggplot(stats_P1_all, aes(x=Condition, y=mean_ROI_P1, fill = Group_pcic)) +
-    geom_bar(position=position_dodge(), stat="identity", color = "black", size=0.5,width=0.9)+
-    geom_errorbar(aes(ymin=mean_ROI_P1-se, ymax=mean_ROI_P1+se),
-                  size=0.5, width=0.2, position=position_dodge(.9)) +
-    labs (x= "", y = expression(paste("Amplitude [",mu,"V]")),colour = "") +
-    scale_fill_manual(values=nov_col)+
-    coord_cartesian(ylim = c(0, 20)) +
-    scale_y_continuous(breaks=seq(0,25,5))+
-    theme_bw()+
-    theme_SN +
-    theme(legend.position = "left", legend.direction = "vertical",
-           legend.key.size = unit(1, "cm"),
-           legend.key.width = unit(0.5,"cm"),
-           legend.text=element_text(size=7), text=element_text(size = 8), legend.title = element_blank(),
-           axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 20, b = 0, l = 0)))
   
-  legend_behav = get_legend(P1_plot)
+  Face2_data_nov = subset(Face2_data_icc, Condition == "nov_happy" | Condition == "nov_angry" | Condition == "nov_neutral")
+
+   Face2_data_cond = aggregate(Face2_data_nov$data, FUN=mean, 
+          by=list(time=Face2_data_nov$time, Condition=Face2_data_nov$Condition))  
+  
+  P1_nov = ggplot(Face2_data_cond, aes(time,x))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.text=element_text(size=8),
+          legend.position="none",legend.title=element_blank())+
+    stat_summary(fun.y = mean,geom = "line", size = .8, aes(colour = Condition))+
+    scale_colour_manual(values = c ("#43494e","#000000","#aaadb1"))+
+    #ggtitle("P1 & P3") +
+    labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-2, 18),xlim=c(-100,500)) +
+    scale_y_continuous(breaks=seq(-2,18,4))+
+    scale_x_continuous(breaks=seq(-100,500,200))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    annotate("rect", xmin = 90, xmax = 130, ymin = -2.5, ymax = 18.5, alpha = .3)+
+    annotate("rect", xmin = 300, xmax = 500, ymin = -2.5, ymax = 18.5, alpha = .3)
+  
+
+```
+
+```{r ERP_N170_rebut3, fig.width=8, fig.height=4}
+  
+# N170
+
+  Face2_data_rep = subset(Face2_data_icc_N170, Condition == "rep_happy" | Condition == "rep_angry" | Condition == "rep_neutral")
+
+  Face2_data_cond =  aggregate(Face2_data_rep$data, FUN=mean, 
+          by=list(time=Face2_data_rep$time, Condition=Face2_data_rep$Condition))  
+  
+  N170_rep = ggplot(Face2_data_cond, aes(time,x))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.text=element_text(size=8),
+          legend.position="none",legend.title=element_blank())+
+    stat_summary(fun.y = mean,geom = "line", size =.8, aes(colour = Condition))+
+    scale_colour_manual(values = c ("#43494e","#000000","#aaadb1"))+
+    #ggtitle("N170 & P3") +
+    labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-6,4),xlim=c(-100,500)) +
+    scale_y_continuous(breaks=seq(-6,4,4))+
+    scale_x_continuous(breaks=seq(-100,500,200))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    annotate("rect", xmin = 180, xmax = 220, ymin = -8, ymax = 6, alpha = .3)
     
   
-# Put plots together
-  plots_EEG_F2 = cowplot::plot_grid(
-    P1_rep_all_traj + theme(legend.position="none"),
-    legend_ERP, legend_behav,
-    align = 'vh',
-    hjust = -1,
-    nrow = 1,
-    rel_widths = c(1, .3, .3))
+  Face2_data_nov = subset(Face2_data_icc_N170, Condition == "nov_happy" | Condition == "nov_angry" | Condition == "nov_neutral")
+
+   Face2_data_cond =  aggregate(Face2_data_nov$data, FUN=mean, 
+          by=list(time=Face2_data_nov$time, Condition=Face2_data_nov$Condition))  
+  
+  N170_nov = ggplot(Face2_data_cond, aes(time,x))+
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x = element_text(size = 8, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.text=element_text(size=8),
+          legend.position="none",legend.title=element_blank())+
+    stat_summary(fun.y = mean,geom = "line", size =.8, aes(colour = Condition))+
+    scale_colour_manual(values = c ("#43494e","#000000","#aaadb1"))+
+    #ggtitle("N170 & P3") +
+    labs(x = "\nTime [ms]",y = expression(paste("Amplitude [",mu,"V]")),colour = "")+
+    coord_cartesian(ylim=c(-6, 4),xlim=c(-100,500)) +
+    scale_y_continuous(breaks=seq(-6,4,4))+
+    scale_x_continuous(breaks=seq(-100,500,200))+
+    geom_vline(xintercept = 0,linetype = "dashed",colour="grey" )+
+    geom_hline(yintercept = 0,linetype = "dashed",colour="grey")+
+    annotate("rect", xmin = 180, xmax = 220, ymin = -8, ymax = 6, alpha = .3)
   
 
-  plots_EEG_F2_2 = cowplot::plot_grid(
-   # legend_behav,
-    P1_plot + theme(legend.position="none"),
-    align = 'vh',
-    hjust = -1,
-    nrow = 1,
-    rel_widths = c(.4, 1))
+```
+
+```{r present_ERP_traj, result = "asis"}
+  # Display plot
+  # https://wilkelab.org/cowplot/articles/shared_legends.html
+  fig_rep_ERPs = cowplot::plot_grid(P1_rep, P1_nov,
+                                    N170_rep, N170_nov,
+                                    nrow = 2, rel_widths = c(1,1,1))
+  fig_rep_ERPs
   
-# Display plot
-# https://wilkelab.org/cowplot/articles/shared_legends.html
-  fig_rep_ERP = cowplot::plot_grid(plots_EEG_F2, plots_EEG_F2_2,rel_widths = c(.7,.6))
+  # Save figure for publication   
+ # ggsave("Figure_X_DMTST_P1_P3_N170.tiff", plot = last_plot(), dpi = 300)
+```
+
+*ERP waveforms and mean amplitudes at Face 2.* B) Mean P1, N170 and P3 amplitudes and standard deviations separately for each condition. 
+
+```{r P1_lines_rebut4, fig.width=2, fig.height=4}
+
+## Select data
+  ERPs_sel = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+  
+# Face 2: P1 repeated happy
+  ERP_hap_Face2_rep = subset(ERPs_sel, Condition == 4)
+  Av_ERP = data.frame(tapply(ERP_hap_Face2_rep$mean_ROI_P1, ERP_hap_Face2_rep$ID, mean))
+  names(Av_ERP)[1] = "P1_hap_rep"
+  
+# Face 2: P1 repeated neutral
+  ERP_neu_Face2_rep = subset(ERPs_sel, Condition == 5)
+  Av_ERP$P1_neu_rep = tapply(ERP_neu_Face2_rep$mean_ROI_P1, ERP_neu_Face2_rep$ID, mean)
+  
+# Face 2: P1 repeated angry
+  ERP_ang_Face2_rep = subset(ERPs_sel, Condition == 6)
+  Av_ERP$P1_ang_rep = tapply(ERP_ang_Face2_rep$mean_ROI_P1, ERP_ang_Face2_rep$ID, mean)
+  
+# Face 2: P1 novel happy  
+  ERP_hap_Face2_nov = subset(ERPs_sel, Condition == 7)
+  Av_ERP$P1_hap_nov = tapply(ERP_hap_Face2_nov$mean_ROI_P1,ERP_hap_Face2_nov$ID, mean)  
+  
+# Face 2: P1 novel neutral
+  ERP_neu_Face2_nov = subset(ERPs_sel, Condition == 8)
+  Av_ERP$P1_neu_nov = tapply(ERP_neu_Face2_nov$mean_ROI_P1, ERP_neu_Face2_nov$ID, mean)
+  
+# Face 2: P1 novel angry
+  ERP_ang_Face2_nov = subset(ERPs_sel, Condition == 9)
+  Av_ERP$P1_ang_nov = tapply(ERP_ang_Face2_nov$mean_ROI_P1,ERP_ang_Face2_nov$ID, mean)  
+  
+  Av_ERP = Av_ERP[-c(4), ]  
+
+  
+# Calculate means/SEs
+  P1_stats = Av_ERP %>% 
+  summarise_each(funs(mean(., na.rm=T), n = sum(!is.na(.)), se = sd(., na.rm=T)/sqrt(sum(!is.na(.)))))
+  
+# Combine data into one data frame 
+  P1_av = data.frame(emot = rep(c("happy", "neutral", "angry","happy", "neutral", "angry")),
+                cond = rep(c("rep","rep","rep","nov","nov","nov")),
+                amp = c(P1_stats$P1_hap_rep_mean, P1_stats$P1_neu_rep_mean, P1_stats$P1_ang_rep_mean,
+                       P1_stats$P1_hap_nov_mean, P1_stats$P1_neu_nov_mean, P1_stats$P1_ang_nov_mean),
+                se = c(P1_stats$P1_hap_rep_se, P1_stats$P1_neu_rep_se, P1_stats$P1_ang_rep_se,
+                       P1_stats$P1_hap_nov_se, P1_stats$P1_neu_nov_se, P1_stats$P1_ang_nov_se))
+  
+nov_col = c("#2FA9F5", "#134462") # order: novel, repeated 
+  
+P1_lines = ggplot(P1_av, aes(x=emot, y=amp, group=cond, color=cond)) + 
+    geom_errorbar(aes(ymin=amp-se, ymax=amp+se), width=.2,position=position_dodge(0.05), size = 1) +
+    geom_line(size = 1) + 
+    geom_point(size = 2)+
+    scale_color_manual(values=c(nov_col))+ 
+    labs(y = expression(paste("Amplitude [",mu,"V]")),colour = "") +
+    scale_y_continuous(breaks=seq(-10,25,5))+
+    coord_cartesian(ylim=c(-10, 25)) +
+    theme_SN +
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 10, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x =  element_blank(),
+          axis.text=element_text(size=10))
+
+
+  # Save figure for publication   
+  #ggsave("Figure_X_P1_lines.tiff", plot = last_plot(), dpi = 300)
+
+```
+
+```{r N170_lines_rebut4, fig.width=2, fig.height=4}
+
+## Select data
+  ERPs_sel = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+
+  ERPs_sel$mean_ROI_N170 = rowMeans(ERPs_sel[,c(26,27)])
+   
+# Face 2: N170 repeated happy
+  ERP_hap_Face2_rep = subset(ERPs_sel, Condition == 4)
+  Av_ERP = data.frame(tapply(ERP_hap_Face2_rep$mean_ROI_N170, ERP_hap_Face2_rep$ID, mean))
+  names(Av_ERP)[1] = "N170_hap_rep"
+  
+# Face 2: N170 repeated neutral
+  ERP_neu_Face2_rep = subset(ERPs_sel, Condition == 5)
+  Av_ERP$N170_neu_rep = tapply(ERP_neu_Face2_rep$mean_ROI_N170, ERP_neu_Face2_rep$ID, mean)
+  
+# Face 2: N170 repeated angry
+  ERP_ang_Face2_rep = subset(ERPs_sel, Condition == 6)
+  Av_ERP$N170_ang_rep = tapply(ERP_ang_Face2_rep$mean_ROI_N170, ERP_ang_Face2_rep$ID, mean)
+  
+# Face 2: N170 novel happy  
+  ERP_hap_Face2_nov = subset(ERPs_sel, Condition == 7)
+  Av_ERP$N170_hap_nov = tapply(ERP_hap_Face2_nov$mean_ROI_N170,ERP_hap_Face2_nov$ID, mean)  
+  
+# Face 2: N170 novel neutral
+  ERP_neu_Face2_nov = subset(ERPs_sel, Condition == 8)
+  Av_ERP$N170_neu_nov = tapply(ERP_neu_Face2_nov$mean_ROI_N170, ERP_neu_Face2_nov$ID, mean)
+  
+# Face 2: N170 novel angry
+  ERP_ang_Face2_nov = subset(ERPs_sel, Condition == 9)
+  Av_ERP$N170_ang_nov = tapply(ERP_ang_Face2_nov$mean_ROI_N170,ERP_ang_Face2_nov$ID, mean)  
+  
+  Av_ERP = Av_ERP[-c(4), ]  
+  
+# Calculate means/SEs
+  N170_stats = Av_ERP %>% 
+  summarise_each(funs(mean(., na.rm=T), n = sum(!is.na(.)), se = sd(., na.rm=T)/sqrt(sum(!is.na(.)))))
+  
+# Combine data into one data frame 
+  N170_av = data.frame(emot = rep(c("happy", "neutral", "angry","happy", "neutral", "angry")),
+                cond = rep(c("rep","rep","rep","nov","nov","nov")),
+                amp = c(N170_stats$N170_hap_rep_mean, N170_stats$N170_neu_rep_mean, N170_stats$N170_ang_rep_mean,
+                       N170_stats$N170_hap_nov_mean, N170_stats$N170_neu_nov_mean, N170_stats$N170_ang_nov_mean),
+                se = c(N170_stats$N170_hap_rep_se, N170_stats$N170_neu_rep_se, N170_stats$N170_ang_rep_se,
+                       N170_stats$N170_hap_nov_se, N170_stats$N170_neu_nov_se, N170_stats$N170_ang_nov_se))
+  
+nov_col = c("#2FA9F5", "#134462") # order: novel, repeated 
+  
+N170_lines = ggplot(N170_av, aes(x=emot, y=amp, group=cond, color=cond)) + 
+    geom_errorbar(aes(ymin=amp-se, ymax=amp+se), width=.2,position=position_dodge(0.05), size = 1) +
+    geom_line(size = 1) + 
+    geom_point(size = 2)+
+    scale_color_manual(values=c(nov_col))+
+   labs(y = expression(paste("Amplitude [",mu,"V]")),colour = "") +
+    scale_y_continuous(breaks=seq(-10,25,5))+
+    coord_cartesian(ylim=c(-10, 25)) +
+    theme_SN +
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 10, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x =  element_blank(),
+          axis.text=element_text(size=10))
+
+
+  # Save figure for publication   
+  #ggsave("Figure_X_N170_lines.tiff", plot = last_plot(), dpi = 300)
+
+```
+
+```{r P3_lines_rebut4, fig.width=2, fig.height=4}
+
+## Select data
+  ERPs_sel = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+  
+# Face 2: P3 repeated happy
+  ERP_hap_Face2_rep = subset(ERPs_sel, Condition == 4)
+  Av_ERP = data.frame(tapply(ERP_hap_Face2_rep$mean_ROI_P3, ERP_hap_Face2_rep$ID, mean))
+  names(Av_ERP)[1] = "P3_hap_rep"
+  
+# Face 2: P3 repeated neutral
+  ERP_neu_Face2_rep = subset(ERPs_sel, Condition == 5)
+  Av_ERP$P3_neu_rep = tapply(ERP_neu_Face2_rep$mean_ROI_P3, ERP_neu_Face2_rep$ID, mean)
+  
+# Face 2: P3 repeated angry
+  ERP_ang_Face2_rep = subset(ERPs_sel, Condition == 6)
+  Av_ERP$P3_ang_rep = tapply(ERP_ang_Face2_rep$mean_ROI_P3, ERP_ang_Face2_rep$ID, mean)
+  
+# Face 2: P3 novel happy  
+  ERP_hap_Face2_nov = subset(ERPs_sel, Condition == 7)
+  Av_ERP$P3_hap_nov = tapply(ERP_hap_Face2_nov$mean_ROI_P3,ERP_hap_Face2_nov$ID, mean)  
+  
+# Face 2: P3 novel neutral
+  ERP_neu_Face2_nov = subset(ERPs_sel, Condition == 8)
+  Av_ERP$P3_neu_nov = tapply(ERP_neu_Face2_nov$mean_ROI_P3, ERP_neu_Face2_nov$ID, mean)
+  
+# Face 2: P3 novel angry
+  ERP_ang_Face2_nov = subset(ERPs_sel, Condition == 9)
+  Av_ERP$P3_ang_nov = tapply(ERP_ang_Face2_nov$mean_ROI_P3,ERP_ang_Face2_nov$ID, mean)  
+  
+  Av_ERP = Av_ERP[-c(4), ]  
+
+# Calculate means/SEs
+  P3_stats = Av_ERP %>% 
+  summarise_each(funs(mean(., na.rm=T), n = sum(!is.na(.)), se = sd(., na.rm=T)/sqrt(sum(!is.na(.)))))
+  
+# Combine data into one data frame 
+  P3_av = data.frame(emot = rep(c("happy", "neutral", "angry","happy", "neutral", "angry")),
+                cond = rep(c("rep","rep","rep","nov","nov","nov")),
+                amp = c(P3_stats$P3_hap_rep_mean, P3_stats$P3_neu_rep_mean, P3_stats$P3_ang_rep_mean,
+                       P3_stats$P3_hap_nov_mean, P3_stats$P3_neu_nov_mean, P3_stats$P3_ang_nov_mean),
+                se = c(P3_stats$P3_hap_rep_se, P3_stats$P3_neu_rep_se, P3_stats$P3_ang_rep_se,
+                       P3_stats$P3_hap_nov_se, P3_stats$P3_neu_nov_se, P3_stats$P3_ang_nov_se))
+  
+nov_col = c("#2FA9F5", "#134462") # order: novel, repeated 
+  
+P3_lines = ggplot(P3_av, aes(x=emot, y=amp, group=cond, color=cond)) + 
+    geom_errorbar(aes(ymin=amp-se, ymax=amp+se), width=.2,position=position_dodge(0.05), size = 1) +
+    geom_line(size = 1) + 
+    geom_point(size = 2)+
+    scale_color_manual(values=c(nov_col))+ 
+    labs(y = expression(paste("Amplitude [",mu,"V]")),colour = "") +
+    scale_y_continuous(breaks=seq(-10,25,5))+
+    coord_cartesian(ylim=c(-10, 25)) +
+    theme_SN +
+    theme(panel.background = element_blank(),panel.border = element_rect(colour = "grey", fill=NA, size=2),
+          axis.title.y = element_text(size = 10, margin = margin(t = 0, r = 0, b = 0, l = 0)),
+          axis.title.x =  element_blank(),
+          axis.text=element_text(size=10))
+
+
+  # Save figure for publication   
+  #ggsave("Figure_X_P3_lines.tiff", plot = last_plot(), dpi = 300)
+
+```
+
+```{r present_ERP_lines, result = "asis"}
+  # Display plot
+  # https://wilkelab.org/cowplot/articles/shared_legends.html
+  fig_rep_lines = cowplot::plot_grid(P1_lines, N170_lines, P3_lines,
+                                    nrow = 1, rel_widths = c(1,1,1))
+  fig_rep_lines
+  
+```
+
+<br><br>
+
+---
+
+*Topographies at Face 2.* Topographies of the averaged P1 (90-130 ms), N170 (180-220 ms) and P3 (300-500 ms) activity displaying scalp topographies (left to right: happy, angry, neutral) and difference (left to right: hap-neu, ang-neu, hap-ang) topographies (in µV) for the emotion condition.
+
+*P1*
+
+```{r P1_emo_effects}
 
 # Get topographies  
   Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
@@ -441,98 +710,1669 @@ We predicted that amplitudes would be larger for emotional compared to neutral f
 
 # Re-name to fit topoplot function
   names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
-
-# Change from wide to long format for electrodes
-  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
-
-# Rename A1/A2
-  names(Topo_Cat)[names(Topo_Cat) == "A1"] = "TP9"
-  names(Topo_Cat)[names(Topo_Cat) == "A2"] = "TP10"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
 
 # Plot topoplots for repeated / novel emotion trials
-  Topo_rep_hap = subset(Topo_Cat, Condition == 4)
-  Topo_nov_hap = subset(Topo_Cat, Condition == 7)
-  Topo_nov_ang = subset(Topo_Cat, Condition == 9)
-
-
-# Calculate difference scores for different contrasts
-  Topo_Diff_nov_hap_rep_hap = data.frame(ID = Topo_rep_hap[,1], time = Topo_rep_hap[,3],
-                                  electrode = Topo_rep_hap[,4], amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  Topo_hap = subset(Topo_Cat, Condition == 4  | Condition == 7)
+  Topo_neu = subset(Topo_Cat, Condition == 5  | Condition == 8)
+  Topo_ang = subset(Topo_Cat, Condition == 6  | Condition == 9)
   
-  Topo_Diff_nov_hap_nov_ang = data.frame(ID = Topo_nov_hap[,1], time = Topo_nov_hap[,3],
-                                  electrode = Topo_nov_hap[,4], amplitude = Topo_nov_hap$amplitude - Topo_nov_ang$amplitude)
+### Difference scores
+  av_hap_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_hap, mean, na.rm = TRUE)
+  
+  av_hap_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_hap_ID, mean, na.rm = TRUE) 
+  
+  av_neu_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_neu, mean, na.rm = TRUE)
+  
+  av_neu_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_neu_ID, mean, na.rm = TRUE) 
   
   
+  av_ang_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_ang, mean, na.rm = TRUE)
+  
+  av_ang_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_ang_ID, mean, na.rm = TRUE) 
+  
+# Change from wide to long format for electrodes
+  Topo_hap = gather(Topo_hap, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_neu = gather(Topo_neu, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_ang = gather(Topo_ang, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_hap_grand = gather(av_hap_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_neu_grand = gather(av_neu_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_ang_grand = gather(av_ang_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
 
+# Calculate difference scores   
+  Topo_hap_neu = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_neu_grand$amplitude)
+  Topo_ang_neu = data.frame(time = av_ang_grand[,1],
+                                  electrode = av_ang_grand[,2], amplitude = av_ang_grand$amplitude - av_neu_grand$amplitude)
+  Topo_hap_ang = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_ang_grand$amplitude)
+  
 ## P1
 
 # Select time windows
-  Topo_Diff_nov_hap_rep_hap_P1 = subset(Topo_Diff_nov_hap_rep_hap, time >= 90 & time <= 130)
-  Topo_Diff_nov_hap_nov_ang_P1 = subset(Topo_Diff_nov_hap_nov_ang, time >= 90 & time <= 130)
+  Topo_hap_P1 = subset(Topo_hap, time >= 90 & time <= 130)
+  Topo_neu_P1 = subset(Topo_neu, time >= 90 & time <= 130)
+  Topo_ang_P1 = subset(Topo_ang, time >= 90 & time <= 130)
+  Topo_hap_neu_P1 = subset(Topo_hap_neu, time >= 90 & time <= 130)
+  Topo_ang_neu_P1 = subset(Topo_ang_neu, time >= 90 & time <= 130)
+  Topo_hap_ang_P1 = subset(Topo_hap_ang, time >= 90 & time <= 130)
   
 # Add electrode information  
-  Topo_Diff_nov_hap_rep_hap_P1 = electrode_locations(Topo_Diff_nov_hap_rep_hap_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
-  Topo_Diff_nov_hap_nov_ang_P1 = electrode_locations(Topo_Diff_nov_hap_nov_ang_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
-  
+  Topo_hap_P1 = electrode_locations(Topo_hap_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_neu_P1 = electrode_locations(Topo_neu_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_P1 = electrode_locations(Topo_ang_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_neu_P1 = electrode_locations(Topo_hap_neu_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_neu_P1 = electrode_locations(Topo_ang_neu_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_ang_P1 = electrode_locations(Topo_hap_ang_P1, electrode = "electrode",  drop = FALSE,montage = NULL)
 
 # Create topographies  
-  topo_diff_nov_hap_rep_hap_P1 = ggplot(Topo_Diff_nov_hap_rep_hap_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("nov. hap. \u2013 rep. hap.")+
+  hap_P1_topo = ggplot(Topo_hap_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
                     geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
-                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-10,24)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
                     theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
-
   
-  topo_diff_nov_hap_nov_ang_P1 = ggplot(Topo_Diff_nov_hap_nov_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("nov. hap. \u2013 nov. ang.")+
-                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,head_size = 0.9) +
-                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
+# Create topographies  
+  ang_P1_topo = ggplot(Topo_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("angry")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-10,24)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("Amplitude (", mu,"V)")))+
                     theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
 
+# Create topographies  
+  neu_P1_topo = ggplot(Topo_neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-10,24)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
 
-# Get topography legend 
-  topo_diff_nov_hap_P1_leg = ggplot(Topo_Diff_nov_hap_rep_hap_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
-                    ggtitle("P1 (90-130 ms)")+
+# Create topographies   
+  hap_neu_P1_topo = ggplot(Topo_hap_neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,1.8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  ang_neu_P1_topo = ggplot(Topo_ang_neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,1.8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  hap_ang_P1_topo = ggplot(Topo_hap_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,1.8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Plot plots
+  plots_P1_emo_1 = cowplot::plot_grid(
+    hap_P1_topo, ang_P1_topo, neu_P1_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+  #ggsave("plots_P1_emo_1.tiff", plots_P1_emo_1, bg = "transparent")
+  
+  plots_P1_emo_2 = cowplot::plot_grid(
+    hap_neu_P1_topo, ang_neu_P1_topo, hap_ang_P1_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+  #ggsave("plots_P1_emo_2.tiff", plots_P1_emo_2, bg = "transparent")  
+  
+  
+  # Get topography legend 
+  P1_emo_leg_1 = ggplot(Topo_neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
                     geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
                               head_size = 0.9) +
-                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,3.5)) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-10,24)) +
                     theme_void() +
                     coord_equal() +
                     labs(fill = expression(paste("", mu,"V")))+
                     theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
-                          legend.key.size = unit(0.4, "cm"))  
-     
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P1_emo_1 = get_legend(P1_emo_leg_1) 
+  
+ # ggsave("topo_leg_P1_emo_1.tiff", topo_leg_P1_emo_1, bg = "transparent")  
+  
+  # Get topography legend 
+  P1_emo_leg_2 = ggplot(Topo_hap_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,1.8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P1_emo_2 = get_legend(P1_emo_leg_2) 
+  
+ # ggsave("topo_leg_P1_emo_2.tiff", topo_leg_P1_emo_2, bg = "transparent")    
+  
+```
 
-## Display plots
-  # https://wilkelab.org/cowplot/articles/shared_legends.html
-  topo_leg = get_legend(topo_diff_nov_hap_P1_leg)  
-  
-  fig_Face_2_topo = cowplot::plot_grid(topo_diff_nov_hap_rep_hap_P1, topo_diff_nov_hap_nov_ang_P1, topo_leg, ncol=3)
-  
-  fig_Face2_cat = cowplot::plot_grid(fig_rep_ERP, fig_Face_2_topo, nrow = 2, rel_heights = c(2, 1), align = "v")
-  
-  #fig_Face2_cat = cowplot::plot_grid(plots_EEG_F2, fig_Face_2_topo, nrow = 2, rel_heights = c(2, 1), align = "v")
-  
-  fig_Face2_cat
-  
-  
-  # Save figure for publication   
-  #ggsave("Figure_X_DMTST_ERPs.tiff", plot = last_plot(), dpi = 300)
+```{r present_P1, results = "asis"}
+
+topo_P1 = cowplot::plot_grid(plots_P1_emo_1,topo_leg_P1_emo_1, plots_P1_emo_2,topo_leg_P1_emo_2)
+topo_P1
 
 ```
 
-<br><br>
+*N170*
 
----
+```{r N170_emo_effects}
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
+
+# Plot topoplots for repeated / novel emotion trials
+  Topo_hap = subset(Topo_Cat, Condition == 4  | Condition == 7)
+  Topo_neu = subset(Topo_Cat, Condition == 5  | Condition == 8)
+  Topo_ang = subset(Topo_Cat, Condition == 6  | Condition == 9)
+  
+### Difference scores
+  av_hap_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_hap, mean, na.rm = TRUE)
+  
+  av_hap_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_hap_ID, mean, na.rm = TRUE) 
+  
+  av_neu_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_neu, mean, na.rm = TRUE)
+  
+  av_neu_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_neu_ID, mean, na.rm = TRUE) 
+  
+  
+  av_ang_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_ang, mean, na.rm = TRUE)
+  
+  av_ang_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_ang_ID, mean, na.rm = TRUE) 
+  
+# Change from wide to long format for electrodes
+  Topo_hap = gather(Topo_hap, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_neu = gather(Topo_neu, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_ang = gather(Topo_ang, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_hap_grand = gather(av_hap_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_neu_grand = gather(av_neu_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_ang_grand = gather(av_ang_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+
+# Calculate difference scores   
+  Topo_hap_neu = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_neu_grand$amplitude)
+  Topo_ang_neu = data.frame(time = av_ang_grand[,1],
+                                  electrode = av_ang_grand[,2], amplitude = av_ang_grand$amplitude - av_neu_grand$amplitude)
+  Topo_hap_ang = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_ang_grand$amplitude)
+  
+## P1
+
+# Select time windows
+  Topo_hap_N170 = subset(Topo_hap, time >= 180 & time <= 220)
+  Topo_neu_N170 = subset(Topo_neu, time >= 180 & time <= 220)
+  Topo_ang_N170 = subset(Topo_ang, time >= 180 & time <= 220)
+  Topo_hap_neu_N170 = subset(Topo_hap_neu, time >= 180 & time <= 220)
+  Topo_ang_neu_N170 = subset(Topo_ang_neu, time >= 180 & time <= 220)
+  Topo_hap_ang_N170 = subset(Topo_hap_ang, time >= 180 & time <= 220)
+  
+# Add electrode information  
+  Topo_hap_N170 = electrode_locations(Topo_hap_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_neu_N170 = electrode_locations(Topo_neu_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_N170 = electrode_locations(Topo_ang_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_neu_N170 = electrode_locations(Topo_hap_neu_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_neu_N170 = electrode_locations(Topo_ang_neu_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_ang_N170 = electrode_locations(Topo_hap_ang_N170, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Create topographies  
+  hap_N170_topo = ggplot(Topo_hap_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-7,8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies  
+  ang_N170_topo = ggplot(Topo_ang_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("angry")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-7,8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Create topographies  
+  neu_N170_topo = ggplot(Topo_neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-7,8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Create topographies   
+  hap_neu_N170_topo = ggplot(Topo_hap_neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  ang_neu_N170_topo = ggplot(Topo_ang_neu_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  hap_ang_N170_topo = ggplot(Topo_hap_ang_N170, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Plot plots
+  plots_N170_emo_1 = cowplot::plot_grid(
+    hap_N170_topo, ang_N170_topo, neu_N170_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+  #plots_N170_emo_1
+  
+  #ggsave("plots_N170_emo_1.tiff", plots_N170_emo_1, bg = "transparent")
+  
+  plots_N170_emo_2 = cowplot::plot_grid(
+    hap_neu_N170_topo, ang_neu_N170_topo, hap_ang_N170_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+ # ggsave("plots_N170_emo_2.tiff", plots_N170_emo_2, bg = "transparent")  
+  
+  
+  # Get topography legend 
+  N170_emo_leg_1 = ggplot(Topo_neu_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-7,8)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_N170_emo_1 = get_legend(N170_emo_leg_1) 
+  
+  #ggsave("topo_leg_N170_emo_1.tiff", topo_leg_N170_emo_1, bg = "transparent")  
+  
+  # Get topography legend 
+  N170_emo_leg_2 = ggplot(Topo_hap_ang_P1, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,2)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_N170_emo_2 = get_legend(N170_emo_leg_2) 
+  
+  #ggsave("topo_leg_N170_emo_2.tiff", topo_leg_N170_emo_2, bg = "transparent")    
+
+  
+  
+```
+
+```{r present_N170, results = "asis"}
+
+topo_N170 = cowplot::plot_grid(plots_N170_emo_1, topo_leg_N170_emo_1, plots_N170_emo_2, topo_leg_N170_emo_2)
+topo_N170
+
+```
+
+*P3*
+
+```{r P3_emo_effects}
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
+
+# Plot topoplots for repeated / novel emotion trials
+  Topo_hap = subset(Topo_Cat, Condition == 4  | Condition == 7)
+  Topo_neu = subset(Topo_Cat, Condition == 5  | Condition == 8)
+  Topo_ang = subset(Topo_Cat, Condition == 6  | Condition == 9)
+  
+### Difference scores
+  av_hap_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_hap, mean, na.rm = TRUE)
+  
+  av_hap_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_hap_ID, mean, na.rm = TRUE) 
+  
+  av_neu_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_neu, mean, na.rm = TRUE)
+  
+  av_neu_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_neu_ID, mean, na.rm = TRUE) 
+  
+  
+  av_ang_ID = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ ID + time, data = Topo_ang, mean, na.rm = TRUE)
+  
+  av_ang_grand = aggregate(cbind(Fp1, Fp2, AF3, AF4,Fz, F3, F4, F7, F8, FC5, FC6,
+                         FT7,FT8, Cz, FC1,FC2,C3, C4, T7, T8, CP1,
+                         CP2, CP5, CP6, TP7, TP8, Pz, P3, P4, P7, P8, PO9, PO10,
+                         PO3, PO4, PO7, PO8,O1, O2, Oz) ~ time, data = av_ang_ID, mean, na.rm = TRUE) 
+  
+# Change from wide to long format for electrodes
+  Topo_hap = gather(Topo_hap, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_neu = gather(Topo_neu, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  Topo_ang = gather(Topo_ang, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_hap_grand = gather(av_hap_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_neu_grand = gather(av_neu_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  av_ang_grand = gather(av_ang_grand, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+
+# Calculate difference scores   
+  Topo_hap_neu = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_neu_grand$amplitude)
+  Topo_ang_neu = data.frame(time = av_ang_grand[,1],
+                                  electrode = av_ang_grand[,2], amplitude = av_ang_grand$amplitude - av_neu_grand$amplitude)
+  Topo_hap_ang = data.frame(time = av_hap_grand[,1],
+                                  electrode = av_hap_grand[,2], amplitude = av_hap_grand$amplitude - av_ang_grand$amplitude)
+  
+## P1
+
+# Select time windows
+  Topo_hap_P3 = subset(Topo_hap, time >= 300 & time <= 500)
+  Topo_neu_P3 = subset(Topo_neu, time >= 300 & time <= 500)
+  Topo_ang_P3 = subset(Topo_ang, time >= 300 & time <= 500)
+  Topo_hap_neu_P3 = subset(Topo_hap_neu, time >= 300 & time <= 500)
+  Topo_ang_neu_P3 = subset(Topo_ang_neu, time >= 300 & time <= 500)
+  Topo_hap_ang_P3 = subset(Topo_hap_ang, time >= 300 & time <= 500)
+  
+# Add electrode information  
+  Topo_hap_P3 = electrode_locations(Topo_hap_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_neu_P3 = electrode_locations(Topo_neu_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_P3 = electrode_locations(Topo_ang_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_neu_P3 = electrode_locations(Topo_hap_neu_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_ang_neu_P3 = electrode_locations(Topo_ang_neu_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_hap_ang_P3 = electrode_locations(Topo_hap_ang_P3, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Create topographies  
+  hap_P3_topo = ggplot(Topo_hap_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-11,17)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies  
+  ang_P3_topo = ggplot(Topo_ang_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("angry")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-11,17)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Create topographies  
+  neu_P3_topo = ggplot(Topo_neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-11,17)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Create topographies   
+  hap_neu_P3_topo = ggplot(Topo_hap_neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  ang_neu_P3_topo = ggplot(Topo_ang_neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies   
+  hap_ang_P3_topo = ggplot(Topo_hap_ang_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none", plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+
+# Plot plots
+  plots_P3_emo_1 = cowplot::plot_grid(
+    hap_P3_topo, ang_P3_topo, neu_P3_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+  
+  #plots_P3_emo_1
+  
+ # ggsave("plots_P3_emo_1.tiff", plots_P3_emo_1, bg = "transparent")
+  
+  plots_P3_emo_2 = cowplot::plot_grid(
+    hap_neu_P3_topo, ang_neu_P3_topo, hap_ang_P3_topo,
+    align = 'vh',
+    hjust = -1,
+    nrow = 1,
+    rel_widths = c(1, 1, 1))
+  
+#  ggsave("plots_P3_emo_2.tiff", plots_P3_emo_2, bg = "transparent")  
+  
+  
+  # Get topography legend 
+  P3_emo_leg_1 = ggplot(Topo_neu_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-11,17)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P3_emo_1 = get_legend(P3_emo_leg_1) 
+  
+#  ggsave("topo_leg_P3_emo_1.tiff", topo_leg_P3_emo_1, bg = "transparent")  
+  
+  # Get topography legend 
+  P3_emo_leg_2 = ggplot(Topo_hap_ang_P3, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                #    ggtitle("neutral")+
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-2.5,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P3_emo_2 = get_legend(P3_emo_leg_2) 
+  
+ # ggsave("topo_leg_P3_emo_2.tiff", topo_leg_P3_emo_2, bg = "transparent")    
+
+  
+```
+
+```{r present_P3, results = "asis"}
+
+topo_P3 = cowplot::plot_grid(plots_P3_emo_1, topo_leg_P3_emo_1, plots_P3_emo_2, topo_leg_P3_emo_2)
+topo_P3
+
+```
+
+
+<!-- For additional topographies -->
+
+```{r P1_diff_effects, eval = FALSE, include = FALSE}
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
+  
+  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  
+  Topo_Cat = subset(Topo_Cat, time >= 90 & time <= 130)
+
+# Plot topoplots for repeated / novel emotion trials
+  Topo_rep_hap = subset(Topo_Cat, Condition == 4)
+  Topo_nov_hap = subset(Topo_Cat, Condition == 7)
+  Topo_rep_neu = subset(Topo_Cat, Condition == 5)
+  Topo_nov_neu = subset(Topo_Cat, Condition == 8)
+  Topo_rep_ang = subset(Topo_Cat, Condition == 6)
+  Topo_nov_ang = subset(Topo_Cat, Condition == 9)
+
+
+# Calculate difference scores   
+  Topo_nov_hap_rep_hap =  data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_rep_ang = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_neu_rep_neu = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_neu$amplitude)
+ 
+  Topo_nov_hap_nov_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_hap_rep_neu = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_neu$amplitude)
+  
+  
+  
+  Topo_nov_hap_rep_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_neu_rep_hap = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_hap_nov_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_ang$amplitude)
+  
+  Topo_rep_hap_rep_ang = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_hap_rep_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  
+  Topo_nov_ang_rep_hap = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_nov_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_ang_rep_neu = data.frame(time = Topo_rep_ang[,3],
+                                  electrode = Topo_rep_ang[,4],
+                                  amplitude = Topo_rep_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_ang_rep_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_neu_rep_ang = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_ang$amplitude)
+  
+  
+# Add electrode information  
+  Topo_nov_hap_rep_hap = electrode_locations(Topo_nov_hap_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_ang = electrode_locations(Topo_nov_ang_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_neu = electrode_locations(Topo_nov_neu_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_neu = electrode_locations(Topo_nov_hap_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_neu = electrode_locations(Topo_rep_hap_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  
+  Topo_nov_hap_rep_neu = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_hap = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_ang = electrode_locations(Topo_nov_hap_nov_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_ang = electrode_locations(Topo_rep_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_rep_ang = electrode_locations(Topo_nov_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+ 
+  Topo_nov_ang_rep_hap = electrode_locations(Topo_nov_ang_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_nov_neu = electrode_locations(Topo_nov_ang_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_ang_rep_neu = electrode_locations(Topo_rep_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_neu = electrode_locations(Topo_nov_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_ang = electrode_locations(Topo_nov_neu_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Create topographies  
+  nov_neu_rep_ang_P1_topo = ggplot(Topo_nov_neu_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_ang_rep_neu_P1_topo = ggplot(Topo_nov_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  rep_ang_rep_neu_P1_topo = ggplot(Topo_rep_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_nov_neu_P1_topo = ggplot(Topo_nov_ang_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_rep_hap_P1_topo = ggplot(Topo_nov_ang_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))     
+  
+# Create topographies  
+  nov_hap_rep_ang_P1_topo = ggplot(Topo_nov_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  rep_hap_rep_ang_P1_topo = ggplot(Topo_rep_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_ang_P1_topo = ggplot(Topo_nov_hap_nov_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+    
+# Create topographies  
+  nov_neu_rep_hap_P1_topo = ggplot(Topo_nov_neu_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_hap_rep_neu_P1_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+  
+# Create topographies  
+  rep_hap_rep_neu_P1_topo = ggplot(Topo_rep_hap_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_neu_P1_topo = ggplot(Topo_nov_hap_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+    
+# Create topographies  
+  nov_neu_rep_neu_P1_topo = ggplot(Topo_nov_neu_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies  
+  nov_ang_rep_ang_P1_topo = ggplot(Topo_nov_ang_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+    
+# Create topographies  
+  nov_hap_rep_hap_P1_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+
+# Plot plots
+  plots_P1_diff_1 = cowplot::plot_grid(
+    nov_hap_rep_hap_P1_topo,
+    nov_ang_rep_ang_P1_topo,
+    nov_neu_rep_neu_P1_topo,
+    nov_hap_nov_neu_P1_topo,
+    rep_hap_rep_neu_P1_topo,
+    nov_hap_rep_hap_P1_topo,
+    nov_neu_rep_hap_P1_topo,
+    nov_hap_nov_ang_P1_topo,
+    rep_hap_rep_ang_P1_topo,
+    nov_hap_rep_hap_P1_topo,
+    nov_ang_rep_hap_P1_topo,
+    nov_ang_nov_neu_P1_topo,
+    rep_ang_rep_neu_P1_topo,
+    nov_ang_rep_neu_P1_topo,
+    nov_neu_rep_ang_P1_topo,
+    nrow = 3)
+  
+ # plots_P1_diff_1
+  
+ # ggsave("plots_P1_diff_1.tiff", plots_P1_diff_1, bg = "transparent")
+
+  # Get topography legend 
+  P1_diff_leg_1 = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-3,3.5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P1_diff_1 = get_legend(P1_diff_leg_1) 
+  
+ # ggsave("topo_leg_P1_diff_1.tiff", topo_leg_P1_diff_1, bg = "transparent")  
+  
+```
+
+```{r N170_diff_effects, eval = FALSE, include = FALSE}
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
+  
+  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  
+  Topo_Cat = subset(Topo_Cat, time >= 180 & time <= 220)
+
+# Plot topoplots for repeated / novel emotion trials
+  Topo_rep_hap = subset(Topo_Cat, Condition == 4)
+  Topo_nov_hap = subset(Topo_Cat, Condition == 7)
+  Topo_rep_neu = subset(Topo_Cat, Condition == 5)
+  Topo_nov_neu = subset(Topo_Cat, Condition == 8)
+  Topo_rep_ang = subset(Topo_Cat, Condition == 6)
+  Topo_nov_ang = subset(Topo_Cat, Condition == 9)
+
+
+# Calculate difference scores   
+  Topo_nov_hap_rep_hap =  data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_rep_ang = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_neu_rep_neu = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_neu$amplitude)
+ 
+  Topo_nov_hap_nov_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_hap_rep_neu = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_neu$amplitude)
+  
+  
+  
+  Topo_nov_hap_rep_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_neu_rep_hap = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_hap_nov_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_ang$amplitude)
+  
+  Topo_rep_hap_rep_ang = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_hap_rep_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  
+  Topo_nov_ang_rep_hap = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_nov_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_ang_rep_neu = data.frame(time = Topo_rep_ang[,3],
+                                  electrode = Topo_rep_ang[,4],
+                                  amplitude = Topo_rep_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_ang_rep_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_neu_rep_ang = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_ang$amplitude)
+  
+  
+# Add electrode information  
+  Topo_nov_hap_rep_hap = electrode_locations(Topo_nov_hap_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_ang = electrode_locations(Topo_nov_ang_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_neu = electrode_locations(Topo_nov_neu_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_neu = electrode_locations(Topo_nov_hap_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_neu = electrode_locations(Topo_rep_hap_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  
+  Topo_nov_hap_rep_neu = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_hap = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_ang = electrode_locations(Topo_nov_hap_nov_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_ang = electrode_locations(Topo_rep_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_rep_ang = electrode_locations(Topo_nov_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+ 
+  Topo_nov_ang_rep_hap = electrode_locations(Topo_nov_ang_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_nov_neu = electrode_locations(Topo_nov_ang_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_ang_rep_neu = electrode_locations(Topo_rep_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_neu = electrode_locations(Topo_nov_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_ang = electrode_locations(Topo_nov_neu_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Create topographies  
+  nov_neu_rep_ang_N170_topo = ggplot(Topo_nov_neu_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_ang_rep_neu_N170_topo = ggplot(Topo_nov_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  rep_ang_rep_neu_N170_topo = ggplot(Topo_rep_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_nov_neu_N170_topo = ggplot(Topo_nov_ang_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_rep_hap_N170_topo = ggplot(Topo_nov_ang_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))     
+  
+# Create topographies  
+  nov_hap_rep_ang_N170_topo = ggplot(Topo_nov_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  rep_hap_rep_ang_N170_topo = ggplot(Topo_rep_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_ang_N170_topo = ggplot(Topo_nov_hap_nov_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+    
+# Create topographies  
+  nov_neu_rep_hap_N170_topo = ggplot(Topo_nov_neu_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_hap_rep_neu_N170_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+  
+# Create topographies  
+  rep_hap_rep_neu_N170_topo = ggplot(Topo_rep_hap_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_neu_N170_topo = ggplot(Topo_nov_hap_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+    
+# Create topographies  
+  nov_neu_rep_neu_N170_topo = ggplot(Topo_nov_neu_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies  
+  nov_ang_rep_ang_N170_topo = ggplot(Topo_nov_ang_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+    
+# Create topographies  
+  nov_hap_rep_hap_N170_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+
+# Plot plots
+  plots_N170_diff_1 = cowplot::plot_grid(
+    nov_hap_rep_hap_N170_topo,
+    nov_ang_rep_ang_N170_topo,
+    nov_neu_rep_neu_N170_topo,
+    nov_hap_nov_neu_N170_topo,
+    rep_hap_rep_neu_N170_topo,
+    nov_hap_rep_hap_N170_topo,
+    nov_neu_rep_hap_N170_topo,
+    nov_hap_nov_ang_N170_topo,
+    rep_hap_rep_ang_N170_topo,
+    nov_hap_rep_hap_N170_topo,
+    nov_ang_rep_hap_N170_topo,
+    nov_ang_nov_neu_N170_topo,
+    rep_ang_rep_neu_N170_topo,
+    nov_ang_rep_neu_N170_topo,
+    nov_neu_rep_ang_N170_topo,
+    nrow = 3)
+  
+ #plots_N170_diff_1
+  
+ # ggsave("plots_N170_diff_1.tiff", plots_N170_diff_1, bg = "transparent")
+
+  # Get topography legend 
+  N170_diff_leg_1 = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-4,4)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_N170_diff_1 = get_legend(N170_diff_leg_1) 
+  
+ # ggsave("topo_leg_N170_diff_1.tiff", topo_leg_N170_diff_1, bg = "transparent")  
+  
+```
+
+```{r P3_diff_effects, eval = FALSE, include = FALSE}
+
+# Get topographies  
+  Topo_Cat = read.csv(file="./data/ERPs_Topo_Face2.csv", header=TRUE, sep=",")
+
+# Remove participant 5
+  Topo_Cat = Topo_Cat[with(Topo_Cat, !(Topo_Cat$ID==5)), ]
+
+# Re-name to fit topoplot function
+  names(Topo_Cat)[names(Topo_Cat) == "Time"] = "time"
+  
+  Topo_Cat$A1 = NULL
+  Topo_Cat$A2 = NULL
+  
+  Topo_Cat = gather(Topo_Cat, electrode, amplitude, Fp1:Oz, factor_key=TRUE)
+  
+  Topo_Cat = subset(Topo_Cat, time >= 300 & time <= 500)
+
+# Plot topoplots for repeated / novel emotion trials
+  Topo_rep_hap = subset(Topo_Cat, Condition == 4)
+  Topo_nov_hap = subset(Topo_Cat, Condition == 7)
+  Topo_rep_neu = subset(Topo_Cat, Condition == 5)
+  Topo_nov_neu = subset(Topo_Cat, Condition == 8)
+  Topo_rep_ang = subset(Topo_Cat, Condition == 6)
+  Topo_nov_ang = subset(Topo_Cat, Condition == 9)
+
+
+# Calculate difference scores   
+  Topo_nov_hap_rep_hap =  data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_rep_ang = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_neu_rep_neu = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_neu$amplitude)
+ 
+  Topo_nov_hap_nov_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_hap_rep_neu = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_neu$amplitude)
+  
+  
+  
+  Topo_nov_hap_rep_neu = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_neu_rep_hap = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_hap_nov_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_nov_ang$amplitude)
+  
+  Topo_rep_hap_rep_ang = data.frame(time = Topo_rep_hap[,3],
+                                  electrode = Topo_rep_hap[,4],
+                                  amplitude = Topo_rep_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  Topo_nov_hap_rep_ang = data.frame(time = Topo_nov_hap[,3],
+                                  electrode = Topo_nov_hap[,4],
+                                  amplitude = Topo_nov_hap$amplitude - Topo_rep_ang$amplitude)
+  
+  
+  Topo_nov_ang_rep_hap = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_hap$amplitude)
+  
+  Topo_nov_ang_nov_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_nov_neu$amplitude)
+  
+  Topo_rep_ang_rep_neu = data.frame(time = Topo_rep_ang[,3],
+                                  electrode = Topo_rep_ang[,4],
+                                  amplitude = Topo_rep_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_ang_rep_neu = data.frame(time = Topo_nov_ang[,3],
+                                  electrode = Topo_nov_ang[,4],
+                                  amplitude = Topo_nov_ang$amplitude - Topo_rep_neu$amplitude)
+  
+  Topo_nov_neu_rep_ang = data.frame(time = Topo_nov_neu[,3],
+                                  electrode = Topo_nov_neu[,4],
+                                  amplitude = Topo_nov_neu$amplitude - Topo_rep_ang$amplitude)
+  
+  
+# Add electrode information  
+  Topo_nov_hap_rep_hap = electrode_locations(Topo_nov_hap_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_ang = electrode_locations(Topo_nov_ang_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_neu = electrode_locations(Topo_nov_neu_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_neu = electrode_locations(Topo_nov_hap_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_neu = electrode_locations(Topo_rep_hap_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  
+  Topo_nov_hap_rep_neu = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_hap = electrode_locations(Topo_nov_neu_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_nov_ang = electrode_locations(Topo_nov_hap_nov_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_hap_rep_ang = electrode_locations(Topo_rep_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_hap_rep_ang = electrode_locations(Topo_nov_hap_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+ 
+  Topo_nov_ang_rep_hap = electrode_locations(Topo_nov_ang_rep_hap, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_nov_neu = electrode_locations(Topo_nov_ang_nov_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_rep_ang_rep_neu = electrode_locations(Topo_rep_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_ang_rep_neu = electrode_locations(Topo_nov_ang_rep_neu, electrode = "electrode",  drop = FALSE,montage = NULL)
+  Topo_nov_neu_rep_ang = electrode_locations(Topo_nov_neu_rep_ang, electrode = "electrode",  drop = FALSE,montage = NULL)
+
+# Create topographies  
+  nov_neu_rep_ang_P3_topo = ggplot(Topo_nov_neu_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_ang_rep_neu_P3_topo = ggplot(Topo_nov_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  rep_ang_rep_neu_P3_topo = ggplot(Topo_rep_ang_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_nov_neu_P3_topo = ggplot(Topo_nov_ang_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+  
+# Create topographies  
+  nov_ang_rep_hap_P3_topo = ggplot(Topo_nov_ang_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))     
+  
+# Create topographies  
+  nov_hap_rep_ang_P3_topo = ggplot(Topo_nov_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  rep_hap_rep_ang_P3_topo = ggplot(Topo_rep_hap_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_ang_P3_topo = ggplot(Topo_nov_hap_nov_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+    
+# Create topographies  
+  nov_neu_rep_hap_P3_topo = ggplot(Topo_nov_neu_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))    
+  
+# Create topographies  
+  nov_hap_rep_neu_P3_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+  
+# Create topographies  
+  rep_hap_rep_neu_P3_topo = ggplot(Topo_rep_hap_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))   
+  
+# Create topographies  
+  nov_hap_nov_neu_P3_topo = ggplot(Topo_nov_hap_nov_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))  
+    
+# Create topographies  
+  nov_neu_rep_neu_P3_topo = ggplot(Topo_nov_neu_rep_neu, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+# Create topographies  
+  nov_ang_rep_ang_P3_topo = ggplot(Topo_nov_ang_rep_ang, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+    
+# Create topographies  
+  nov_hap_rep_hap_P3_topo = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+               #     ggtitle("happy")+
+                    geom_topo(grid_res = 300, 
+                              interp_limit = "head", chan_markers = "point",
+                              chan_size = 0.6, head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("Amplitude (", mu,"V)")))+
+                    theme(legend.position = "none",
+                          plot.title = element_text(size = 8, face = "bold", hjust = 0.5))
+  
+
+# Plot plots
+  plots_P3_diff_1 = cowplot::plot_grid(
+    nov_hap_rep_hap_P3_topo,
+    nov_ang_rep_ang_P3_topo,
+    nov_neu_rep_neu_P3_topo,
+    nov_hap_nov_neu_P3_topo,
+    rep_hap_rep_neu_P3_topo,
+    nov_hap_rep_hap_P3_topo,
+    nov_neu_rep_hap_P3_topo,
+    nov_hap_nov_ang_P3_topo,
+    rep_hap_rep_ang_P3_topo,
+    nov_hap_rep_hap_P3_topo,
+    nov_ang_rep_hap_P3_topo,
+    nov_ang_nov_neu_P3_topo,
+    rep_ang_rep_neu_P3_topo,
+    nov_ang_rep_neu_P3_topo,
+    nov_neu_rep_ang_P3_topo,
+    nrow = 3)
+  
+  plots_P3_diff_1
+  
+ # ggsave("plots_P3_diff_1.tiff", plots_P3_diff_1, bg = "transparent")
+
+  # Get topography legend 
+  P3_diff_leg_1 = ggplot(Topo_nov_hap_rep_hap, aes(x = x, y = y, fill = amplitude, label = electrode)) +
+                    geom_topo(grid_res = 300, interp_limit = "head", chan_markers = "point", chan_size = 0.6,
+                              head_size = 0.9) +
+                    scale_fill_distiller(palette = "RdBu" , limits = c(-5,5)) +
+                    theme_void() +
+                    coord_equal() +
+                    labs(fill = expression(paste("", mu,"V")))+
+                    theme(legend.position = "right", legend.title=element_text(size=8), legend.text=element_text(size=7),
+                          legend.key.size = unit(0.4, "cm")) 
+  
+  topo_leg_P3_diff_1 = get_legend(P3_diff_leg_1) 
+  
+ # ggsave("topo_leg_P3_diff_1.tiff", topo_leg_P3_diff_1, bg = "transparent")  
+  
+```
+
 
 ### **Model specification** {.tabset .tabset-pills}
-
 
 #### LMM P1: Random effect structure
 <br>
@@ -557,8 +2397,8 @@ The final model was:
   P1_Rep$PT[P1_Rep$Group_pt == 2]='target'
   
   # Rename variables   
-  P1_Rep$Response[P1_Rep$Response == 0]='false'
-  P1_Rep$Response[P1_Rep$Response == 1]='correct'
+  #P1_Rep$Response[P1_Rep$Response == 0]='false'
+  #P1_Rep$Response[P1_Rep$Response == 1]='correct'
   
 # Define emotions
   P1_Rep$Condition[P1_Rep$Condition == 1]='happy'
@@ -574,7 +2414,7 @@ The final model was:
 # Factor and create contrasts
   P1_Rep$rep = factor(P1_Rep$rep)
   P1_Rep$PT = factor(P1_Rep$PT)
-  P1_Rep$Response = factor(P1_Rep$Response)
+ # P1_Rep$Response = factor(P1_Rep$Response)
   
   contrasts(P1_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
 
@@ -588,7 +2428,8 @@ The final model was:
   
   
 # Bring electrodes in one variable
-  P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO3:P1_Oz, factor_key = TRUE)
+ # P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO3:P1_Oz, factor_key = TRUE)
+  P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO7:P1_Oz, factor_key = TRUE)
   
   P1_Rep$Elect_site = factor(P1_Rep$Elect_site)
   P1_Rep = subset(P1_Rep, PT == "target")
@@ -602,6 +2443,7 @@ The final model was:
                           control=lmerControl(calc.derivs = FALSE)) 
  
 ```
+
 
   ``r format(formula(mod_P1_Rep.lmer))``
 
@@ -715,6 +2557,7 @@ The final model was:
 ```
 
   ``r format(formula(mod_N170_Rep.lmer))``
+  
 
 ---
 
@@ -764,6 +2607,7 @@ Based on visual inspection, we assumed homoscedasticity.
 The final model was:
 
 ```{r P3_rep_build_mod}
+
 # Select correct responses and outlier-free data 
  P3_Rep = subset(ERP_data,  Exclude_smaller_250ms == FALSE & Response == 1)
                 
@@ -806,7 +2650,9 @@ The final model was:
   contrasts(P3_Rep$Condition) = cbind(EvsN,HvsA)
   
 # Bring electrodes in one variable
-  P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO3:P3_Oz, factor_key = TRUE)
+ # P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO3:P3_Oz, factor_key = TRUE)
+P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO7:P3_Oz, factor_key = TRUE)
+
   
   P3_Rep$Elect_site = factor(P3_Rep$Elect_site)
   
@@ -820,7 +2666,11 @@ The final model was:
                           + (1|Elect_site),
                           data = P3_Rep,
                           control=lmerControl(calc.derivs = FALSE)) 
-
+  
+  #tab_model(mod_P3_Rep.lmer)
+  
+  #plot_model(mod_P3_Rep.lmer, type = "pred", terms = c("rep"))
+  
 ```
 <br>
 
@@ -830,7 +2680,7 @@ The final model was:
 
 #### LMM P3: Normality of residuals 
 
-<<<<<<< HEAD
+
 ```{r P3_rep_res_box, fig.width = 6, fig.asp = .62}
 
 ## Check properties of DV / residuals 
@@ -871,11 +2721,317 @@ Based on visual inspection, we assumed homoscedasticity.
 
 ---
 
-### **Results**
+#### Supplement: Face 1 analysis
 
-#### **P1**
+```{r P1_prime_build_mod }
+
+# Select correct responses and outlier-free data 
+  P1_Rep = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+                
+# Prepare fixed factors 
+  P1_Rep$ID = as.factor(P1_Rep$ID)
+  P1_Rep$Stim_Type = as.factor(P1_Rep$Stim_Type)
+
+# Define novel vs repeated trials
+  P1_Rep$rep[P1_Rep$Group_cic == 1]='repeated'
+  P1_Rep$rep[P1_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  P1_Rep$PT[P1_Rep$Group_pt == 1]='prime'
+  P1_Rep$PT[P1_Rep$Group_pt == 2]='target'
+  
+  # Rename variables   
+  #P1_Rep$Response[P1_Rep$Response == 0]='false'
+  #P1_Rep$Response[P1_Rep$Response == 1]='correct'
+  
+# Define emotions
+  P1_Rep$Condition[P1_Rep$Condition == 1]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 2]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 3]='angry'
+  P1_Rep$Condition[P1_Rep$Condition == 4]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 5]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 6]='angry'
+  P1_Rep$Condition[P1_Rep$Condition == 7]='happy'
+  P1_Rep$Condition[P1_Rep$Condition == 8]='neutral'
+  P1_Rep$Condition[P1_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  P1_Rep$rep = factor(P1_Rep$rep)
+  P1_Rep$PT = factor(P1_Rep$PT)
+ # P1_Rep$Response = factor(P1_Rep$Response)
+  
+  contrasts(P1_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+
+  P1_Rep$Condition = factor(P1_Rep$Condition)
+  contrasts(P1_Rep$Condition) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(P1_Rep$Condition) = cbind(EvsN,HvsA)
+  
+  
+# Bring electrodes in one variable
+ # P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO3:P1_Oz, factor_key = TRUE)
+  P1_Rep = gather(P1_Rep, Elect_site, P1_Amplitude, P1_PO7:P1_Oz, factor_key = TRUE)
+  
+  P1_Rep$Elect_site = factor(P1_Rep$Elect_site)
+  P1_Rep = subset(P1_Rep, PT == "prime")
+  
+# Build full model 
+  mod_P1_emo.lmer = lmer(P1_Amplitude ~ Condition + contr_F1_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P1_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+  
+  
+#  tab_model(mod_P1_emo.lmer)
+  
+#  plot_model(mod_P1_emo.lmer, type = "pred", terms = c("Condition"))
+  
+ 
+```
+
+```{r N170_prime_build_mod }
+
+# Select correct responses and outlier-free data 
+  N170_Rep = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1) 
+
+# Prepare fixed factors 
+  N170_Rep$ID = as.factor(N170_Rep$ID)
+  N170_Rep$Stim_Type = as.factor(N170_Rep$Stim_Type)
+  
+# Single electrodes  
+   N170_Rep = gather(N170_Rep, Elect_site, N170_Amplitude, N170l_TP7:N170r_P8, factor_key = TRUE)
+   N170_Rep$Elect_site = factor(N170_Rep$Elect_site)
+  
+# Define novel vs repeated trials
+  N170_Rep$rep[N170_Rep$Group_cic == 1]='repeated'
+  N170_Rep$rep[N170_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  N170_Rep$PT[N170_Rep$Group_pt == 1]='prime'
+  N170_Rep$PT[N170_Rep$Group_pt == 2]='target'
+  
+# Define emotions
+  N170_Rep$Condition[N170_Rep$Condition == 1]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 2]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 3]='angry'
+  N170_Rep$Condition[N170_Rep$Condition == 4]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 5]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 6]='angry'
+  N170_Rep$Condition[N170_Rep$Condition == 7]='happy'
+  N170_Rep$Condition[N170_Rep$Condition == 8]='neutral'
+  N170_Rep$Condition[N170_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  N170_Rep$rep = factor(N170_Rep$rep)
+  N170_Rep$PT = factor(N170_Rep$PT) 
+  N170_Rep$Response = factor(N170_Rep$Response) 
+  
+  contrasts(N170_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  contrasts(N170_Rep$PT) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  
+  N170_Rep$Condition = factor(N170_Rep$Condition)
+  contrasts(N170_Rep$Condition) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(N170_Rep$Condition) = cbind(EvsN,HvsA)
+  
+  N170_Rep = subset(N170_Rep, PT == "prime")
+
+# Build full model 
+  mod_N170_emo.lmer = lmer(N170_Amplitude ~  Condition + contr_F1_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = N170_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+  
+#  tab_model(mod_N170_emo.lmer)
+  
+#  plot_model(mod_N170_emo.lmer, type = "pred", terms = c("Condition"))  
+  
+```
+
+```{r P3_prime_build_mod }
+
+# Select correct responses and outlier-free data 
+ P3_Rep = subset(ERP_data,  Exclude_smaller_250ms == FALSE & Response == 1)
+                
+# Prepare fixed factors 
+  P3_Rep$ID = as.factor(P3_Rep$ID)
+  P3_Rep$Stim_Type = as.factor(P3_Rep$Stim_Type)
+
+# Define novel vs repeated trials
+  P3_Rep$rep[P3_Rep$Group_cic == 1]='repeated'
+  P3_Rep$rep[P3_Rep$Group_cic == 2]='novel'
+  
+# Rename variables   
+  P3_Rep$PT[P3_Rep$Group_pt == 1]='prime'
+  P3_Rep$PT[P3_Rep$Group_pt == 2]='target'
+
+# Define emotions
+  P3_Rep$Condition[P3_Rep$Condition == 1]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 2]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 3]='angry'
+  P3_Rep$Condition[P3_Rep$Condition == 4]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 5]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 6]='angry'
+  P3_Rep$Condition[P3_Rep$Condition == 7]='happy'
+  P3_Rep$Condition[P3_Rep$Condition == 8]='neutral'
+  P3_Rep$Condition[P3_Rep$Condition == 9]='angry'
+  
+# Factor and create contrasts
+  P3_Rep$rep = factor(P3_Rep$rep)
+  P3_Rep$PT = factor(P3_Rep$PT)
+  
+  contrasts(P3_Rep$rep) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+  contrasts(P3_Rep$PT) = c(-0.5,0.5) # intercept is the mean of repeated / novel
+
+  P3_Rep$Condition = factor(P3_Rep$Condition)
+  contrasts(P3_Rep$Condition) = contr.treatment(3,  base = 3)
+
+# A = angry, N = neutral, H = happy
+  HvsA = c(0.5,-0.5,0) # compare: happy vs. angry
+  EvsN = c(-0.25,-0.25,0.5) # compare happy/angry to neutral
+  contrasts(P3_Rep$Condition) = cbind(EvsN,HvsA)
+  
+# Bring electrodes in one variable
+ # P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO3:P3_Oz, factor_key = TRUE)
+P3_Rep = gather(P3_Rep, Elect_site, P3_Amplitude, P3_PO7:P3_Oz, factor_key = TRUE)
+
+  
+  P3_Rep$Elect_site = factor(P3_Rep$Elect_site)
+  
+  P3_Rep = subset(P3_Rep, PT == "prime")
+  #P3_Rep = subset(P3_Rep, Response == "false")
+  
+# Build full model 
+  mod_P3_emo.lmer = lmer(P3_Amplitude ~  Condition + contr_F1_scal + WM_scal +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P3_Rep,
+                          control=lmerControl(calc.derivs = FALSE)) 
+  
+  #tab_model(mod_P3_emo.lmer)
+  
+  #plot_model(mod_P3_emo.lmer, type = "pred", terms = c("Condition"))
+  
+```
+
+```{r erp_results, results = 'asis'}
+# Define labels
+  labels = c("Emotion vs. Neutral", "Happy vs. Angry", "Stimulus' Contrast",  "Working Memory")
+
+# Create table
+  tab_model(mod_P1_emo.lmer, mod_N170_emo.lmer, mod_P3_emo.lmer, 
+            show.intercept = FALSE,
+            pred.labels=labels,
+            string.est = "b",
+            show.se=TRUE, string.se = "SE",
+            show.stat=TRUE, string.stat = "t",
+            show.ci = FALSE, 
+            show.re.var = TRUE, show.obs = FALSE,
+            emph.p = TRUE, dv.labels=c("P1 Amplitude","N170 Amplitude","P3 Amplitude"),
+            show.icc = TRUE)
+
+```
+
+*Post-hoc tests*
+
+**P1 Emotion vs. Neutral contrast**
 
 ```{r post_hoc_P1_tests}
+
+### Calculate post-hoc tests P1 valence
+  mod_P1_Rep.lmer3 = lmer(P1_Amplitude ~ contr_F2_scal + 
+                           WM_scal + Condition  +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P1_Rep,
+                          control=lmerControl(calc.derivs = FALSE))   
+
+  
+  P1_Rep_lmm_model_posthoc =  summary(glht(mod_P1_Rep.lmer3, 
+                                           linfct=mcp(Condition = c(
+                                           "neutral - happy = 0",
+                                           "neutral - angry = 0")),
+                                           test = adjusted(type = "fdr")))
+ 
+
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P1_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P1_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P1_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P1_Rep_posthoc2 = merge(tab1,tab2,by='Row.names')
+  colnames(P1_Rep_posthoc2) = c("Contrast","Est.","Std. Error", "z value", "p value")
+
+
+```
+
+```{r post_hoc_tests_P1_1, results = 'asis'}
+
+# Create table
+  kable(P1_Rep_posthoc2) %>% 
+  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
+
+```
+
+**P3 Emotion vs. Neutral contrast**
+
+```{r post_hoc_P3_tests}
+
+### Calculate post-hoc tests P3 valence
+  mod_P3_Rep.lmer3 = lmer(P3_Amplitude ~ contr_F2_scal + 
+                           WM_scal + Condition  +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P3_Rep,
+                          control=lmerControl(calc.derivs = FALSE))   
+
+  
+  P3_Rep_lmm_model_posthoc =  summary(glht(mod_P3_Rep.lmer3, 
+                                           linfct=mcp(Condition = c(
+                                           "neutral - happy = 0",
+                                           "neutral - angry = 0")),
+                                           test = adjusted(type = "fdr")))
+ 
+
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P3_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P3_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P3_Rep_posthoc2 = merge(tab1,tab2,by='Row.names')
+  colnames(P3_Rep_posthoc2) = c("Contrast","Est.","Std. Error", "z value", "p value")
+
+
+```
+
+```{r post_hoc_tests_P3_1, results = 'asis'}
+
+# Create table
+  kable(P3_Rep_posthoc2) %>% 
+  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
+
+```
+
+
+### **Results**
+
+
+```{r post_hoc_P1_tests_2}
 
 ### Calculate post-hoc tests P1 valence
   P1_Rep$interaction = interaction(P1_Rep$rep, P1_Rep$Condition)
@@ -941,17 +3097,57 @@ Based on visual inspection, we assumed homoscedasticity.
 
 
 ```
-In line with our hypothesis, we found larger P1 amplitudes for emotional vs. neutral expressions ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[2,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[2,5])`). Both happy (`r reportP(P1_Rep_posthoc1[1,5])`) and angry expressions (`r reportP(P1_Rep_posthoc1[2,5])`) elicited larger P1 amplitudes compared to neutral expressions. No amplitude differences were detected between happy and angry expressions ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[3,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[3,5])`). There was no main effect of repetition ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[4,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[4,5])`). Similarly, no interaction of emotional vs. neutral expressions with repetition was found ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[7,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[7,5])`). We did, however, detect a significant interaction of happy vs. angry expressions with repetition ($\beta$ `r reportbe(coef(summary(mod_P1_Rep.lmer))[8,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[8,5])`): Post-hoc tests indicated that, in line with our hypothesis, P1 amplitudes for repeated happy expressions were smaller than for novel happy expressions (`r reportP(P1_Rep_posthoc2[5,5])`). Novel happy expressions also elicited larger P1 amplitudes than novel angry expressions (`r reportP(P1_Rep_posthoc2[1,5])`; all other *p* > `r reportci(P1_Rep_posthoc2[6,5])`).
 
-#### **N170**
+```{r erp_results_2, results = 'asis'}
+# Define labels
+  labels = c("Emotion vs. Neutral", "Happy vs. Angry",  "Repetition",  "Stimulus' Contrast",  "Working Memory","E vs. N x Repetition", "H vs. A x Repetition")
 
-We did not find significant main effects for facial expression contrasts (emotion vs. neutral expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[2,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[2,5])`; happy vs. angry expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[3,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[3,5])`) or repetition  ($\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[4,1])`, `r reportP(coef(summary(mod_N170_Rep.lmer))[4,5])`) None of the interactions of facial expressions with repetition were significant (emotion vs. neutral expressions: β = 0.87, p = 0.43; happy vs. angry expressions: β = 1.16, p = 0.08). None of the interactions of facial expressions with repetition were significant (emotion vs. neutral expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[7,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[7,5])`; happy vs. angry expressions: $\beta$ `r reportbe(coef(summary(mod_N170_Rep.lmer))[8,1])`, `r reportP(coef(summary(mod_P1_Rep.lmer))[8,5])`).
+# Create table
+  tab_model(mod_P1_Rep.lmer, mod_N170_Rep.lmer, mod_P3_Rep.lmer, 
+            show.intercept = FALSE,
+            pred.labels=labels,
+            string.est = "b",
+            show.se=TRUE, string.se = "SE",
+            show.stat=TRUE, string.stat = "t",
+            show.ci = FALSE, 
+            show.re.var = TRUE, show.obs = FALSE,
+            emph.p = TRUE, dv.labels=c("P1 Amplitude","N170 Amplitude","P3 Amplitude"),
+            show.icc = TRUE)
 
-#### **P3**
+```
 
-```{r post_hoc_P3_tests}
+*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
 
-### Calculate post-hoc tests P3 valence
+<br>
+
+**Post-hoc test P1: Contrast Emotion vs. Neutral**
+
+```{r post_hoc_tests_P1_12, results = 'asis'}
+
+# Create table
+  kable(P1_Rep_posthoc1) %>% 
+  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
+
+```
+
+<br>
+
+**Post-hoc test P1: Contrast Emotion vs. Neutral with Repetition**
+
+```{r post_hoc_tests_P1_2, results = 'asis'}
+
+# Create table
+  kable(P1_Rep_posthoc2) %>% 
+  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
+
+```
+
+<br>
+
+
+```{r post_hoc_P3_tests_2}
+
+### Calculate post-hoc tests P1 valence
   P3_Rep$interaction = interaction(P3_Rep$rep, P3_Rep$Condition)
 
 
@@ -979,56 +3175,42 @@ We did not find significant main effects for facial expression contrasts (emotio
   P3_Rep_posthoc1 = merge(tab1,tab2,by='Row.names')
   colnames(P3_Rep_posthoc1) = c("Contrast","Est.","Std. Error", "z value", "p value")
 
-```
+  
+### Calculate post-hoc tests P3 valence
+  P3_Rep$interaction = interaction(P3_Rep$rep, P3_Rep$Condition)
 
-In line with our hypothesis, we detected differences for emotional vs. neutral facial expressions (β = -1.40, p = 0.01). Angry expressions elicited larger P3 amplitudes than neutral expressions (p < 0.001) and happy expressions (β = 1.15, p = 0.01). No significant difference was found for happy vs. neutral expressions (p = 0.47). P3 amplitudes did not show significant modulations by repetition (β = 0.40, p = 0.33). Interactions of facial expression contrasts with repetition were not significant (emotional vs. neutral facial expressions x repetition: β = 1.16, p = 0.27; happy vs. angry facial expressions x repetition: β = -0.59, p = 0.52). Additionally, we detected that stimulus’ contrast was a significant covariate, with larger contrast values eliciting larger P3 amplitudes (β = -0.51, p = 0.04
 
-```{r erp_results, results = 'asis'}
-# Define labels
-  labels = c("Emotion vs. Neutral", "Happy vs. Angry",  "Repetition",  "Stimulus' Contrast",  "Working Memory","E vs. N x Repetition", "H vs. A x Repetition")
+  mod_P3_Rep.lmer3 = lmer(P3_Amplitude ~ contr_F2_scal + 
+                           WM_scal + interaction +
+                          + (1|ID) 
+                          + (1|Stim_Type)
+                          + (1|Elect_site),
+                          data = P3_Rep,
+                          control=lmerControl(calc.derivs = FALSE))   
 
-# Create table
-  tab_model(mod_P1_Rep.lmer, mod_N170_Rep.lmer, mod_P3_Rep.lmer, 
-            show.intercept = FALSE,
-            pred.labels=labels,
-            string.est = "b",
-            show.se=TRUE, string.se = "SE",
-            show.stat=TRUE, string.stat = "t",
-            show.ci = FALSE, 
-            show.re.var = TRUE, show.obs = FALSE,
-            emph.p = TRUE, dv.labels=c("P1 Amplitude","N170 Amplitude","P3 Amplitude"),
-            show.icc = TRUE)
+  
+  P3_Rep_lmm_model_posthoc =  summary(glht(mod_P3_Rep.lmer3, 
+                                           linfct=mcp(interaction = c(
+                                           "novel.happy - novel.angry = 0",
+                                           "novel.happy - repeated.angry = 0",
+                                           "repeated.angry - novel.angry = 0",
+                                           "repeated.happy - novel.angry = 0",
+                                           "repeated.happy - novel.happy = 0",
+                                           "repeated.happy - repeated.angry	= 0")),
+                                           test = adjusted(type = "fdr")))
+ 
 
-```
+# Get ready for presentation in RMarkdown
+  tab1 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$coefficients),
+               as.data.frame(P3_Rep_lmm_model_posthoc$test$sigma),by=0)
+  tab2 = as.data.frame(P3_Rep_lmm_model_posthoc$test$pvalues)
+  rownames(tab2) = rownames(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat))
+  tab2 = merge(as.data.frame(P3_Rep_lmm_model_posthoc$test$tstat),tab2,by=0)
+  P3_Rep_posthoc2 = merge(tab1,tab2,by='Row.names')
+  colnames(P3_Rep_posthoc2) = c("Contrast","Est.","Std. Error", "z value", "p value")
 
-*Note:* p-values for the fixed effects calculated using Wald-statistics approximation, uncorrected. *b*: unstandardized coefficient; *SE*: standard error; *t*: test statistic coefficient; *p*: p-value; *σ2*: within-group variance; *τ00*: between-group variance; *ICC*: interclass correlation (ratio of between-cluster variance to total variance); *N*: number of random effects.
-
-<br>
-
-**Post-hoc test P1: Contrast Emotion vs. Neutral**
-
-```{r post_hoc_tests_P1_1, results = 'asis'}
-
-# Create table
-  kable(P1_Rep_posthoc1) %>% 
-  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
-
-```
-
-<br>
-
-**Post-hoc test P1: Contrast Emotion vs. Neutral with Repetition**
-
-```{r post_hoc_tests_P1_2, results = 'asis'}
-
-# Create table
-  kable(P1_Rep_posthoc2) %>% 
-  kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
 
 ```
-
-<br>
-
 
 **Post-hoc test P3: Contrast Emotion vs. Neutral**
 

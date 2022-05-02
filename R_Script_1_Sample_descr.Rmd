@@ -118,7 +118,6 @@ dfSummary(qn_data[c('sex', 'age', 'PPVT_Perc', 'CMM_Perc', 'SRS', 'SCQ','wink_in
                 labels.col=FALSE, headings=FALSE, graph.magnif=0.75)
 ```
 
-
 # Session info
 
 <!-- Provide session info  -->

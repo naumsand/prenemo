@@ -41,7 +41,7 @@ output:
   library(corrplot)
   library(cowplot)
   library(dplyr)
-  library(eeptools)
+  #library(eeptools)
   library(EnvStats)
   library(ez)
   library(ggplot2)
@@ -180,7 +180,7 @@ apaCorr <- function(mat, corrtype = "spearman") {
 
 # Load data
   load.Rdata(filename="./data/EMT_data.Rdata", "EMT")
-  load.Rdata(filename="./data/ERP_data.Rdata", "ERPs")
+  load.Rdata(filename="./data/ERP_data_PO7_PO8.Rdata", "ERPs")
   load.Rdata(filename="./data/qn_data.Rdata", "qn_data")
 
 ```
@@ -437,9 +437,6 @@ RTs were log-transformed (determined using the Box-Cox procedure) to meet the as
 
 ```
 
-There were no accuracy differences between emotional vs. neutral expressions ($\beta$ `r reportbe(coef(summary(mod_EMT_Acc.glmm))[2,1])`, `r reportP(coef(summary(mod_EMT_Acc.glmm))[2,4])`, *OR* `r reportbe(exp(coef(summary(mod_EMT_Acc.glmm))[2,1]))` [95% CI: `r reportci((exp(coef(summary(mod_EMT_Acc.glmm))[2,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_EMT_Acc.glmm))[2,1]))[1])`, `r reportci((exp(coef(summary(mod_EMT_Acc.glmm))[2,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_EMT_Acc.glmm))[2,1]))[3])`]), nor happy vs. angry expressions ($\beta$ `r reportbe(coef(summary(mod_EMT_Acc.glmm))[3,1])`, `r reportP(coef(summary(mod_EMT_Acc.glmm))[3,4])`, *OR* `r reportbe(exp(coef(summary(mod_EMT_Acc.glmm))[3,1]))` [95% CI: `r reportci((exp(coef(summary(mod_EMT_Acc.glmm))[3,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_EMT_Acc.glmm))[3,1]))[1])`, `r reportci((exp(coef(summary(mod_EMT_Acc.glmm))[3,1]) + qnorm(c(0.05,0.5,0.95)) * exp(coef(summary(mod_EMT_Acc.glmm))[3,1]))[3])`]). 
-  For reaction times, the emotional vs. neutral expression contrast was significant ($\beta$ `r reportbe(coef(summary(mod_EMT_RT.lmer))[2,1])`, `r reportP(coef(summary(mod_EMT_RT.lmer))[2,5])`). Post-hoc tests indicated that happy expressions were detected faster than neutral expressions(`r reportP(EMT_RT_posthoc[2,5])`; angry vs neutral: `r reportP(EMT_RT_posthoc[1,5])`). The happy vs. angry contrast yielded no significant results ($\beta$ `r reportbe(coef(summary(mod_EMT_RT.lmer))[3,1])`, `r reportP(coef(summary(mod_EMT_RT.lmer))[3,5])`).
-
  
 <div align="center">
 
@@ -491,61 +488,127 @@ There were no accuracy differences between emotional vs. neutral expressions ($\
 # ERP association with empathy / emotion recognition
 
 
-```{r Correlations_Prep}
+```{r Correlations_Prep_P1, include = FALSE}
 
 ## Re-do this section for accuracy data --> use ERPs dataset for accuracy calculation
 
 ## Select data
-  load.Rdata(filename="./data/ERP_data.Rdata", "ERP_data")
+  load.Rdata(filename="./data/ERP_data_PO7_PO8.Rdata", "ERP_data")
   ERPs_sel = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
   
 # Face 2: P1 repeated happy
   ERP_hap_Face2_rep = subset(ERPs_sel, Condition == 4)
-  Corr_data = data.frame(tapply(ERP_hap_Face2_rep$mean_ROI_P1,ERP_hap_Face2_rep$ID, mean))
-  names(Corr_data)[1] = "P1_hap_rep"
+  Corr_Data_P1 = data.frame(tapply(ERP_hap_Face2_rep$mean_ROI_P1, ERP_hap_Face2_rep$ID, mean))
+  names(Corr_Data_P1)[1] = "P1_hap_rep"
   
 # Face 2: P1 novel happy  
   ERP_hap_Face2_nov = subset(ERPs_sel, Condition == 7)
-  Corr_data$P1_hap_nov = tapply(ERP_hap_Face2_nov$mean_ROI_P1,ERP_hap_Face2_nov$ID, mean)  
+  Corr_Data_P1$P1_hap_nov = tapply(ERP_hap_Face2_nov$mean_ROI_P1,ERP_hap_Face2_nov$ID, mean)  
   
 # Face 2: P1 novel angry 
   ERP_ang_Face2_nov = subset(ERPs_sel, Condition == 9)
-  Corr_data$P1_ang_nov = tapply(ERP_ang_Face2_nov$mean_ROI_P1,ERP_ang_Face2_nov$ID, mean)
+  Corr_Data_P1$P1_ang_nov = tapply(ERP_ang_Face2_nov$mean_ROI_P1,ERP_ang_Face2_nov$ID, mean)
 
-  Corr_data = Corr_data[-c(4),]
+  Corr_Data_P1 = Corr_Data_P1[-c(4),]
     
 # Calculate difference scores
-  Corr_data$P1_F2_Nov_Rep_Hap = Corr_data$P1_hap_nov-Corr_data$P1_hap_rep
-  Corr_data$P1_F2_Nov_Hap_Ang = Corr_data$P1_hap_nov-Corr_data$P1_ang_nov
+  Corr_Data_P1$P1_F2_Nov_Rep_Hap = Corr_Data_P1$P1_hap_nov-Corr_Data_P1$P1_hap_rep
+  Corr_Data_P1$P1_F2_Nov_Hap_Ang = Corr_Data_P1$P1_hap_nov-Corr_Data_P1$P1_ang_nov
 
 
 # Order questionnaire data by ID  
   qn_data = qn_data[order(qn_data$ID),]
 
 # Integrate questionnare data   
-  Corr_data$EMK_EK_P = qn_data$EMK_EK_P
-  Corr_data$EMK_EM_P = qn_data$EMK_EM_P
-  Corr_data$EMK_EK_Ch = qn_data$EMK_EK_Ch
-  Corr_data$EMK_EM_Ch = qn_data$EMK_EM_Ch
+  Corr_Data_P1$EMK_EK_P = qn_data$EMK_EK_P
+  Corr_Data_P1$EMK_EM_P = qn_data$EMK_EM_P
+  Corr_Data_P1$EMK_EK_Ch = qn_data$EMK_EK_Ch
+  Corr_Data_P1$EMK_EM_Ch = qn_data$EMK_EM_Ch
 
 # Compute composite scores for parental/children measures of EMK
-  Corr_data$EMK_EK = scale(Corr_data$EMK_EK_P) + scale(Corr_data$EMK_EK_Ch)
-  Corr_data$EMK_EM = scale(Corr_data$EMK_EM_P) + scale(Corr_data$EMK_EM_Ch)
+  Corr_Data_P1$EMK_EK = scale(Corr_Data_P1$EMK_EK_P) + scale(Corr_Data_P1$EMK_EK_Ch)
+  Corr_Data_P1$EMK_EM = scale(Corr_Data_P1$EMK_EM_P) + scale(Corr_Data_P1$EMK_EM_Ch)
 
 # Select variables
-  ERPs_corr_F2 = subset(Corr_data,select = c(P1_F2_Nov_Rep_Hap, P1_F2_Nov_Hap_Ang, 
+  ERPs_corr_F2 = subset(Corr_Data_P1,select = c(P1_F2_Nov_Rep_Hap, P1_F2_Nov_Hap_Ang, 
                                              EMK_EK_P, EMK_EK_Ch,
                                              EMK_EM_P, EMK_EM_Ch)) 
 
 ```
 
+```{r Correlations_Prep_P3, include = FALSE}
+
+## Re-do this section for accuracy data --> use ERPs dataset for accuracy calculation
+
+## Select data
+  load.Rdata(filename="./data/ERP_data_PO7_PO8.Rdata", "ERP_data")
+  ERPs_sel = subset(ERP_data, Exclude_smaller_250ms == FALSE & Response == 1)
+  
+# Face 2: P3 repeated
+  P3_rep = subset(ERPs_sel, Condition == 4 | Condition == 5 | Condition == 6)
+  Corr_Data_P3 = data.frame(tapply(P3_rep$mean_ROI_P3, P3_rep$ID, mean))
+  names(Corr_Data_P3)[1] = "P3_rep"
+  
+# Face 2: P3 novel  
+  P3_nov = subset(ERPs_sel, Condition == 7 | Condition == 8 | Condition == 9)
+  Corr_Data_P3$P3_nov= tapply(P3_nov$mean_ROI_P3, P3_nov$ID, mean)  
+  
+  Corr_Data_P3 =  Corr_Data_P3[-c(4), ]
+
+# Calculate difference scores
+  Corr_Data_P3$P3_nov_rep = Corr_Data_P3$P3_nov-Corr_Data_P3$P3_rep
+
+# Order questionnaire data by ID  
+  qn_data = qn_data[order(qn_data$ID),]
+
+# Integrate questionnare data   
+  Corr_Data_P3$EMK_EK_P = qn_data$EMK_EK_P
+  Corr_Data_P3$EMK_EM_P = qn_data$EMK_EM_P
+  Corr_Data_P3$EMK_EK_Ch = qn_data$EMK_EK_Ch
+  Corr_Data_P3$EMK_EM_Ch = qn_data$EMK_EM_Ch
+
+# Compute composite scores for parental/children measures of EMK
+  Corr_Data_P3$EMK_EK = scale(Corr_Data_P3$EMK_EK_P) + scale(Corr_Data_P3$EMK_EK_Ch)
+  Corr_Data_P3$EMK_EM = scale(Corr_Data_P3$EMK_EM_P) + scale(Corr_Data_P3$EMK_EM_Ch)
+  
+
+# Select variables
+  P3_corr_F2 = subset(Corr_Data_P3,select = c(P3_nov_rep, 
+                                             EMK_EK_P, EMK_EK_Ch,
+                                             EMK_EM_P, EMK_EM_Ch)) 
+  
+  
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EK_P)
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EM_P)
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EK_Ch)
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EM_Ch)
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EM)
+  # cor.test(Corr_data$P3_nov_rep, Corr_data$EMK_EK)
+  # 
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EK_P)
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EM_P)
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EK_Ch)
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EM_Ch)
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EM)
+  # cor.test(Corr_data$P3_nov, Corr_data$EMK_EK)
+  # 
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EK_P)
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EM_P)
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EK_Ch)
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EM_Ch)
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EM)
+  # cor.test(Corr_data$P3_rep, Corr_data$EMK_EK)
+  
+```
+
+
 **Correlation of EMK empathy composite scores with significant P1 amplitude repetition x emotion interactions**
 
-```{r Corr_calc_EMK_EM, results = "asis"}
+```{r Corr_calc_EMK_EM_P1, results = "asis"}
 
 # Calculate EMK Empathy associations with significant P1 repetition x emotion interaction 
-  EMK_EM_Nov_Hap_Rep_Hap = cor.test(Corr_data$P1_F2_Nov_Rep_Hap, Corr_data$EMK_EM)
-  EMK_EM_Nov_Hap_Nov_Ang = cor.test(Corr_data$P1_F2_Nov_Hap_Ang, Corr_data$EMK_EM)
+  EMK_EM_Nov_Hap_Rep_Hap = cor.test(Corr_Data_P1$P1_F2_Nov_Rep_Hap, Corr_Data_P1$EMK_EM)
+  EMK_EM_Nov_Hap_Nov_Ang = cor.test(Corr_Data_P1$P1_F2_Nov_Hap_Ang, Corr_Data_P1$EMK_EM)
 
 # Merge table 
   P1_Corr_Nov_Hap_Rep_Hap = c(EMK_EM_Nov_Hap_Rep_Hap$estimate[[1]], EMK_EM_Nov_Hap_Rep_Hap$conf.int[1], EMK_EM_Nov_Hap_Rep_Hap$conf.int[2],
@@ -569,15 +632,41 @@ There were no accuracy differences between emotional vs. neutral expressions ($\
   
 ```
 
+```{r Corr_calc_EMK_EM_P3, results = "asis"}
+
+# Calculate EMK Empathy associations with significant P3 repetition effect
+  EMK_EM_Nov_Hap_Rep_Hap = cor.test(Corr_Data_P3$P3_nov_rep, Corr_Data_P3$EMK_EM)
+
+# Merge table 
+  P3_Corr_Nov_Rep = c(EMK_EM_Nov_Hap_Rep_Hap$estimate[[1]], EMK_EM_Nov_Hap_Rep_Hap$conf.int[1], EMK_EM_Nov_Hap_Rep_Hap$conf.int[2],
+                            EMK_EM_Nov_Hap_Rep_Hap$statistic[[1]], EMK_EM_Nov_Hap_Rep_Hap$p.value)
+  
+  
+  EMK_EM_table = as.data.frame(rbind(P3_Corr_Nov_Rep))
+
+# Rename columns
+  names(EMK_EM_table)[1] = "r"
+  names(EMK_EM_table)[2] = "Upper CI"
+  names(EMK_EM_table)[3] = "Lower CI"
+  names(EMK_EM_table)[4] = "t"
+  names(EMK_EM_table)[5] = "p (uncorrected)"
+  
+# Print table 
+  kable(EMK_EM_table) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  
+```
+
+
 <!-- ### Correlation of EMK empathy composite scores with significant P1 amplitude repetition x emotion interactions -->
 
 **Correlation of EMK emotion recognition composite scores with significant P1 amplitude repetition x emotion interactions**
 
-```{r Corr_calc_EMK_EK, results = "asis"}
+```{r Corr_calc_EMK_EK_P1, results = "asis"}
 
 # Calculate EMK Empathy associations with significant P1 repetition x emotion interaction 
-  EMK_EK_Nov_Hap_Rep_Hap = cor.test(Corr_data$P1_F2_Nov_Rep_Hap, Corr_data$EMK_EK)
-  EMK_EK_Nov_Hap_Nov_Ang = cor.test(Corr_data$P1_F2_Nov_Hap_Ang, Corr_data$EMK_EK)
+  EMK_EK_Nov_Hap_Rep_Hap = cor.test(Corr_Data_P1$P1_F2_Nov_Rep_Hap, Corr_Data_P1$EMK_EK)
+  EMK_EK_Nov_Hap_Nov_Ang = cor.test(Corr_Data_P1$P1_F2_Nov_Hap_Ang, Corr_Data_P1$EMK_EK)
 
 # Merge table 
   P1_Corr_Nov_Hap_Rep_Hap = c(EMK_EK_Nov_Hap_Rep_Hap$estimate[[1]], EMK_EK_Nov_Hap_Rep_Hap$conf.int[1], EMK_EK_Nov_Hap_Rep_Hap$conf.int[2],
@@ -600,11 +689,32 @@ There were no accuracy differences between emotional vs. neutral expressions ($\
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
   
 ```  
+
+```{r Corr_calc_EMK_EK_P3, results = "asis"}
+
+# Calculate EMK Empathy associations with significant P3 repetition effect
+  EMK_EK_Nov_Hap_Rep_Hap = cor.test(Corr_Data_P3$P3_nov_rep, Corr_Data_P3$EMK_EK)
+
+# Merge table 
+  P3_Corr_Nov_Rep = c(EMK_EK_Nov_Hap_Rep_Hap$estimate[[1]], EMK_EK_Nov_Hap_Rep_Hap$conf.int[1], EMK_EK_Nov_Hap_Rep_Hap$conf.int[2],
+                            EMK_EK_Nov_Hap_Rep_Hap$statistic[[1]], EMK_EK_Nov_Hap_Rep_Hap$p.value)
   
+  
+  EMK_EK_table = as.data.frame(rbind(P3_Corr_Nov_Rep))
 
-We calculated difference scores of significant emotion x repetition interactions (novel happy-repeated happy, novel happy-novel angry) for P1 amplitudes. Subsequently, we associated them with EMK 3-6 empathy and emotion recognition composite scores. None of the correlations of emotion recognition or empathy with P1 difference scores survived FDR-correction (all *p* > .63)
-
-
+# Rename columns
+  names(EMK_EK_table)[1] = "r"
+  names(EMK_EK_table)[2] = "Upper CI"
+  names(EMK_EK_table)[3] = "Lower CI"
+  names(EMK_EK_table)[4] = "t"
+  names(EMK_EK_table)[5] = "p (uncorrected)"
+  
+# Print table 
+  kable(EMK_EK_table) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  
+```  
+  
 ```{r save_corr_results, include = FALSE, eval = FALSE}
 
 # Save data set in RData format
