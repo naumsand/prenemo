@@ -46,10 +46,8 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
   + qn_data
   + EEG_task_data
-  + ERP_data
-  + ERPs_Topo_Face1
+  + ERP_data_PO7_PO8
   + ERPs_Topo_Face2
-  + XX_ROI_XX_Face_1 (ROI_P1_P3_Face1, left_ROI_N170_Face1, right_ROI_N170_Face1)
   + XX_ROI_XX_Face_2 (ROI_P1_P3_Face2, left_ROI_N170_Face2, right_ROI_N170_Face2)
   + EMT_data
   
@@ -93,7 +91,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 ```
 
 
-## ERP_data
+## ERP_data_PO7_PO8
 
 <!-- Display ERP data descriptions -->  
 
@@ -102,7 +100,7 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 # Load data set
   qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERP_data",
+                               sheet = "ERP_data_PO7_PO8",
                                startCol = 1,
                                endCol = 0)
 
@@ -112,24 +110,6 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 ```
 
-
-## ERP_Topo_Face1
-
-<!-- Display ERP data descriptions -->  
-
-```{r table_ERP_topo_f1, results = 'asis'}
-
-# Load data set
-  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "ERPs_Topo_Face1",
-                               startCol = 1,
-                               endCol = 0)
-
-# Create table
-  kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
-
-```
 
 
 ## ERPs_Topo_Face2
@@ -151,25 +131,6 @@ In 'Overview of data sets', we created a tab for every data set used within this
 
 ```
 
-
-## XX_ROI_XX_Face_1
-
-<!-- Display ERP data descriptions -->  
-
-
-```{r table_ERP_traj_f1, results = 'asis'}
-
-# Load data set
-  qn_data_desc = readWorksheetFromFile("./data/data_overview.xlsx",
-                               sheet = "XX_ROI_XX_Face1",
-                               startCol = 1,
-                               endCol = 0)
-
-# Create table
-  kable(qn_data_desc) %>%
-    kable_styling(bootstrap_options = c("hover"), font_size = 14,fixed_thead = T)
-
-```
 
 
 ## XX_ROI_XX_Face_2
